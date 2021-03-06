@@ -7,6 +7,7 @@
 
 
 #include <glm\glm.hpp>
+#include "OmniShadowFrameBuffer.h"
 
 /*!
  * Directional light, a light that gets emitted in a specific direction
@@ -78,14 +79,16 @@ struct PointLight {
 	 */
 	PointLight(glm::vec3 color, glm::vec3 position, glm::vec3 attenuation, bool enabled = true)
 		: color(color), position(position), attenuation(attenuation), enabled(enabled)
-	{}
+	{
+		omniShadowFBO = OmniShadowFrameBuffer();
+	}
 
 	/*!
 	 * If the light is enabled
 	 */
 	bool enabled;
 	bool castShadow = false;
-
+	OmniShadowFrameBuffer omniShadowFBO;
 	/*!
 	 * Color of the light
 	 */
@@ -104,7 +107,7 @@ struct PointLight {
 	bool castsShadows() {
 		return this->castShadow;
 	}
-	bool toggleShadows() {
+	void toggleShadows() {
 		this->castShadow = !this->castShadow;
 	}
 };

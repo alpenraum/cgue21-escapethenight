@@ -11,7 +11,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <SOIL2/SOIL2.h>
-#include <physx/include/PxPhysicsAPI.h>
+#include "AdvancedShader.h"
+
 
 
 
@@ -23,11 +24,9 @@ public:
 	Model();
 	Model(string const &path, glm::vec3 position);
 	Model(string const &path, glm::vec3 position, glm::vec3 scale);
-	virtual void draw(Shader &shader);
+	virtual void draw(AdvancedShader &shader);
 	void setMaterialCoefficients(float ambient, float diffuse, float specular);
-	void setRotation(PxQuat rotation) {
-		this->transform.setRotation(rotation);
-	}
+	
 	void setScale(float coeff) {
 		this->transform.setScale(glm::vec3(coeff));
 	}

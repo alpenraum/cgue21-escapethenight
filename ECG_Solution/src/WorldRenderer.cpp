@@ -10,7 +10,9 @@ WorldRenderer::WorldRenderer(std::vector<Model*> models, std::vector<Watertile*>
 	levelRenderer.addModels(models);
 
 
-	//waterFBO = WaterFrameBuffer(Settings::width, Settings::height);
+	omniShadowRenderer = OmniShadowRenderer();
+
+
 	waterRenderer = WaterRenderer();
 
 	this->watertiles = watertiles;
@@ -30,11 +32,24 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 	WaterFrameBuffer waterFBO;
 	glm::vec3 cameraPos = camera->getPosition();
 
-	//in case water textures are smaller than screen resolution
-	if (Settings::waterTextureScale != 1.0f) {
-		glViewport(0, 0, Settings::width * Settings::waterTextureScale, Settings::height * Settings::waterTextureScale);
-	}
 
+
+
+	std::vector<Model*>* modelList = levelRenderer.getModels();
+	for each (PointLight * light in *pointLights) {
+		if (light->castsShadows()) {
+			omniShadowRenderer.prepareRender(light);
+			for each (Model * m in *modelList) {
+				m->draw(*omniShadowRenderer.getShader());
+			}
+			omniShadowRenderer.cleanUpAfterRender(light);
+		}
+	}
+	
+	//in case water textures have a different size to Screen
+	glViewport(0, 0, Settings::waterTextureDimension, Settings::waterTextureDimension);
+	
+	
 	for each (Watertile* tile in watertiles) {
 		//RENDER REFLECTION
 		waterFBO = tile->getWaterFBO();
@@ -47,7 +62,7 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 
 		waterFBO.bindReflectionFBO();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		levelRenderer.setUniforms(camera, glm::vec4(0, 1.0f, 0, -tile->getPosition().y + 1.0f), lightMapping, normalMapping, *dirLights, *pointLights); 
+		levelRenderer.setUniforms(true,camera, glm::vec4(0, 1.0f, 0, -tile->getPosition().y + 0.5f), lightMapping, normalMapping, *dirLights, *pointLights); 
 		levelRenderer.render();
 		skybox.draw(camera);
 
@@ -62,27 +77,28 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 
 		waterFBO.bindRefractionFBO();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		levelRenderer.setUniforms(camera, glm::vec4(0, -1.0f, 0, tile->getPosition().y), lightMapping, normalMapping, *dirLights, *pointLights);
+		levelRenderer.setUniforms(true,camera, glm::vec4(0, -1.0f, 0, tile->getPosition().y), lightMapping, normalMapping, *dirLights, *pointLights);
 		levelRenderer.render();
 		waterFBO.unbindFBO();
 
 	}
 	
-
-
-
-	//RENDER SCENE
+	
+	//RENDER SCENE TO SCREEN
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, Settings::width, Settings::height);
 	// Set per-frame uniforms
-	levelRenderer.setUniforms(camera, glm::vec4(0, 1.0f, 0, 1000000.0f), lightMapping, normalMapping, *dirLights, *pointLights);
+	levelRenderer.setUniforms(true,camera, glm::vec4(0, 1.0f, 0, 1000000.0f), lightMapping, normalMapping, *dirLights, *pointLights);
+
+
 	levelRenderer.render();
 	for each (Watertile * tile in watertiles)
 	{
-		waterRenderer.draw(camera, tile, tile->getWaterFBO(), deltaTime, pointLights->at(0));
+		waterRenderer.draw(camera, tile, tile->getWaterFBO(), deltaTime, *pointLights, normalMapping);
 	}
-	skybox.draw(camera);
 	// draw skybox as last
+	skybox.draw(camera);
+	
 
 }
 
@@ -91,4 +107,10 @@ void WorldRenderer::cleanUp()
 	for each (Watertile * tile in watertiles) {
 		tile->getWaterFBO().shutdown();
 	}
+	for each (PointLight * l in *pointLights) {
+		l->omniShadowFBO.shutdown();
+	}
+	levelRenderer.cleanup();
+	waterRenderer.cleanup();
+	omniShadowRenderer.cleanup();
 }

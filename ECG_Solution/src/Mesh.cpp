@@ -50,13 +50,15 @@ void Mesh::setupMesh() {
 	//unbind
 	glBindVertexArray(0);
 
+	glGenerateMipmap(GL_TEXTURE_2D);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glGenerateMipmap(GL_TEXTURE_2D);
+	
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, -0.4f);
 
 }
 
-void Mesh::draw(Shader &shader) {
+void Mesh::draw(AdvancedShader & shader) {
 
 	
 	GLuint diffuseNr = 1;
@@ -64,7 +66,7 @@ void Mesh::draw(Shader &shader) {
 	GLuint lightMapNr = 1;
 	
 
-	for (GLuint i = 0; i < textures.size(); i++) {
+	for (GLint i = 0; i < textures.size(); i++) {
 		glActiveTexture(GL_TEXTURE0 + i);
 
 		std::stringstream ss;
@@ -84,15 +86,15 @@ void Mesh::draw(Shader &shader) {
 
 		number = ss.str();
 
-		glUniform1i(glGetUniformLocation(shader.getHandle(), (name+number).c_str()),i);
+		shader.setUniform((name+number).c_str(),i);
 		glBindTexture(GL_TEXTURE_2D, this->textures[i].id);
 		
 
 		
 	}
 
-	glUniform3f(glGetUniformLocation(shader.getHandle(), "materialCoefficients"),ambient,diffuse, specular);
-	glUniform1f(glGetUniformLocation(shader.getHandle(), "shininess"), shininess);
+	shader.setUniform( "materialCoefficients", glm::vec3(ambient,diffuse, specular));
+	shader.setUniform("shininess", shininess);
 	
 	glActiveTexture(GL_TEXTURE0);
 
@@ -108,9 +110,9 @@ void Mesh::draw(Shader &shader) {
 	}
 }
 
-void Mesh::draw(Shader &shader, Transform tm) {
-	glUniformMatrix4fv(glGetUniformLocation(shader.getHandle(), "modelMatrix"),1, GL_FALSE, glm::value_ptr(tm.getModelMatrix()));
-	glUniformMatrix4fv(glGetUniformLocation(shader.getHandle(), "normalMatrix"), 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(tm.getModelMatrix()))));
+void Mesh::draw(AdvancedShader & shader, Transform tm) {
+	shader.setUniform("modelMatrix",tm.getModelMatrix());
+	shader.setUniform("normalMatrix",glm::transpose(glm::inverse(tm.getModelMatrix())));
 	Mesh::draw(shader);
 }
 

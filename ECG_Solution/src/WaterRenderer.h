@@ -5,6 +5,7 @@
 #include "Watertile.h"
 #include "utils/TextureLoader.h"
 #include "WaterFrameBuffer.h"
+#include "Light.h"
 class WaterRenderer
 {
 private:
@@ -45,6 +46,7 @@ public:
 
 	
 
-	void draw(ICamera* camera, Watertile* tile, WaterFrameBuffer waterFBO, float deltaTime, struct PointLight* sun);
+	void draw(ICamera* camera, Watertile* tile, WaterFrameBuffer waterFBO, float deltaTime, std::vector<PointLight*> pointLights, bool normalMapping);
 	
+	void cleanup();
 };

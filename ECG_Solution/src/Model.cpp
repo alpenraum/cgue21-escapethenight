@@ -14,8 +14,8 @@ Model::Model(string const &path, glm::vec3 position, glm::vec3 scale) {
 	loadModel(path);
 }
 
-void Model::draw(Shader &shader) {
-	glUniform1f(glGetUniformLocation(shader.getHandle(), "alpha"), 1.0f);
+void Model::draw(AdvancedShader &shader) {
+	shader.setUniform("alpha", 1.0f);
 	for (unsigned int i = 0; i < meshes.size(); i++) {
 		meshes[i].draw(shader, transform);
 		

@@ -1,102 +1,30 @@
-/*
-* Copyright 2018 Vienna University of Technology.
-* Institute of Computer Graphics and Algorithms.
-* This file is part of the ECG Lab Framework and must not be redistributed.
-*/
 #pragma once
-
-#include <GL\glew.h>
-#include <string>
+#include "utils/Settings.h"
+#include "utils/Utils.h"
 #include <fstream>
+#include <sstream>
 #include <iostream>
 #include <unordered_map>
-#include <glm\glm.hpp>
-#include <glm\gtc\type_ptr.hpp>
-
-#include "utils/Utils.h"
-
-
-/*!
- * Shader class that encapsulates all shader access
- */
-class Shader
+class AdvancedShader 
 {
-protected:
-	/*!
-	 * The shader program handle
-	 */
-	GLuint _handle;
+private:
+    const string DIRECTORY = "assets/shader/";
+    std::unordered_map<std::string, GLint> _locations;
+    GLuint programId;
 
-	/*!
-	 * Path to vertex shader and fragment shader
-	 */
-	std::string _vs, _fs;
+    GLint loadShader(const char* path, GLenum shaderType);
 
-	/*!
-	 * Whether an internal shader is being used
-	 */
-	bool _useFileAsSource;
+    
 
+public:
+    AdvancedShader(const char* vertexFile, const char* fragmentFile, const char* geomFile = nullptr);
+	AdvancedShader();
 	/*!
-	 * Stores the shader location names with their location IDs
-	 */
-	std::unordered_map<std::string, GLint> _locations;
-
-	/*!
-	 * Loads the specified vertex and fragment shaders
-	 * (usually called in the constructor)
-	 */
-	GLuint loadShaders();
-
-	/*!
-	 * Loads a shader from a given file and compiles it
-	 * @param file: path to the shader
-	 * @param shaderType: type of the shader (e.g. GL_VERTEX_SHADER or GL_FRAGMENT_SHADER)
-	 * @param handle: shader handle
-	 * @return if the shader could be loaded
-	 */
-	bool loadShader(std::string file, GLenum shaderType, GLuint& handle);
-	
-	/*!
+	* finds the uniform location, saves it in _locations (if not present) and returns the value;
 	 * @param uniform: uniform string in shader
 	 * @return the location ID of the uniform
 	 */
 	GLint getUniformLocation(std::string uniform);
-
-public:
-	bool loadShaderPublic(std::string file, GLenum shaderType, GLuint& handle) {
-		return loadShader(file, shaderType, handle);
-	}
-
-	GLint getUniformLocationPublic(std::string uniform) {
-		return getUniformLocation(uniform);
-	}
-
-	/*!
-	* finds the locations of all uniforms in the array and saves them to _locations
-	*/
-	void initUniforms(std::vector<string> uniformNames) {
-		for each (string str in uniformNames) {
-			if (_locations.find(str) == _locations.end()) {
-				_locations.insert({ str, getUniformLocation(str) });
-			}
-		}
-	}
-
-	/*!
-	 * Default constructor of a simple color shader
-	 */
-	Shader();
-
-	/*!
-	 * Shader constructor with specified vertex and fragment shader
-	 * Loads and compiles the shader
-	 * @param vs: path to the vertex shader
-	 * @param fs: path to the fragment shader
-	 */
-	Shader(std::string vs, std::string fs);
-	
-	~Shader();
 
 	/*!
 	 * Uses the shader with glUseProgram
@@ -204,24 +132,11 @@ public:
 	 * @param vec: the value to be set
 	 */
 	void setUniform(GLint location, const glm::vec4& vec);
-	/*!
-	 * Sets a uniform array property
-	 * @param arr: name of the uniform array
-	 * @param i: index of the value to be set
-	 * @param prop: property name
-	 * @param vec: the value to be set
-	 */
-	void setUniformArr(std::string arr, unsigned int i, std::string prop, const glm::vec3& vec);
-	/*!
-	 * Sets a uniform array property
-	 * @param arr: name of the uniform array
-	 * @param i: index of the value to be set
-	 * @param prop: property name
-	 * @param f: the value to be set
-	 */
-	void setUniformArr(std::string arr, unsigned int i, std::string prop, const float f);
 
-	GLuint getHandle() {
-		return this->_handle;
-	}
+
+	GLuint getProgramId();
+
+   
+    
 };
+

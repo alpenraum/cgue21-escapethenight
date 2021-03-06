@@ -23,8 +23,7 @@ struct PointLight {
     vec3 position;
     vec3 attenuation;
     bool enabled;
-    
-    bool emittingShadows;
+   // bool emittingShadows;
 };
 
 
@@ -37,7 +36,7 @@ uniform DirectionalLight dirLights[8];
 uniform vec3 materialCoefficients; // x = ambient, y = diffuse, z = specular 
 uniform float shininess;
 
-uniform samplerCube depthMaps[10];
+
 
 uniform vec3 cameraWorld;
 uniform float alpha;
@@ -48,48 +47,10 @@ uniform bool lightMapping;
 uniform bool normalMapping;
 
 
-uniform float farPlane;
+//uniform float farPlane;
 
 
-// array of offset direction for sampling
-vec3 gridSamplingDisk[20] = vec3[]
-(
-   vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
-   vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
-   vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
-   vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
-   vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
-);
-
-
-float ShadowCalculation(vec3 fragPos, PointLight light, int index){
-    vec3 fragToLight = fragPos - light.position; 
-    float currentDepth = length(fragToLight);
-
-    //pcf algorithm - https://learnopengl.com/Advanced-Lighting/Shadows/Point-Shadows
-
-    float shadow = 0.0f;
-    float bias = 0.15f;
-    int samples = 20;
-    float viewDistance = length(cameraWorld - fragPos);
-    float diskRadius = (1.0f + (viewDistance / farPlane))/25.0;
-
-    for (int i=0; i<samples; ++i){
-        float closestDepth =texture(depthMaps[index], fragToLight + gridSamplingDisk[i]*diskRadius).r;
-        //FIND OUT WHY CUBEMAPS READS ARE NOT POSSIBLE
-        closestDepth *=farPlane;
-        if(currentDepth - bias>closestDepth){
-            shadow +=1.0f;
-        }
-       
-    }
-
-        shadow/=float(samples);
-
-        return shadow;
-}
-
-vec3 blinnPhongPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec4 color, int index){
+vec3 blinnPhongPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec4 color){
     vec3 lightDir = (light.position-fragPos);
     float d= length(lightDir);
 
@@ -122,11 +83,6 @@ vec3 blinnPhongPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 view
 	    vec3 diffuse1  = att * diffuse;
 	    vec3 specular1 = att * specular;
 
-        if(light.emittingShadows){
-            float shadow = ShadowCalculation(fs_in.FragPos, light,index);
-            diffuse1*= (1.0f-shadow);
-            specular1*=(1.0f-shadow);
-        }
 	    /*if(lightmapping){
 	        ambient1  *= (vec3(texture(texture_lightMap1, fs_in.lightMapCoords)).rgb);
 	        diffuse1  *= (vec3(texture(texture_lightMap1, fs_in.lightMapCoords)).rgb);
@@ -185,11 +141,11 @@ void main()
 
     for(int i=0;i<pointLights.length();i++){
         if(pointLights[i].enabled){
-            FragColor.rgb+= blinnPhongPointLight(pointLights[i],normal,fs_in.FragPos, viewDir, color, i);
+            FragColor.rgb+= blinnPhongPointLight(pointLights[i],normal,fs_in.FragPos, viewDir, color);
         }
     }
     
-                         
+                 
     
     
     //Luma conversion

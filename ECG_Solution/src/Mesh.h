@@ -7,7 +7,7 @@ A Mesh is an Actor that has geometry, one or more textures, a shader and a bound
 #include <sstream>
 #include <iostream>
 
-#include "Shader.h"
+#include "AdvancedShader.h"
 #include "Texture.h"
 #include <iostream> 
 #include <GL/glew.h>
@@ -66,10 +66,10 @@ public:
 	@param shader - Shader which is used for drawing this mesh
 	Right now, each Mesh only uses one Texture
 	*/
-	void draw(Shader &shader);
+	void draw(AdvancedShader & shader);
 
 
-	void draw(Shader &shader, Transform tm);
+	void draw(AdvancedShader & shader, Transform tm);
 
 
 	std::vector<Vertex> getVertices() {

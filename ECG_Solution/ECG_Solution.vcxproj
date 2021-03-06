@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="src\AdvancedShader.cpp" />
+    <ClCompile Include="src\OmniShadowFrameBuffer.cpp" />
+    <ClCompile Include="src\OmniShadowRenderer.cpp" />
     <ClCompile Include="src\Skybox.cpp" />
     <ClCompile Include="src\BasicCamera.cpp" />
     <ClCompile Include="src\Actor.cpp" />
-    <ClCompile Include="src\utils\Converter.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\Model.cpp" />
     <ClCompile Include="src\Sound.cpp" />
@@ -15,13 +17,14 @@
     <ClCompile Include="src\WaterFrameBuffer.cpp" />
     <ClCompile Include="src\LevelRenderer.cpp" />
     <ClCompile Include="src\WorldRenderer.cpp" />
+    <ClInclude Include="src\AdvancedShader.h" />
+    <ClInclude Include="src\OmniShadowFrameBuffer.h" />
+    <ClInclude Include="src\OmniShadowRenderer.h" />
     <ClInclude Include="src\IFBO.h" />
     <ClInclude Include="src\Skybox.h" />
     <ClInclude Include="src\BasicCamera.h" />
     <ClInclude Include="src\Actor.h" />
     <ClInclude Include="src\ICamera.h" />
-    <ClInclude Include="src\PhysxConfig.h" />
-    <ClInclude Include="src\utils\Converter.h" />
     <ClInclude Include="src\Geometry.h" />
     <ClInclude Include="src\utils\INIReader.h" />
     <ClInclude Include="src\Light.h" />
@@ -111,7 +114,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)external\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;ECG_Library_Debug.lib;assimp-vc140-mt.lib;PhysX_32.lib;PhysXCharacterKinematic_static_32.lib;PhysXCommon_32.lib;PhysXExtensions_static_32.lib;PhysXFoundation_32.lib;PhysXPvdSDK_static_32.lib;PhysXCooking_32.lib;soil2-debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;ECG_Library_Debug.lib;assimp-vc140-mt.lib;soil2-debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>MSVCRTD;LIBCMT</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
@@ -144,7 +147,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)external\lib-release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;ECG_Library_Release.lib;assimp-vc140-mt.lib;PhysX_32_release.lib;PhysXCharacterKinematic_static_32_release.lib;PhysXCommon_32_release.lib;PhysXExtensions_static_32_release.lib;PhysXFoundation_32_release.lib;PhysXPvdSDK_static_32_release.lib;PhysXCooking_32_release.lib;soil2-debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;ECG_Library_Release.lib;assimp-vc140-mt.lib;soil2-debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
       <ForceFileOutput>

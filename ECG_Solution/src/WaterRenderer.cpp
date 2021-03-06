@@ -9,6 +9,8 @@ WaterRenderer::WaterRenderer()
 {
 	shader = std::make_shared<Shader>("water.vert", "water.frag");
 
+	
+
 	reflectionTextureLocation = shader.get()->getUniformLocationPublic("reflectionTexture");
 	refractionTextureLocation = shader.get()->getUniformLocationPublic("refractionTexture");
 	dudvLocation = shader.get()->getUniformLocationPublic("dudvmap");
@@ -34,7 +36,7 @@ WaterRenderer::~WaterRenderer()
 {
 }
 
-void WaterRenderer::draw(ICamera* camera, Watertile* tile, WaterFrameBuffer waterFBO, float deltaTime, struct PointLight* sun){
+void WaterRenderer::draw(ICamera* camera, Watertile* tile, WaterFrameBuffer waterFBO, float deltaTime, std::vector<PointLight*> pointLights, bool normalMapping){
 
 	
 	shader->use();
@@ -50,10 +52,16 @@ void WaterRenderer::draw(ICamera* camera, Watertile* tile, WaterFrameBuffer wate
 	shader.get()->setUniform("viewProjMatrix", camera->getViewProjMatrix());
 	shader->setUniform("moveFactor", tile->getMoveFactor(deltaTime));
 	shader->setUniform("cameraPos", camera->getPosition());
-	shader->setUniform("sunPos", sun->position);
-	shader->setUniform("sunColor", sun->color);
+	shader->setUniform("normalMapping", normalMapping);
 	
-	
+	for (unsigned int i = 0; i < pointLights.size(); i++) {
+		string number = std::to_string(i);
+
+		shader->setUniform(("lights[" + number + "].position").c_str(),pointLights.at(i)->position);
+		shader->setUniform(("lights[" + number + "].color").c_str(), pointLights.at(i)->color);
+	}
+
+
 
 	shader->setUniform("near", camera->getNearFar().x);
 	shader->setUniform("far", camera->getNearFar().y);
@@ -87,6 +95,11 @@ void WaterRenderer::draw(ICamera* camera, Watertile* tile, WaterFrameBuffer wate
 	glDisable(GL_BLEND);
 	shader->unuse();
 	
+}
+
+void WaterRenderer::cleanup()
+{
+	glDeleteShader(shader->getHandle());
 }
 
 

@@ -17,65 +17,6 @@ void LevelRenderer::addModels(std::vector<Model*> models)
 	modelList = models;
 }
 
-
-
-void LevelRenderer::setUniforms(ICamera* camera, glm::vec4 clippingPlane, bool lightMapping, bool normalMapping, std::vector<DirectionalLight*> dirLights, std::vector<PointLight*> pointLights)
-{	
-	shader->use();
-	shader->setUniform("viewProjMatrix", camera->getViewProjMatrix());
-	shader->setUniform("clippingPlane", clippingPlane);
-	shader->setUniform("cameraWorld", camera->getPosition());
-	shader->setUniform("alpha", 1.0f);
-	shader->setUniform("gamma", Settings::gamma);
-	shader->setUniform("lightMapping", lightMapping);
-	shader->setUniform("normaMapping", normalMapping);
-
-	for (GLuint i = 0; i < dirLights.size(); i++) {
-		string number = std::to_string(i);
-		shader->setUniform(("dirLights[" + number + "].color").c_str(), dirLights.at(i)->color);
-		shader->setUniform(("dirLights[" + number + "].direction").c_str(), dirLights.at(i)->direction);
-	}
-
-	for (GLuint i = 0; i < pointLights.size(); i++) {
-		PointLight* temp = pointLights.at(i);
-
-		string number = std::to_string(i);
-		shader->setUniform(("pointLights[" + number + "].color").c_str(), temp->color);
-		shader->setUniform(("pointLights[" + number + "].position").c_str(), temp->position);
-		shader->setUniform(("pointLights[" + number + "].attentuation").c_str(), temp->attenuation);
-		shader->setUniform(("pointLights[" + number + "].enabled").c_str(), temp->enabled);
-	}
-}
-
-LevelRenderer::LevelRenderer()
-{
-
-	std::vector<string> uniformNames = std::vector<string>();
-	uniformNames.push_back("viewProjMatrix");
-	uniformNames.push_back("clippingPlane");
-	uniformNames.push_back("cameraWorld");
-	uniformNames.push_back("alpha");
-	uniformNames.push_back("gamma");
-	uniformNames.push_back("lightMapping");
-	uniformNames.push_back("normalMapping");
-	
-
-	shader = std::make_shared<Shader>("newVert.vert", "newFrag.frag");
-	shader->use();
-	
-	shader->initUniforms(uniformNames);
-
-	shader->unuse();
-
-	modelList = std::vector<Model*>();
-
-}
-
-/*
-* Renders the objects in the modelList
-* 
-* setUniforms() must be called before!
-*/
 void LevelRenderer::render()
 {
 	shader->use();
@@ -85,7 +26,76 @@ void LevelRenderer::render()
 	shader->unuse();
 }
 
+void LevelRenderer::setUniforms(bool shadows, ICamera* camera, glm::vec4 clippingPlane, bool lightMapping, bool normalMapping, std::vector<DirectionalLight*> dirLights, std::vector<PointLight*> pointLights, GLuint depthCubemap)
+{
+
+	AdvancedShader* s;
+
+	if (shadows) {
+		s = shader.get();
+	}
+	else {
+		s = shadowlessShader.get();
+		}
+	s->use();
+	s->setUniform("viewProjMatrix", camera->getViewProjMatrix());
+	s->setUniform("clippingPlane", clippingPlane);
+	s->setUniform("cameraWorld", camera->getPosition());
+	s->setUniform("alpha", 1.0f);
+	s->setUniform("gamma", Settings::gamma);
+	s->setUniform("lightMapping", lightMapping);
+	s->setUniform("normaMapping", normalMapping);
+	s->setUniform("farPlane", Settings::farPlane);
+
+	for (GLuint i = 0; i < dirLights.size(); i++) {
+		string number = std::to_string(i);
+		s->setUniform(("dirLights[" + number + "].color").c_str(), dirLights.at(i)->color);
+		s->setUniform(("dirLights[" + number + "].direction").c_str(), dirLights.at(i)->direction);
+	}
+
+	for (GLuint i = 0; i < pointLights.size(); i++) {
+		PointLight* temp = pointLights.at(i);
+
+		string number = std::to_string(i);
+		s->setUniform(("pointLights[" + number + "].color").c_str(), temp->color);
+		s->setUniform(("pointLights[" + number + "].position").c_str(), temp->position);
+		s->setUniform(("pointLights[" + number + "].attentuation").c_str(), temp->attenuation);
+		s->setUniform(("pointLights[" + number + "].enabled").c_str(), temp->enabled);
+		s->setUniform(("pointLights[" + number + "].emittingShadows").c_str(), temp->castsShadows());
+		glActiveTexture(GL_TEXTURE0 + 5 + i);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, temp->omniShadowFBO.getDepthMap());
+		s->setUniform(("depthMaps[" + std::to_string(i) + "]").c_str(), GL_TEXTURE0 + 5 + i);
+	}
+}
+
+LevelRenderer::LevelRenderer()
+{
+	shader = std::make_shared<AdvancedShader>("newVert.vert", "newFrag.frag");
+	shader->use();
+	shader->unuse();
+
+	shadowlessShader = std::make_shared<AdvancedShader>("newVertNoShadows.vert", "newFragNoShadows.frag");
+	shadowlessShader->use();
+	shadowlessShader->unuse();
+
+	modelList = std::vector<Model*>();
+}
+
+/*
+* Renders the objects in the modelList
+*
+* setUniforms() must be called before!
+*/
+void LevelRenderer::renderWithoutShadows()
+{
+	shadowlessShader->use();
+	for each (Model * model in modelList) {
+		model->draw(*shadowlessShader.get());
+	}
+	shadowlessShader->unuse();
+}
+
 void LevelRenderer::cleanup()
 {
-	
+	glDeleteShader(shader->getProgramId());
 }

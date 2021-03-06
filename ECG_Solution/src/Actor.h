@@ -1,7 +1,7 @@
 #pragma once
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\glm.hpp>
-#include <physx/include/PxPhysicsAPI.h>
+
 #include "utils/Transform.h"
 
 /*!
@@ -13,7 +13,7 @@ protected:
 	//The current Transformation of this Actor
 	Transform transform;
 
-	physx::PxRigidActor *collisionModel;
+	
 	
 
 public:

@@ -15,7 +15,9 @@ public:
 	static float gamma;
 	static float mouseSens;
 
-	static float waterTextureScale;
+	static int waterTextureDimension;
+	static int shadowTextureDimension;
+	static float shadowDistance;
 
 	static void loadSettings(INIReader reader);
 

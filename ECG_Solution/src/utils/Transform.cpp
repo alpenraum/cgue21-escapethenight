@@ -18,9 +18,7 @@ void Transform::setPosition(glm::vec3 position)
 
 	this->position = position;
 }
-void Transform::setPosition(PxVec3 position) {
-	setPosition(PhysXVec3ToglmVec3(position));
-}
+
 
 
 void Transform::setScale(glm::vec3 scale)
@@ -59,9 +57,7 @@ void Transform::setRotation(glm::quat rotation)
 	this->rotation = rotation;
 
 }
-void Transform::setRotation(PxQuat rotation) {
-	this->setRotation(PhysXQuatToglmQuat(rotation));
-}
+
 
 
 glm::vec3 Transform::getScale()

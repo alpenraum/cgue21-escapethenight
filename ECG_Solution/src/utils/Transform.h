@@ -7,10 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/quaternion.hpp>
-#include <physx/include/PxPhysicsAPI.h>
-#include "Converter.h"
 
-using namespace physx;
 
 
 
@@ -45,7 +42,7 @@ public:
 	 */
 
 	void setPosition(glm::vec3 position);
-	void setPosition(PxVec3 position);
+	
 
 	/** Set the local rotation
 
@@ -54,7 +51,7 @@ public:
 	 */
 
 	void setRotation(glm::quat rotation);
-	void setRotation(PxQuat rotation);
+	
 	/** Set the local scale
 
 	 @param[in] scale The scale

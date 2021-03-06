@@ -14,7 +14,7 @@ Watertile::Watertile(glm::vec3 position, float waveStrength)
 	this->_spatialData.setScale(glm::vec3(_tileSize, 1, _tileSize));
 	_waveStrength = waveStrength;
 
-	waterFBO = WaterFrameBuffer(Settings::width*Settings::waterTextureScale, Settings::height * Settings::waterTextureScale);
+	waterFBO = WaterFrameBuffer(Settings::waterTextureDimension, Settings::waterTextureDimension);
 }
 Watertile::Watertile(glm::vec3 position, glm::vec2 scale, float waveStrength)
 {
@@ -23,7 +23,7 @@ Watertile::Watertile(glm::vec3 position, glm::vec2 scale, float waveStrength)
 	this->_spatialData.setScale(glm::vec3(scale.x, 1, scale.y));
 	_waveStrength = waveStrength;
 
-	waterFBO = WaterFrameBuffer(Settings::width * Settings::waterTextureScale, Settings::height * Settings::waterTextureScale);
+	waterFBO = WaterFrameBuffer(Settings::waterTextureDimension, Settings::waterTextureDimension);
 }
 
 Watertile::~Watertile()

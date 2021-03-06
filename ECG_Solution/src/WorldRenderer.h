@@ -4,6 +4,7 @@
 #include "WaterRenderer.h"
 #include "WaterFrameBuffer.h"
 #include "Skybox.h"
+#include "OmniShadowRenderer.h"
 class WorldRenderer
 {
 private:
@@ -11,8 +12,10 @@ private:
 	LevelRenderer levelRenderer;
 
 	WaterRenderer waterRenderer;
-	//WaterFrameBuffer waterFBO;
 	std::vector<Watertile*> watertiles;
+
+	OmniShadowRenderer omniShadowRenderer;
+
 	Skybox skybox;
 
 	std::vector<DirectionalLight*>* dirLights;

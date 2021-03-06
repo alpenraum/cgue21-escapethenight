@@ -16,14 +16,13 @@
 #include <stdio.h>
 #include "ICamera.h"
 #include "BasicCamera.h"
-#include "PhysxConfig.h"
 #include "Skybox.h"
 #include "Watertile.h"
 #include "WaterRenderer.h"
 #include "WaterFrameBuffer.h"
 #include "utils/Settings.h"
 #include "WorldRenderer.h"
-
+#pragma warning( disable : 4244 )
 
 
 /* --------------------------------------------- */
@@ -42,7 +41,6 @@
 static void APIENTRY DebugCallbackDefault(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam);
 static std::string FormatDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity, const char* msg);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-void setPerFrameUniforms(Shader* shader, ICamera& camera, std::vector<DirectionalLight*>* dirLights, std::vector<PointLight*>* pointLights, float totalTime, glm::vec4 clippingPlane);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void renderQuad();
@@ -58,8 +56,6 @@ static bool _culling = true;
 static bool _dragging = false;
 static bool _strafing = false;
 static float _zoom = 6.0f;
-static PxReal mAccumulator = 0.0f;
-static PxReal mStepSize = 1.0f / 60.0f;
 static float gamma;
 static bool isFPCamera = false;
 static bool NORMALMAPPING = true;
@@ -167,58 +163,7 @@ int main(int argc, char** argv)
 
 
 
-	// configure (floating point) framebuffers
-		// ---------------------------------------
-	unsigned int hdrFBO;
-	glGenFramebuffers(1, &hdrFBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
-	// create 2 floating point color buffers (1 for normal rendering, other for brightness treshold values)
-	unsigned int colorBuffers[2];
-	glGenTextures(2, colorBuffers);
-	for (unsigned int i = 0; i < 2; i++)
-	{
-		glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, Settings::width, Settings::height, 0, GL_RGB, GL_FLOAT, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);  // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		// attach texture to framebuffer
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0);
-	}
-	// create and attach depth buffer (renderbuffer)
-	unsigned int rboDepth;
-	glGenRenderbuffers(1, &rboDepth);
-	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, Settings::width, Settings::height);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
-	// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
-	unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-	glDrawBuffers(2, attachments);
-	// finally check if framebuffer is complete
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		std::cout << "Framebuffer not complete!" << std::endl;
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	// ping-pong-framebuffer for blurring
-	unsigned int pingpongFBO[2];
-	unsigned int pingpongColorbuffers[2];
-	glGenFramebuffers(2, pingpongFBO);
-	glGenTextures(2, pingpongColorbuffers);
-	for (unsigned int i = 0; i < 2; i++)
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[i]);
-		glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, Settings::width, Settings::height, 0, GL_RGB, GL_FLOAT, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongColorbuffers[i], 0);
-		// also check if framebuffers are complete (no need for depth buffer)
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-			std::cout << "Framebuffer not complete!" << std::endl;
-	}
 
 
 
@@ -229,9 +174,7 @@ int main(int argc, char** argv)
 	// Initialize scene and render loop
 	/* --------------------------------------------- */
 	
-		// Load shader(s)
-		//std::shared_ptr<Shader> textureShader = std::make_shared<Shader>("newVert.vert", "newFrag.frag");
-		std::shared_ptr<Shader> bloomShader = std::make_shared<Shader>("bloom.vert","bloom.frag");
+		// Load shader(s)	
 		std::shared_ptr<Shader> textShader = std::make_shared<Shader>("text.vert", "text.frag");
 
 		
@@ -291,6 +234,7 @@ int main(int argc, char** argv)
 		for (int i = 0; i < 3; i++) {
 
 			PointLight* pointL = new PointLight(glm::normalize(glm::vec3(1.0f)) * 4.0f, glm::vec3((-20.0f) + 20.0f * i, 20.0f, 0), glm::vec3(1.0f, 0.045f, 0.0075f));
+			pointL->toggleShadows();
 			pointLights.push_back(pointL);
 
 		}
@@ -378,8 +322,6 @@ int main(int argc, char** argv)
 			
 			
 
-			//PHYSX
-			physx.advanceSimulation(dt);
 
 			
 
@@ -388,7 +330,7 @@ int main(int argc, char** argv)
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-			worldRenderer.render(&camera,dt,false,false);
+			worldRenderer.render(&camera,dt,false,NORMALMAPPING);
 			
 
 
@@ -424,7 +366,7 @@ int main(int argc, char** argv)
 	/* --------------------------------------------- */
 	
 	glfwTerminate();
-	physx.shutdown();
+	
 	return EXIT_SUCCESS;
 }
 
@@ -538,7 +480,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			if (_culling) glEnable(GL_CULL_FACE);
 			else glDisable(GL_CULL_FACE);
 			break;
-		
+		case GLFW_KEY_F3:
+			NORMALMAPPING = !NORMALMAPPING;
+			break;
 		case GLFW_KEY_F4:
 			LOG_TO_CONSOLE("posX:", camera.getPosition().x);
 			LOG_TO_CONSOLE("posY:", camera.getPosition().y);

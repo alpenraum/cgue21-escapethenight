@@ -12,7 +12,9 @@ float Settings::farPlane = 0;
 float Settings::gamma = 0;
 float Settings::mouseSens = 0;
 
-float Settings::waterTextureScale = 1.0f;
+int Settings::waterTextureDimension = 0;
+int Settings::shadowTextureDimension = 0;
+float Settings::shadowDistance = 0.0f;
 
 void Settings::loadSettings(INIReader reader)
 {
@@ -26,5 +28,7 @@ void Settings::loadSettings(INIReader reader)
 	Settings::gamma = float(reader.GetReal("camera", "gamma", 1.0f));
 	Settings::mouseSens = float(reader.GetReal("controls", "mouse_sensitivity", 1.0f));
 
-	Settings::waterTextureScale = float(reader.GetReal("graphics", "water_texture_scale", 1.0f));
+	Settings::waterTextureDimension = (reader.GetInteger("graphics", "water_texture_dimension", 1024));
+	Settings::shadowTextureDimension = (reader.GetInteger("graphics", "shadow_texture_dimension", 1024));
+	Settings::shadowDistance = float(reader.GetReal("graphics", "shadow_distance",50.0f));
 }
