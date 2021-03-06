@@ -6,6 +6,7 @@ WorldRenderer::WorldRenderer()
 
 WorldRenderer::WorldRenderer(std::vector<Model*> models, std::vector<Watertile*> watertiles, std::vector<std::string> skyboxFaces, std::vector<DirectionalLight*>* dirLights, std::vector<PointLight*>* pointLights)
 {
+
 	levelRenderer = LevelRenderer();
 	levelRenderer.addModels(models);
 
@@ -34,7 +35,7 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 
 
 
-
+	//render shadowmaps
 	std::vector<Model*>* modelList = levelRenderer.getModels();
 	for each (PointLight * light in *pointLights) {
 		if (light->castsShadows()) {

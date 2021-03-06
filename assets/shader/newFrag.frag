@@ -23,7 +23,7 @@ struct PointLight {
     vec3 position;
     vec3 attenuation;
     bool enabled;
-    
+    samplerCube depthMap;
     bool emittingShadows;
 };
 
@@ -32,12 +32,13 @@ struct PointLight {
 uniform sampler2D texture_diffuse1;
 uniform sampler2D texture_normal1;
 uniform sampler2D texture_lightMap1;
-uniform PointLight pointLights[10];
+uniform PointLight pointLights[4];
+
 uniform DirectionalLight dirLights[8];
 uniform vec3 materialCoefficients; // x = ambient, y = diffuse, z = specular 
 uniform float shininess;
 
-uniform samplerCube depthMaps[10];
+//uniform samplerCube depthMaps[10];
 
 uniform vec3 cameraWorld;
 uniform float alpha;
@@ -69,14 +70,15 @@ float ShadowCalculation(vec3 fragPos, PointLight light, int index){
     //pcf algorithm - https://learnopengl.com/Advanced-Lighting/Shadows/Point-Shadows
 
     float shadow = 0.0f;
-    float bias = 0.15f;
+    float bias = 0.25f;
     int samples = 20;
     float viewDistance = length(cameraWorld - fragPos);
     float diskRadius = (1.0f + (viewDistance / farPlane))/25.0;
 
     for (int i=0; i<samples; ++i){
-        float closestDepth =texture(depthMaps[index], fragToLight + gridSamplingDisk[i]*diskRadius).r;
-        //FIND OUT WHY CUBEMAPS READS ARE NOT POSSIBLE
+        float closestDepth =texture(light.depthMap, fragToLight + gridSamplingDisk[i]*diskRadius).r;
+
+        //FIND OUT WHY CUBEMAPS READS ARE NOT POSSIBLE - DYNAMIC INDEXING IS NOT WORKING
         closestDepth *=farPlane;
         if(currentDepth - bias>closestDepth){
             shadow +=1.0f;
@@ -123,15 +125,12 @@ vec3 blinnPhongPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 view
 	    vec3 specular1 = att * specular;
 
         if(light.emittingShadows){
-            float shadow = ShadowCalculation(fs_in.FragPos, light,index);
-            diffuse1*= (1.0f-shadow);
-            specular1*=(1.0f-shadow);
+           float shadow = ShadowCalculation(fs_in.FragPos, light,index);
+           diffuse1*= (1.0f-shadow);
+           specular1*=(1.0f-shadow);
+          
         }
-	    /*if(lightmapping){
-	        ambient1  *= (vec3(texture(texture_lightMap1, fs_in.lightMapCoords)).rgb);
-	        diffuse1  *= (vec3(texture(texture_lightMap1, fs_in.lightMapCoords)).rgb);
-	   
-	    }*/
+	    
 	    return ((ambient1 + diffuse1)* color.rgb + specular1);
     }else{
      	return vec3(0.0f);

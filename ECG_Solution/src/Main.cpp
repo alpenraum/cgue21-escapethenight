@@ -207,7 +207,7 @@ int main(int argc, char** argv)
 	
 		Model renderObject = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, 5.0f,-10.0f));
 		Model betweenWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, -10.0f, -10.0f));
-		Model subWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, -3.0f, -10.0f));
+		Model subWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(17.0f, 5.0f, 10.0f));
 		Model terrain = Model("assets/models/LowPolyMountains_obj/lowpolymountains.obj", glm::vec3(0.0f,0.5f,0.0f));
 		modelList.push_back(&terrain);
 		modelList.push_back(&renderObject);
@@ -230,6 +230,7 @@ int main(int argc, char** argv)
 
 
 		PointLight sun = PointLight(glm::normalize(glm::vec3(0.6f, 0.5f, 0.3f)) * 4.0f, glm::vec3(30.0f, 10.0f, 15.0f), glm::vec3(1.0f, 0.045f, 0.0075f));
+		sun.toggleShadows();
 		pointLights.push_back(&sun);
 		for (int i = 0; i < 3; i++) {
 

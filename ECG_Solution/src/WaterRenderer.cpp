@@ -99,7 +99,7 @@ void WaterRenderer::draw(ICamera* camera, Watertile* tile, WaterFrameBuffer wate
 
 void WaterRenderer::cleanup()
 {
-	glDeleteShader(shader->getHandle());
+	glDeleteProgram(shader->getHandle());
 }
 
 

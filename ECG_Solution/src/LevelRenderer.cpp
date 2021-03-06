@@ -47,13 +47,13 @@ void LevelRenderer::setUniforms(bool shadows, ICamera* camera, glm::vec4 clippin
 	s->setUniform("normaMapping", normalMapping);
 	s->setUniform("farPlane", Settings::farPlane);
 
-	for (GLuint i = 0; i < dirLights.size(); i++) {
+	for (GLint i = 0; i < dirLights.size(); i++) {
 		string number = std::to_string(i);
 		s->setUniform(("dirLights[" + number + "].color").c_str(), dirLights.at(i)->color);
 		s->setUniform(("dirLights[" + number + "].direction").c_str(), dirLights.at(i)->direction);
 	}
 
-	for (GLuint i = 0; i < pointLights.size(); i++) {
+	for (GLint i = 0; i < pointLights.size(); i++) {
 		PointLight* temp = pointLights.at(i);
 
 		string number = std::to_string(i);
@@ -62,9 +62,9 @@ void LevelRenderer::setUniforms(bool shadows, ICamera* camera, glm::vec4 clippin
 		s->setUniform(("pointLights[" + number + "].attentuation").c_str(), temp->attenuation);
 		s->setUniform(("pointLights[" + number + "].enabled").c_str(), temp->enabled);
 		s->setUniform(("pointLights[" + number + "].emittingShadows").c_str(), temp->castsShadows());
-		glActiveTexture(GL_TEXTURE0 + 5 + i);
+		glActiveTexture(GL_TEXTURE0 + 3 + i);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, temp->omniShadowFBO.getDepthMap());
-		s->setUniform(("depthMaps[" + std::to_string(i) + "]").c_str(), GL_TEXTURE0 + 5 + i);
+		s->setUniform(("pointLights[" + number + "].depthMap").c_str(), 0 + 3 + i);
 	}
 }
 
@@ -97,5 +97,5 @@ void LevelRenderer::renderWithoutShadows()
 
 void LevelRenderer::cleanup()
 {
-	glDeleteShader(shader->getProgramId());
+	glDeleteProgram(shader->getProgramId());
 }

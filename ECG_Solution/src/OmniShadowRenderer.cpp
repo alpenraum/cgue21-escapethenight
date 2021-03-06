@@ -53,7 +53,7 @@ void OmniShadowRenderer::cleanUpAfterRender(PointLight* pointLight)
 
 void OmniShadowRenderer::cleanup()
 {
-	glDeleteShader(shader->getProgramId());
+	glDeleteProgram(shader->getProgramId());
 }
 
 
