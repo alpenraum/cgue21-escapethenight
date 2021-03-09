@@ -9,7 +9,6 @@
     <ClCompile Include="src\Actor.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\Model.cpp" />
-    <ClCompile Include="src\Sound.cpp" />
     <ClCompile Include="src\utils\Settings.cpp" />
     <ClCompile Include="src\utils\Transform.cpp" />
     <ClCompile Include="src\Watertile.cpp" />
@@ -32,7 +31,6 @@
     <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\Model.h" />
     <ClInclude Include="src\Shader.h" />
-    <ClInclude Include="src\Sound.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\utils\Settings.h" />
     <ClInclude Include="src\utils\Utils.h" />

@@ -20,13 +20,11 @@ public:
 	void setPosition(glm::vec3 val);
 	glm::mat4 getModelMatrix();
 	float getMoveFactor(float deltaTime);
-	float getWaveStrength() const { return _waveStrength; }
-	void setWaveStrength(float val) { _waveStrength = val; }
-	glm::vec2 getScale() {
-		return glm::vec2(_spatialData.getScale().x, _spatialData.getScale().y);
-	}
+	float getWaveStrength();
+	void setWaveStrength(float val);
+	glm::vec2 getScale();
 
-	WaterFrameBuffer getWaterFBO() { return waterFBO; }
+	WaterFrameBuffer getWaterFBO();
 
 
 

@@ -44,12 +44,12 @@ float Watertile::getMoveFactor(float deltaTime) {
 	return _moveFactor;
 }
 
-inline float Watertile::getWaveStrength() const { return _waveStrength; }
+float Watertile::getWaveStrength() { return _waveStrength; }
 
-inline void Watertile::setWaveStrength(float val) { _waveStrength = val; }
+void Watertile::setWaveStrength(float val) { _waveStrength = val; }
 
-inline glm::vec2 Watertile::getScale() {
+glm::vec2 Watertile::getScale() {
 	return glm::vec2(_spatialData.getScale().x, _spatialData.getScale().y);
 }
 
-inline WaterFrameBuffer Watertile::getWaterFBO() { return waterFBO; }
+WaterFrameBuffer Watertile::getWaterFBO() { return waterFBO; }
