@@ -237,6 +237,7 @@ int main(int argc, char** argv)
 			PointLight* pointL = new PointLight(glm::normalize(glm::vec3(1.0f)) * 4.0f, glm::vec3((-20.0f) + 20.0f * i, 20.0f, 0), glm::vec3(1.0f, 0.045f, 0.0075f));
 			pointL->toggleShadows();
 			pointLights.push_back(pointL);
+			//DONT FORGET TO CHANGE NUMBER OF LIGHTS IN FRAGMENT SHADER
 
 		}
 
