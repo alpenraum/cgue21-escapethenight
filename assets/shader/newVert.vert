@@ -29,9 +29,13 @@ void main()
 
 	vec4 position_world_ = modelMatrix * vec4(position, 1);
 	
-	
+	//world space
 	vs_out.FragPos = position_world_.xyz;
+
+	//camera space
 	gl_Position = viewProjMatrix * position_world_;
+
+	//clipping the rendered scene for the reflection and refraction textures of water
 	gl_ClipDistance[0] = dot(position_world_,clippingPlane);
 
 

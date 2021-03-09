@@ -4,14 +4,13 @@
 * This file is part of the ECG Lab Framework and must not be redistributed.
 */
 
-
 #include "utils/Utils.h"
 #include <sstream>
 #include "Shader.h"
 #include "Material.h"
 #include "Light.h"
 #include "Texture.h"
-#include <iostream> 
+#include <iostream>
 #include "Model.h"
 #include <stdio.h>
 #include "ICamera.h"
@@ -23,15 +22,6 @@
 #include "utils/Settings.h"
 #include "WorldRenderer.h"
 #pragma warning( disable : 4244 )
-
-
-/* --------------------------------------------- */
-// TODO
-//Make screensize, fullscreen, fps limit, mouse sensitivity configurable in settings.ini
-/* --------------------------------------------- */
-
-
-
 
 
 /* --------------------------------------------- */
@@ -50,7 +40,6 @@ void renderQuad();
 
 BasicCamera camera;
 
-
 static bool _wireframe = false;
 static bool _culling = true;
 static bool _dragging = false;
@@ -60,9 +49,6 @@ static float gamma;
 static bool isFPCamera = false;
 static bool NORMALMAPPING = true;
 static bool won = false;
-
-
-
 
 /* --------------------------------------------- */
 // Main
@@ -78,7 +64,7 @@ int main(int argc, char** argv)
 	INIReader reader("assets/settings.ini");
 	Settings::loadSettings(reader);
 	std::string window_title = reader.Get("window", "title", "ECG");
-	
+
 	/* --------------------------------------------- */
 	// Create context
 	/* --------------------------------------------- */
@@ -90,7 +76,7 @@ int main(int argc, char** argv)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // Request OpenGL version 4.3
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Request core profile
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);  // Create an OpenGL debug context 
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);  // Create an OpenGL debug context
 	glfwWindowHint(GLFW_REFRESH_RATE, Settings::refreshRate); // Set refresh rate
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
@@ -110,7 +96,7 @@ int main(int argc, char** argv)
 		EXIT_WITH_ERROR("Failed to create window")
 	}
 
-	// This function makes the context of the specified window current on the calling thread. 
+	// This function makes the context of the specified window current on the calling thread.
 	glfwMakeContextCurrent(window);
 
 	// Initialize GLEW
@@ -133,7 +119,6 @@ int main(int argc, char** argv)
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	}
 
-
 	/* --------------------------------------------- */
 	// Init framework
 	/* --------------------------------------------- */
@@ -151,7 +136,7 @@ int main(int argc, char** argv)
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// set GL defaults
-	glClearColor(0.1f,0.1f, 0.1f, 1.0f);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	// Enable blending
@@ -161,200 +146,146 @@ int main(int argc, char** argv)
 	//Enable CLipping planes
 	glEnable(GL_CLIP_DISTANCE0);
 
-
-
-
-
-
-
-
-
 	std::cout << "SCENE INIT" << std::endl;
 	/* --------------------------------------------- */
 	// Initialize scene and render loop
 	/* --------------------------------------------- */
-	
-		// Load shader(s)	
-		std::shared_ptr<Shader> textShader = std::make_shared<Shader>("text.vert", "text.frag");
 
-		
-		
-		
-		// Initialize camera
-		//Camera camera(fov, float(window_width) / float(window_height), nearZ, farZ);
-		camera = BasicCamera(Settings::fov, ((double)Settings::width/(double)Settings::height), Settings::nearPlane, Settings::farPlane, Settings::mouseSens);
+		// Load shader(s)
+	std::shared_ptr<Shader> textShader = std::make_shared<Shader>("text.vert", "text.frag");
 
-		
+	// Initialize camera
+	//Camera camera(fov, float(window_width) / float(window_height), nearZ, farZ);
+	camera = BasicCamera(Settings::fov, ((double)Settings::width / (double)Settings::height), Settings::nearPlane, Settings::farPlane, Settings::mouseSens);
+
 	/* --------------------------------------------- */
 	// Models
 	/* --------------------------------------------- */
-		
+
 		//SKYBOX
-		std::vector<std::string> skyboxFaces
-		{
-			"assets/skybox/right.jpg",
-			"assets/skybox/left.jpg",
-			"assets/skybox/top.jpg",
-			"assets/skybox/bottom.jpg",
-			"assets/skybox/front.jpg",
-			"assets/skybox/back.jpg"
-		};
-		
+	std::vector<std::string> skyboxFaces
+	{
+		"assets/skybox/right.jpg",
+		"assets/skybox/left.jpg",
+		"assets/skybox/top.jpg",
+		"assets/skybox/bottom.jpg",
+		"assets/skybox/front.jpg",
+		"assets/skybox/back.jpg"
+	};
 
-		std::vector<Model*> modelList = std::vector<Model*>();
-		std::vector<Watertile*> watertiles = std::vector<Watertile*>();
+	std::vector<Model*> modelList = std::vector<Model*>();
+	std::vector<Watertile*> watertiles = std::vector<Watertile*>();
 
-	
-		Model renderObject = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, 5.0f,-10.0f));
-		Model betweenWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, -10.0f, -10.0f));
-		Model subWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(17.0f, 5.0f, 10.0f));
-		Model terrain = Model("assets/models/LowPolyMountains_obj/lowpolymountains.obj", glm::vec3(0.0f,0.5f,0.0f));
-		modelList.push_back(&terrain);
-		modelList.push_back(&renderObject);
-		modelList.push_back(&subWaterBird);
-		modelList.push_back(&betweenWaterBird);
-		
-		Watertile watertile = Watertile(glm::vec3(-15.0f, 0.0f, 14.0f), glm::vec2(10.0f), 0.03f);
-		watertiles.push_back(&watertile);
-		Watertile tile1 = Watertile(glm::vec3(15.0f, 0.0f, 7.0f), glm::vec2(10.0f), 0.1f);
-		watertiles.push_back(&tile1);
+	Model renderObject = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, 5.0f, -10.0f));
+	Model betweenWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, -10.0f, -10.0f));
+	Model subWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(17.0f, 5.0f, 10.0f));
+	Model terrain = Model("assets/models/LowPolyMountains_obj/lowpolymountains.obj", glm::vec3(0.0f, 0.5f, 0.0f));
+	modelList.push_back(&terrain);
+	modelList.push_back(&renderObject);
+	modelList.push_back(&subWaterBird);
+	modelList.push_back(&betweenWaterBird);
+
+	Watertile watertile = Watertile(glm::vec3(-15.0f, 0.0f, 14.0f), glm::vec2(10.0f), 0.03f);
+	watertiles.push_back(&watertile);
+	Watertile tile1 = Watertile(glm::vec3(15.0f, 0.0f, 7.0f), glm::vec2(10.0f), 0.1f);
+	watertiles.push_back(&tile1);
 
 	/* --------------------------------------------- */
 	// Lights
 	/* --------------------------------------------- */
-		std::vector<DirectionalLight*> dirLights = std::vector<DirectionalLight*>();
-		std::vector<PointLight*> pointLights = std::vector<PointLight*>();
+	std::vector<DirectionalLight*> dirLights = std::vector<DirectionalLight*>();
+	std::vector<PointLight*> pointLights = std::vector<PointLight*>();
 
-		//for good attentuation values, see: http://wiki.ogre3d.org/-Point+Light+Attenuation
+	//for good attentuation values, see: http://wiki.ogre3d.org/-Point+Light+Attenuation
 
-
-
-		PointLight sun = PointLight(glm::normalize(glm::vec3(0.6f, 0.5f, 0.3f)) * 4.0f, glm::vec3(30.0f, 10.0f, 15.0f), glm::vec3(1.0f, 0.045f, 0.0075f));
-		sun.toggleShadows();
-		pointLights.push_back(&sun);
-		for (int i = 0; i < 3; i++) {
-
-			PointLight* pointL = new PointLight(glm::normalize(glm::vec3(1.0f)) * 4.0f, glm::vec3((-20.0f) + 20.0f * i, 20.0f, 0), glm::vec3(1.0f, 0.045f, 0.0075f));
-			pointL->toggleShadows();
-			pointLights.push_back(pointL);
-			//DONT FORGET TO CHANGE NUMBER OF LIGHTS IN FRAGMENT SHADER
-
-		}
-
-
-
+	PointLight sun = PointLight(glm::normalize(glm::vec3(0.6f, 0.5f, 0.3f)) * 4.0f, glm::vec3(30.0f, 10.0f, 15.0f), glm::vec3(1.0f, 0.045f, 0.0075f));
+	sun.toggleShadows();
+	pointLights.push_back(&sun);
+	for (int i = 0; i < 3; i++) {
+		PointLight* pointL = new PointLight(glm::normalize(glm::vec3(1.0f)) * 4.0f, glm::vec3((-20.0f) + 20.0f * i, 20.0f, 0), glm::vec3(1.0f, 0.045f, 0.0075f));
+		pointL->toggleShadows();
+		pointLights.push_back(pointL);
+	}
 
 	/* --------------------------------------------- */
 	// Renderers
 	/* --------------------------------------------- */
-		WorldRenderer worldRenderer = WorldRenderer(modelList,watertiles,skyboxFaces,&dirLights,&pointLights);
+	WorldRenderer worldRenderer = WorldRenderer(modelList, watertiles, skyboxFaces, &dirLights, &pointLights);
 
+	// Render loop
+	float t = float(glfwGetTime());
+	float dt = 0.0f;
+	float t_sum = 0.0f;
+	double mouseX = Settings::width / 2.0, mouseY = Settings::height / 2.0;
+	float oldX = mouseX, oldY = mouseY;
+	glm::vec2 mouseDelta = glm::vec2(0.0f);
+	bool w, a, s, d, shift, space, e;
 
+	std::cout << "Scene Loaded" << std::endl;
+	while (!glfwWindowShouldClose(window)) {
+		//RENDERING
+		// Clear backbuffer
 
-		// Render loop
-		float t = float(glfwGetTime());
-		float dt = 0.0f;
-		float t_sum = 0.0f;
-		double mouseX= Settings::width/2.0, mouseY= Settings::height/2.0;
-		float oldX = mouseX, oldY = mouseY;
-		glm::vec2 mouseDelta = glm::vec2(0.0f);
-		bool w, a, s, d, shift, space, e;
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// Poll events
+		glfwPollEvents();
 
-		
-		
+		// Read polling inputs
+		glfwGetCursorPos(window, &mouseX, &mouseY);
 
+		//glfwSetCursorPos(window, window_width / 2.0, window_height / 2.0);
+		w = glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS;
+		a = glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS;
+		s = glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS;
+		d = glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS;
+		shift = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS;
+		space = glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS;
+		e = glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS;
 
-	
+		//calulate Mouse
+		mouseDelta.x = mouseX - oldX;
+		mouseDelta.y = mouseY - oldY;
+		oldX = mouseX;
+		oldY = mouseY;
 
-
-
-
-
-		std::cout << "Scene Loaded" << std::endl;
-		while (!glfwWindowShouldClose(window)) {
-
-			//RENDERING
-			// Clear backbuffer
-
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-			// Poll events
-			glfwPollEvents();
-			
-			// Read polling inputs
-			glfwGetCursorPos(window, &mouseX, &mouseY);
-
-			//glfwSetCursorPos(window, window_width / 2.0, window_height / 2.0);
-			w = glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS;
-			a = glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS;
-			s = glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS;
-			d = glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS;
-			shift = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS;
-			space = glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS;
-			e = glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS;
-
-			//calulate Mouse
-			mouseDelta.x = mouseX - oldX;
-			mouseDelta.y =  mouseY - oldY;
-			oldX = mouseX;
-			oldY = mouseY;
-		
-			//_-------------------------------------------------------------------------------_
-			//TODO ADD CHARACTER CONTROLLER WHICH PARSES WASD SPACE SHIFT TO PLAYER AND CAMERA
-			unsigned int direction = ICamera::NO_MOVEMENT;
-			if (w) {
-				direction += ICamera::FORWARD;
-			}
-			else if (s) {
-				direction += ICamera::BACKWARD;
-			}
-
-			if (a) {
-				direction += ICamera::LEFT;
-			}else if (d) {
-				direction += ICamera::RIGHT;
-			}
-			
-			camera.ProcessKeyboard(direction, dt, shift);
-			camera.ProcessMouseMovement(mouseDelta, dt);
-			camera.updateCamera();
-			
-			
-			
-			
-
-
-			
-
-			
-			//glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-			worldRenderer.render(&camera,dt,false,NORMALMAPPING);
-			
-
-
-			
-
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-						
-
-
-			
-			// Compute frame time
-			dt = t;
-			t = float(glfwGetTime());
-			dt = t - dt;
-			t_sum += dt;
-
-
-			// Swap buffers
-			glfwSwapBuffers(window);
+		//_-------------------------------------------------------------------------------_
+		//TODO ADD CHARACTER CONTROLLER WHICH PARSES WASD SPACE SHIFT TO PLAYER AND CAMERA
+		unsigned int direction = ICamera::NO_MOVEMENT;
+		if (w) {
+			direction += ICamera::FORWARD;
 		}
-	
+		else if (s) {
+			direction += ICamera::BACKWARD;
+		}
 
+		if (a) {
+			direction += ICamera::LEFT;
+		}
+		else if (d) {
+			direction += ICamera::RIGHT;
+		}
+
+		camera.ProcessKeyboard(direction, dt, shift);
+		camera.ProcessMouseMovement(mouseDelta, dt);
+		camera.updateCamera();
+
+		//glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		worldRenderer.render(&camera, dt, false, NORMALMAPPING);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		// Compute frame time
+		dt = t;
+		t = float(glfwGetTime());
+		dt = t - dt;
+		t_sum += dt;
+
+		// Swap buffers
+		glfwSwapBuffers(window);
+	}
 
 	/* --------------------------------------------- */
 	// Destroy framework
@@ -366,12 +297,11 @@ int main(int argc, char** argv)
 	/* --------------------------------------------- */
 	// Destroy context and exit
 	/* --------------------------------------------- */
-	
+
 	glfwTerminate();
-	
+
 	return EXIT_SUCCESS;
 }
-
 
 // renderQuad() renders a 1x1 XY quad in NDC
 // -----------------------------------------
@@ -404,21 +334,17 @@ void renderQuad()
 	glBindVertexArray(0);
 }
 
-
-
-
-
-
-
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-	
-	} else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+	}
+	else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
 		_dragging = false;
-	} else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+	}
+	else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
 		_strafing = true;
-	} else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
+	}
+	else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
 		_strafing = false;
 	}
 }
@@ -441,16 +367,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 	// Keydown Events
 	// Space - Jump
-	
+
 	if (action == GLFW_KEY_DOWN) {
 		switch (key)
 		{
 		case GLFW_KEY_SPACE:
 
 			break;
-		
+
 		case GLFW_KEY_F:
-			
+
 			break;
 		case GLFW_KEY_1:
 
@@ -464,36 +390,35 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		case GLFW_KEY_BACKSPACE:
 
 			break;
-
 		}
-	} else if (action != GLFW_RELEASE) return;
+	}
+	else if (action != GLFW_RELEASE) return;
 
 	switch (key)
 	{
-		case GLFW_KEY_ESCAPE:
-			glfwSetWindowShouldClose(window, true);
-			break;
-		case GLFW_KEY_F1:
-			_wireframe = !_wireframe;
-			glPolygonMode(GL_FRONT_AND_BACK, _wireframe ? GL_LINE : GL_FILL);
-			break;
-		case GLFW_KEY_F2:
-			_culling = !_culling;
-			if (_culling) glEnable(GL_CULL_FACE);
-			else glDisable(GL_CULL_FACE);
-			break;
-		case GLFW_KEY_F3:
-			NORMALMAPPING = !NORMALMAPPING;
-			break;
-		case GLFW_KEY_F4:
-			LOG_TO_CONSOLE("posX:", camera.getPosition().x);
-			LOG_TO_CONSOLE("posY:", camera.getPosition().y);
-			LOG_TO_CONSOLE("posZ:", camera.getPosition().z);
-			break;
-		case GLFW_KEY_F6:
-			
-			break;
-		
+	case GLFW_KEY_ESCAPE:
+		glfwSetWindowShouldClose(window, true);
+		break;
+	case GLFW_KEY_F1:
+		_wireframe = !_wireframe;
+		glPolygonMode(GL_FRONT_AND_BACK, _wireframe ? GL_LINE : GL_FILL);
+		break;
+	case GLFW_KEY_F2:
+		_culling = !_culling;
+		if (_culling) glEnable(GL_CULL_FACE);
+		else glDisable(GL_CULL_FACE);
+		break;
+	case GLFW_KEY_F3:
+		NORMALMAPPING = !NORMALMAPPING;
+		break;
+	case GLFW_KEY_F4:
+		LOG_TO_CONSOLE("posX:", camera.getPosition().x);
+		LOG_TO_CONSOLE("posY:", camera.getPosition().y);
+		LOG_TO_CONSOLE("posZ:", camera.getPosition().z);
+		break;
+	case GLFW_KEY_F6:
+
+		break;
 	}
 }
 

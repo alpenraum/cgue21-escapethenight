@@ -2,14 +2,9 @@
 #include "Watertile.h"
 #include "Light.h"
 
-
-
-
 WaterRenderer::WaterRenderer()
 {
 	shader = std::make_shared<Shader>("water.vert", "water.frag");
-
-	
 
 	reflectionTextureLocation = shader.get()->getUniformLocationPublic("reflectionTexture");
 	refractionTextureLocation = shader.get()->getUniformLocationPublic("refractionTexture");
@@ -28,40 +23,33 @@ WaterRenderer::WaterRenderer()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-
-	
 }
 
 WaterRenderer::~WaterRenderer()
 {
 }
 
-void WaterRenderer::draw(ICamera* camera, Watertile* tile, WaterFrameBuffer waterFBO, float deltaTime, std::vector<PointLight*> pointLights, bool normalMapping){
-
-	
+void WaterRenderer::draw(ICamera* camera, Watertile* tile, WaterFrameBuffer waterFBO, float deltaTime, std::vector<PointLight*> pointLights, bool normalMapping) {
 	shader->use();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	//MUST BE DONE FOR EVERY TILE 
+	//MUST BE DONE FOR EVERY TILE
 	shader.get()->setUniform("modelMatrix", tile->getModelMatrix());
 	float scaleFactor = glm::length(tile->getScale());
 	shader->setUniform("tiling", scaleFactor / 4.0f);
-
 
 	shader.get()->setUniform("viewProjMatrix", camera->getViewProjMatrix());
 	shader->setUniform("moveFactor", tile->getMoveFactor(deltaTime));
 	shader->setUniform("cameraPos", camera->getPosition());
 	shader->setUniform("normalMapping", normalMapping);
-	
+
 	for (unsigned int i = 0; i < pointLights.size(); i++) {
 		string number = std::to_string(i);
 
-		shader->setUniform(("lights[" + number + "].position").c_str(),pointLights.at(i)->position);
+		shader->setUniform(("lights[" + number + "].position").c_str(), pointLights.at(i)->position);
 		shader->setUniform(("lights[" + number + "].color").c_str(), pointLights.at(i)->color);
 	}
-
-
 
 	shader->setUniform("near", camera->getNearFar().x);
 	shader->setUniform("far", camera->getNearFar().y);
@@ -71,7 +59,7 @@ void WaterRenderer::draw(ICamera* camera, Watertile* tile, WaterFrameBuffer wate
 	glUniform1i(reflectionTextureLocation, 0);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, waterFBO.getRefractionTexture());
-	glUniform1i(refractionTextureLocation,1);
+	glUniform1i(refractionTextureLocation, 1);
 
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, dudvTexture);
@@ -85,7 +73,6 @@ void WaterRenderer::draw(ICamera* camera, Watertile* tile, WaterFrameBuffer wate
 	glBindTexture(GL_TEXTURE_2D, waterFBO.getRefractionDepthTexture());
 	glUniform1i(refractionDepthTextureLocation, 4);
 
-
 	// skybox cube
 	glBindVertexArray(waterVAO);
 
@@ -94,12 +81,9 @@ void WaterRenderer::draw(ICamera* camera, Watertile* tile, WaterFrameBuffer wate
 
 	glDisable(GL_BLEND);
 	shader->unuse();
-	
 }
 
 void WaterRenderer::cleanup()
 {
 	glDeleteProgram(shader->getHandle());
 }
-
-

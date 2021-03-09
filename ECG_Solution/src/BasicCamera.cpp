@@ -55,6 +55,7 @@ void BasicCamera::ProcessKeyboard(unsigned int direction, float deltaTime, bool 
 	else {
 		velocity = _movementSpeed * deltaTime;
 	}
+	//each bit corresponds to a direction. if 1, the camera moves in that direction
 	if (CHECK_BIT(direction,0))
 		_position += _forward * velocity;
 	if (CHECK_BIT(direction, 1))

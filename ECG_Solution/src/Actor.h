@@ -13,9 +13,6 @@ protected:
 	//The current Transformation of this Actor
 	Transform transform;
 
-	
-	
-
 public:
 	/*!
 	 * Base constructor. Initialises with zero rotation and translation.
@@ -40,7 +37,7 @@ public:
 	 * Returns the current transformation matrix for this Actor.
 	 * @return the current transformation matrix for this Actor
 	 */
-	glm::mat4 getTransform();
+	glm::mat4 getTransMatrix();
 	Transform getTransformation();
 	/*!
 	 * Updates the state of the Actor. Gets called (in)directly in the gameloop. This implementation is empty. Subclasses may override this function to define thier update behaviour.
@@ -48,4 +45,3 @@ public:
 	 */
 	virtual void update(float delta);
 };
-

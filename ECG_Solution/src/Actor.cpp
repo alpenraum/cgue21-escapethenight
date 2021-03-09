@@ -1,8 +1,6 @@
 #include "Actor.h"
 
-
-
-Actor::Actor(): transform()
+Actor::Actor() : transform()
 {
 }
 
@@ -18,7 +16,7 @@ Transform Actor::getTransformation() {
 	return this->transform;
 }
 
-glm::mat4 Actor::getTransform()
+glm::mat4 Actor::getTransMatrix()
 {
 	return transform.getModelMatrix();
 }

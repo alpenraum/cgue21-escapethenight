@@ -1,10 +1,16 @@
 #pragma once
 #include "utils/Utils.h"
 #include "utils/Transform.h"
+/*!
+* The interface of cameras
+*/
 class ICamera {
 protected:
+	//contains the position and viewing direction of the camera
 	Transform spatialData;
+	//near plane
 	float _nearC;
+	//far plane
 	float _farC;
 public:
 	enum Camera_Movement {

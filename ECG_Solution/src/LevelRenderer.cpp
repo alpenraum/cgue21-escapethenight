@@ -28,7 +28,6 @@ void LevelRenderer::render()
 
 void LevelRenderer::setUniforms(bool shadows, ICamera* camera, glm::vec4 clippingPlane, bool lightMapping, bool normalMapping, std::vector<DirectionalLight*> dirLights, std::vector<PointLight*> pointLights, GLuint depthCubemap)
 {
-
 	AdvancedShader* s;
 
 	if (shadows) {
@@ -36,7 +35,7 @@ void LevelRenderer::setUniforms(bool shadows, ICamera* camera, glm::vec4 clippin
 	}
 	else {
 		s = shadowlessShader.get();
-		}
+	}
 	s->use();
 	s->setUniform("viewProjMatrix", camera->getViewProjMatrix());
 	s->setUniform("clippingPlane", clippingPlane);

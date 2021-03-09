@@ -2,7 +2,6 @@
 
 GLint AdvancedShader::loadShader(const char* path, GLenum shaderType)
 {
-
 	std::string code;
 	std::ifstream shaderFile;
 	shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -16,14 +15,14 @@ GLint AdvancedShader::loadShader(const char* path, GLenum shaderType)
 		code = shaderStream.str();
 	}
 	catch (std::ifstream::failure& e) {
-		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ --> "<< path << std::endl;
+		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ --> " << path << std::endl;
 	}
 
 	const char* shaderCode = code.c_str();
 
 	GLuint shaderHandle;
 	shaderHandle = glCreateShader(shaderType);
-	glShaderSource(shaderHandle,1,&shaderCode , NULL);
+	glShaderSource(shaderHandle, 1, &shaderCode, NULL);
 	glCompileShader(shaderHandle);
 
 	GLint IsCompiled = false;
@@ -42,7 +41,6 @@ GLint AdvancedShader::loadShader(const char* path, GLenum shaderType)
 		// Exit with failure.
 		glDeleteShader(shaderHandle); // Don't leak the shader.
 		exit(-1);
-
 	}
 
 	return shaderHandle;
@@ -67,7 +65,7 @@ AdvancedShader::AdvancedShader(const char* vertexFile, const char* fragmentFile,
 	GLuint fragmentID = loadShader((DIRECTORY + fragmentFile).c_str(), GL_FRAGMENT_SHADER);
 	GLuint geomID;
 	if (geomFile != nullptr) {
-		 geomID = loadShader((DIRECTORY + geomFile).c_str(), GL_GEOMETRY_SHADER);
+		geomID = loadShader((DIRECTORY + geomFile).c_str(), GL_GEOMETRY_SHADER);
 	}
 
 	programId = glCreateProgram();
@@ -96,13 +94,9 @@ AdvancedShader::AdvancedShader(const char* vertexFile, const char* fragmentFile,
 		glDeleteShader(vertexID);
 		glDeleteShader(fragmentID);
 
-		
-
 		exit(-1);
-
 	}
 
-	
 	glDeleteShader(vertexID);
 	glDeleteShader(fragmentID);
 	if (geomFile != nullptr) {
@@ -161,7 +155,7 @@ void AdvancedShader::setUniform(std::string uniform, const glm::mat4& mat)
 
 void AdvancedShader::setUniform(GLint location, const glm::mat4& mat)
 {
-	glUniformMatrix4fv(location,1,GL_FALSE, glm::value_ptr(mat));
+	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat));
 }
 
 void AdvancedShader::setUniform(std::string uniform, const glm::mat3& mat)
@@ -208,4 +202,3 @@ GLuint AdvancedShader::getProgramId()
 {
 	return programId;
 }
-

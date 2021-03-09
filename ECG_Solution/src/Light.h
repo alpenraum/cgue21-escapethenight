@@ -5,7 +5,6 @@
 */
 #pragma once
 
-
 #include <glm\glm.hpp>
 #include "OmniShadowFrameBuffer.h"
 
@@ -146,9 +145,8 @@ struct LineLight {
 	/*!
 	 * The light's attenuation (x = constant, y = linear, z = quadratic)
 	 */
-	//glm::vec3 attenuation;
+	 //glm::vec3 attenuation;
 	bool isEnabled() {
 		return this->enabled;
 	}
-	
 };

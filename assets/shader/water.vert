@@ -22,6 +22,7 @@ struct Light{
 };
 
 uniform Light lights[10];
+//how often the texture is repeated on the water surface
 uniform float tiling;
 
 

@@ -29,7 +29,7 @@ const float waveStrength = 0.04f;
 
 void main(void) {
 
-	
+	//get screen coordinates to make use of projective texturing
 	vec2 ndc = (fs_in.clipSpace.xy/fs_in.clipSpace.w)/2.0f+0.5f;
 	vec2 refractionCoords = vec2(ndc.x,ndc.y);
 	vec2 reflectionCoords = vec2(ndc.x, -ndc.y);
@@ -44,7 +44,7 @@ void main(void) {
 
 	float waterDepth = floorDist - waterDist;
 	
-
+	//displace reflection and refraction texture coordinates
 	vec2 distortedTexCoords = texture(dudvmap, vec2(fs_in.texCoords.x + moveFactor, fs_in.texCoords.y)).rg*0.1f;
 	distortedTexCoords = fs_in.texCoords + vec2(distortedTexCoords.x, distortedTexCoords.y+moveFactor);
 	vec2 distort = (texture(dudvmap, distortedTexCoords).rg * 2.0 - 1.0) * waveStrength * clamp(waterDepth/20.0f, 0.0f,1.0f);;
@@ -60,7 +60,7 @@ void main(void) {
 	vec4 refractColor = texture(refractionTexture,refractionCoords);
 
 	
-
+	//normalmapping
 	vec4 normalC = vec4(1.0f);
 	if(normalMapping){
 		normalC = texture(normalMap, distortedTexCoords);

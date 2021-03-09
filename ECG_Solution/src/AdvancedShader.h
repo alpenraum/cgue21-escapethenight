@@ -5,20 +5,28 @@
 #include <sstream>
 #include <iostream>
 #include <unordered_map>
-class AdvancedShader 
+/*!
+* A shader manager that is able to work with geometry shaders
+*/
+class AdvancedShader
 {
 private:
-    const string DIRECTORY = "assets/shader/";
-    std::unordered_map<std::string, GLint> _locations;
-    GLuint programId;
+	const string DIRECTORY = "assets/shader/";
+	std::unordered_map<std::string, GLint> _locations;
+	GLuint programId;
 
-    GLint loadShader(const char* path, GLenum shaderType);
-
-    
+	/*!
+	* creates a Shader and returns the handle
+	* @param path: the name of the shader file
+	* @param shaderType: the type of the shader (GL_VERTEX_SHADER,GL_FRAGMENT_SHADER,GL_GEOMETRY_SHADER)
+	*/
+	GLint loadShader(const char* path, GLenum shaderType);
 
 public:
-    AdvancedShader(const char* vertexFile, const char* fragmentFile, const char* geomFile = nullptr);
+
+	AdvancedShader(const char* vertexFile, const char* fragmentFile, const char* geomFile = nullptr);
 	AdvancedShader();
+
 	/*!
 	* finds the uniform location, saves it in _locations (if not present) and returns the value;
 	 * @param uniform: uniform string in shader
@@ -133,10 +141,5 @@ public:
 	 */
 	void setUniform(GLint location, const glm::vec4& vec);
 
-
 	GLuint getProgramId();
-
-   
-    
 };
-

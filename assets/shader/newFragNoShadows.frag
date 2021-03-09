@@ -1,7 +1,6 @@
 #version 430 core
 
 layout(location=0) out vec4 FragColor;
-layout(location=1) out vec4 BrightColor;
 
 
 in VS_OUT {
@@ -23,7 +22,6 @@ struct PointLight {
     vec3 position;
     vec3 attenuation;
     bool enabled;
-   // bool emittingShadows;
 };
 
 
@@ -45,9 +43,6 @@ uniform float gamma;
 
 uniform bool lightMapping;
 uniform bool normalMapping;
-
-
-//uniform float farPlane;
 
 
 vec3 blinnPhongPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec4 color){
@@ -83,18 +78,12 @@ vec3 blinnPhongPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 view
 	    vec3 diffuse1  = att * diffuse;
 	    vec3 specular1 = att * specular;
 
-	    /*if(lightmapping){
-	        ambient1  *= (vec3(texture(texture_lightMap1, fs_in.lightMapCoords)).rgb);
-	        diffuse1  *= (vec3(texture(texture_lightMap1, fs_in.lightMapCoords)).rgb);
-	   
-	    }*/
 	    return ((ambient1 + diffuse1)* color.rgb + specular1);
     }else{
      	return vec3(0.0f);
     }
   
 }
-//DO NOT USE ------------------------------------------------------------------------------------------------
 vec3 blinnPhongDirLight(DirectionalLight light, vec3 normal, vec3 viewDir, vec4 color){
     vec3 lightDir = normalize(-light.direction);
     // diffuse shading
@@ -108,12 +97,6 @@ vec3 blinnPhongDirLight(DirectionalLight light, vec3 normal, vec3 viewDir, vec4 
     vec3 specular = spec * materialCoefficients.z * light.color;
     vec3 ambient  = materialCoefficients.x * light.color; 
     vec3 diffuse  = diff*light.color * materialCoefficients.y;
-
-    if(lightMapping){
-         ambient  *= (vec3(texture(texture_lightMap1, fs_in.lightMapCoords)).rgb);
-         diffuse  *= (vec3(texture(texture_lightMap1, fs_in.lightMapCoords)).rgb) ;
-   
-    }
     
     return ((ambient + diffuse)* color.rgb + specular);
 }
@@ -129,11 +112,6 @@ void main()
     vec3 texColor = texture(texture_diffuse1, fs_in.TexCoords).rgb;
     vec4 color = vec4(texColor * materialCoefficients.x, alpha);
     vec3 normal = normalize(fs_in.Normal); 
-   /* if(normalmapping){
-    normal = texture(texture_normal1,  fs_in.TexCoords).rgb;
-    //to range [-1,1]
-    normal = normalize(normal * 2.0 -1.0);
-    } */
     vec3 viewDir = normalize(cameraWorld - fs_in.FragPos);
 
     
@@ -144,15 +122,7 @@ void main()
             FragColor.rgb+= blinnPhongPointLight(pointLights[i],normal,fs_in.FragPos, viewDir, color);
         }
     }
-    
-                 
-    
-    
-    //Luma conversion
-    
-    float brightness = dot(FragColor.rgb, vec3(0.2126,0.7152,0.0722));
-    
-    BrightColor = vec4(FragColor.rgb * brightness,1.0);
+
 
 }
 
