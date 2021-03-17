@@ -1,4 +1,4 @@
-//keeping the outdated c++ compiler is such a great idea. Redefinition in every file the header is included
+//keeping the outdated c++ compiler is such a great idea. Redefinition in every file the header is included /s
 
 #include "Settings.h"
 int Settings::width = 0;

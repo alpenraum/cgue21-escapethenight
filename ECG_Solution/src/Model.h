@@ -3,7 +3,6 @@
 #include "Actor.h"
 #include "Shader.h"
 #include "Mesh.h"
-#include "Texture.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -36,6 +35,9 @@ public:
 			mesh.setShininess(shininess);
 		}
 	}
+
+	glm::vec2 getBottomLeft();
+	glm::vec2 getTopRight();
 protected:
 	//saves all Meshes from this Model
 	std::vector<Mesh> meshes;

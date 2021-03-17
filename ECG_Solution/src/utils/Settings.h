@@ -1,6 +1,9 @@
 #pragma once
 #include <stdio.h>
 #include "INIReader.h"
+/*!
+* Static class with all Settings we need available 
+*/
 class Settings
 {
 public:

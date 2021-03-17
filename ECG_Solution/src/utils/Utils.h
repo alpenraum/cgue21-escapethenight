@@ -58,7 +58,6 @@ public:
 	~DDSImage() { if (image != nullptr) { delete[] image; image = nullptr; } }
 };
 
-
 /* --------------------------------------------- */
 // Framework functions
 /* --------------------------------------------- */

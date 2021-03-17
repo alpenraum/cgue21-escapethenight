@@ -1,27 +1,21 @@
 #include "OmniShadowRenderer.h"
 
-
 OmniShadowRenderer::OmniShadowRenderer(string vf, string gf, string ff)
 {
-	shader = std::make_shared<AdvancedShader>("shadow.vert","shadow.frag", "shadow.geom");
+	shader = std::make_shared<AdvancedShader>("shadow.vert", "shadow.frag", "shadow.geom");
 	shader->use();
-
-		
 }
 
-OmniShadowRenderer::OmniShadowRenderer(): OmniShadowRenderer("shadow.vert","shadow.frag", "shadow.geom")
+OmniShadowRenderer::OmniShadowRenderer() : OmniShadowRenderer("shadow.vert", "shadow.frag", "shadow.geom")
 {
-
 }
 
 void OmniShadowRenderer::prepareRender(PointLight* pointLight)
 {
 	shader->use();
-	
 
 	shader->setUniform("lightPos", pointLight->position);
 	shader->setUniform("farPlane", Settings::farPlane);
-	
 
 	glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), (float)Settings::shadowTextureDimension / (float)Settings::shadowTextureDimension, 1.0f, Settings::shadowDistance);
 	std::vector<glm::mat4> shadowTransforms;
@@ -39,10 +33,6 @@ void OmniShadowRenderer::prepareRender(PointLight* pointLight)
 	pointLight->omniShadowFBO.bindFBO();
 	glViewport(0, 0, Settings::shadowTextureDimension, Settings::shadowTextureDimension);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	
-	
-
-
 }
 
 void OmniShadowRenderer::cleanUpAfterRender(PointLight* pointLight)
@@ -55,5 +45,3 @@ void OmniShadowRenderer::cleanup()
 {
 	glDeleteProgram(shader->getProgramId());
 }
-
-

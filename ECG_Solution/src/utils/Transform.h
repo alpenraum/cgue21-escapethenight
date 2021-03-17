@@ -1,39 +1,26 @@
 #pragma once
 
-
-
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-
-
-
-class Actor;
-
-
-
+/*!
+* saves the position, scale, and rotation of an entity and can calculate the neccessary matrices
+*/
 class Transform
 {
-
-
-
 public:
 
 	Transform();
 	~Transform();
 
-
-	   	  
 	/** The local position */
 	glm::vec3 position;
 	/** The local scale */
 	glm::vec3 scale;
 	/** The local rotation */
 	glm::quat rotation;
-
 
 	/** Set the local position
 
@@ -42,7 +29,6 @@ public:
 	 */
 
 	void setPosition(glm::vec3 position);
-	
 
 	/** Set the local rotation
 
@@ -51,7 +37,7 @@ public:
 	 */
 
 	void setRotation(glm::quat rotation);
-	
+
 	/** Set the local scale
 
 	 @param[in] scale The scale
@@ -60,10 +46,6 @@ public:
 
 	void setScale(glm::vec3 scale);
 
-
-
-
-
 	/** Get the local position
 
 	 @return The local position
@@ -71,8 +53,6 @@ public:
 	 */
 
 	glm::vec3 getPosition();
-
-
 
 	/** Get the local scale
 
@@ -90,13 +70,6 @@ public:
 
 	glm::quat getRotation();
 
-
-
-
-
-
-
-
 	/** Get the full model matrix
 
 	 @return The model matrix
@@ -104,12 +77,6 @@ public:
 	 */
 
 	glm::mat4 getModelMatrix();
-
-
-
-
-
-
 
 	/** Get the Up vector for this Transform
 
@@ -128,5 +95,4 @@ public:
 	 @return The Right vector */
 
 	glm::vec3 getRight();
-
 };

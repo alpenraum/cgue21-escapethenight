@@ -9,7 +9,6 @@
 #include "Shader.h"
 #include "Material.h"
 #include "Light.h"
-#include "Texture.h"
 #include <iostream>
 #include "Model.h"
 #include <stdio.h>
@@ -21,6 +20,8 @@
 #include "WaterFrameBuffer.h"
 #include "utils/Settings.h"
 #include "WorldRenderer.h"
+#include "TwoDGridPF.h"
+#include "Pathfinder.h"
 #pragma warning( disable : 4244 )
 
 
@@ -180,7 +181,7 @@ int main(int argc, char** argv)
 	Model betweenWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, -10.0f, -10.0f));
 	Model subWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(17.0f, 5.0f, 10.0f));
 	Model terrain = Model("assets/models/LowPolyMountains_obj/lowpolymountains.obj", glm::vec3(0.0f, 0.5f, 0.0f));
-	modelList.push_back(&terrain);
+	
 	modelList.push_back(&renderObject);
 	modelList.push_back(&subWaterBird);
 	modelList.push_back(&betweenWaterBird);
@@ -190,6 +191,10 @@ int main(int argc, char** argv)
 	Watertile tile1 = Watertile(glm::vec3(15.0f, 0.0f, 7.0f), glm::vec2(10.0f), 0.1f);
 	watertiles.push_back(&tile1);
 
+
+	TwoDGridPF gird(modelList, glm::vec2(1000));
+	Pathfinder pathfinder = Pathfinder(glm::vec2(1000));
+	modelList.push_back(&terrain);
 	/* --------------------------------------------- */
 	// Lights
 	/* --------------------------------------------- */
@@ -212,6 +217,9 @@ int main(int argc, char** argv)
 	/* --------------------------------------------- */
 	WorldRenderer worldRenderer = WorldRenderer(modelList, watertiles, skyboxFaces, &dirLights, &pointLights);
 
+
+
+	
 	// Render loop
 	float t = float(glfwGetTime());
 	float dt = 0.0f;
@@ -248,6 +256,24 @@ int main(int argc, char** argv)
 		mouseDelta.y = mouseY - oldY;
 		oldX = mouseX;
 		oldY = mouseY;
+
+
+
+		if (e) {
+			std::vector<glm::vec2> path;
+			path = pathfinder.findPath(glm::vec2(0, 0), glm::vec2((int)camera.getPosition().x, (int)camera.getPosition().z), gird);
+			
+			for each (glm::vec2 var in path)
+			{
+				std::cout << "(" << var.x << "," << var.y << ")-";
+			}
+		
+
+		}
+
+
+
+
 
 		//_-------------------------------------------------------------------------------_
 		//TODO ADD CHARACTER CONTROLLER WHICH PARSES WASD SPACE SHIFT TO PLAYER AND CAMERA
