@@ -21,7 +21,7 @@ WorldRenderer::WorldRenderer(std::vector<Model*> models, std::vector<Watertile*>
 	this->pointLights = pointLights;
 }
 
-void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, bool normalMapping)
+void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, bool normalMapping, Player* player, bool renderPlayer)
 {
 	//glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -36,6 +36,10 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 			omniShadowRenderer.prepareRender(light);
 			for each (Model * m in *modelList) {
 				m->draw(*omniShadowRenderer.getShader());
+			}
+			
+			if (renderPlayer) {
+				player->draw(camera, omniShadowRenderer.getShader().get(), deltaTime);
 			}
 			omniShadowRenderer.cleanUpAfterRender(light);
 		}
@@ -79,6 +83,9 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 	levelRenderer.setUniforms(true, camera, glm::vec4(0, 1.0f, 0, 1000000.0f), lightMapping, normalMapping, *dirLights, *pointLights);
 
 	levelRenderer.render();
+	if (renderPlayer) {
+		player->draw(camera, levelRenderer.getShader(), deltaTime);
+	}
 	for each (Watertile * tile in watertiles)
 	{
 		waterRenderer.draw(camera, tile, tile->getWaterFBO(), deltaTime, *pointLights, normalMapping);

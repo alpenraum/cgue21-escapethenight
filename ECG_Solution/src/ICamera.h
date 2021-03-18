@@ -26,10 +26,14 @@ public:
 	virtual glm::mat4 getViewProjMatrix() = 0;
 	virtual glm::vec3 getPosition() = 0;
 	virtual glm::vec2 getNearFar() = 0;
+	virtual glm::vec3 getForward() = 0;
+	virtual glm::vec3 getRight() = 0;
 	
 	virtual float getYaw() = 0;
 	virtual float getPitch() = 0;
 
 	virtual void setPosition(glm::vec3 val) = 0;
 	virtual void invertPitch()= 0;
+
+	
 };

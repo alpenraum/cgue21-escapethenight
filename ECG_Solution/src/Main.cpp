@@ -22,6 +22,7 @@
 #include "WorldRenderer.h"
 #include "TwoDGridPF.h"
 #include "Pathfinder.h"
+#include "Player.h"
 #pragma warning( disable : 4244 )
 
 
@@ -35,11 +36,13 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void renderQuad();
+
 /* --------------------------------------------- */
 // Global variables
 /* --------------------------------------------- */
 
-BasicCamera camera;
+BasicCamera* camera;
+Player* player;
 
 static bool _wireframe = false;
 static bool _culling = true;
@@ -50,6 +53,8 @@ static float gamma;
 static bool isFPCamera = false;
 static bool NORMALMAPPING = true;
 static bool won = false;
+
+static bool usePlayerCamera = true;
 
 /* --------------------------------------------- */
 // Main
@@ -157,7 +162,12 @@ int main(int argc, char** argv)
 
 	// Initialize camera
 	//Camera camera(fov, float(window_width) / float(window_height), nearZ, farZ);
-	camera = BasicCamera(Settings::fov, ((double)Settings::width / (double)Settings::height), Settings::nearPlane, Settings::farPlane, Settings::mouseSens);
+	BasicCamera freeCamera = BasicCamera(Settings::fov, ((double)Settings::width / (double)Settings::height), Settings::nearPlane, Settings::farPlane, Settings::mouseSens);
+
+	player = new Player();
+
+
+
 
 	/* --------------------------------------------- */
 	// Models
@@ -261,7 +271,7 @@ int main(int argc, char** argv)
 
 		if (e) {
 			std::vector<glm::vec2> path;
-			path = pathfinder.findPath(glm::vec2(0, 0), glm::vec2((int)camera.getPosition().x, (int)camera.getPosition().z), gird);
+			path = pathfinder.findPath(glm::vec2(0, 0), glm::vec2((int)camera->getPosition().x, (int)camera->getPosition().z), gird);
 			
 			for each (glm::vec2 var in path)
 			{
@@ -272,34 +282,44 @@ int main(int argc, char** argv)
 		}
 
 
+		if (usePlayerCamera) {
+			camera = player->getCamera();
+		}
+		else {
+			camera = &freeCamera;
+		}
 
 
 
 		//_-------------------------------------------------------------------------------_
 		//TODO ADD CHARACTER CONTROLLER WHICH PARSES WASD SPACE SHIFT TO PLAYER AND CAMERA
-		unsigned int direction = ICamera::NO_MOVEMENT;
+		unsigned int direction = Player::NO_MOVEMENT;
 		if (w) {
-			direction += ICamera::FORWARD;
+			direction += Player::FORWARD;
 		}
 		else if (s) {
-			direction += ICamera::BACKWARD;
+			direction += Player::BACKWARD;
 		}
 
 		if (a) {
-			direction += ICamera::LEFT;
+			direction += Player::LEFT;
 		}
 		else if (d) {
-			direction += ICamera::RIGHT;
+			direction += Player::RIGHT;
 		}
 
-		camera.ProcessKeyboard(direction, dt, shift);
-		camera.ProcessMouseMovement(mouseDelta, dt);
-		camera.updateCamera();
+		freeCamera.ProcessKeyboard(direction, dt, shift);
+		freeCamera.ProcessMouseMovement(mouseDelta, dt);
+		freeCamera.updateCamera();
+
+		player->update(direction, mouseDelta, dt);
+
 
 		//glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		worldRenderer.render(&camera, dt, false, NORMALMAPPING);
+		worldRenderer.render(camera, dt, false, NORMALMAPPING, player, usePlayerCamera);
+		
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -438,9 +458,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		NORMALMAPPING = !NORMALMAPPING;
 		break;
 	case GLFW_KEY_F4:
-		LOG_TO_CONSOLE("posX:", camera.getPosition().x);
-		LOG_TO_CONSOLE("posY:", camera.getPosition().y);
-		LOG_TO_CONSOLE("posZ:", camera.getPosition().z);
+		LOG_TO_CONSOLE("posX:", camera->getPosition().x);
+		LOG_TO_CONSOLE("posY:", camera->getPosition().y);
+		LOG_TO_CONSOLE("posZ:", camera->getPosition().z);
+		break;
+	case GLFW_KEY_F5:
+		usePlayerCamera = !usePlayerCamera;
+		if (!usePlayerCamera) {
+			//if switched to free camera, reset it's position to the player
+			camera->setPosition(player->getPosition());
+		}
 		break;
 	case GLFW_KEY_F6:
 
