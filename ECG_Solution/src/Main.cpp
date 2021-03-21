@@ -46,8 +46,6 @@ Player* player;
 
 static bool _wireframe = false;
 static bool _culling = true;
-static bool _dragging = false;
-static bool _strafing = false;
 static float _zoom = 6.0f;
 static float gamma;
 static bool isFPCamera = false;
@@ -187,13 +185,20 @@ int main(int argc, char** argv)
 	std::vector<Model*> modelList = std::vector<Model*>();
 	std::vector<Watertile*> watertiles = std::vector<Watertile*>();
 
-	Model renderObject = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, 5.0f, -10.0f));
+	Model renderObject = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, 2.0f, -10.0f));
 	Model betweenWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, -10.0f, -10.0f));
-	Model subWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(17.0f, 5.0f, 10.0f));
 	Model terrain = Model("assets/models/LowPolyMountains_obj/lowpolymountains.obj", glm::vec3(0.0f, 0.5f, 0.0f));
-	
+
+	Model shadowBird1 = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(2.0f, 3.0f, 12.0f), glm::vec3(0.2f));
+	Model shadowBird2 = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(-2.0f, 3.0f, 12.0f), glm::vec3(0.2f));
+	Model shadowBird3 = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(2.0f, 3.0f, 8.0f), glm::vec3(0.2f));
+	Model shadowBird4 = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(-2.0f, 3.0f, 8.0f), glm::vec3(0.2f));
+
 	modelList.push_back(&renderObject);
-	modelList.push_back(&subWaterBird);
+	modelList.push_back(&shadowBird1);
+	modelList.push_back(&shadowBird2);
+	modelList.push_back(&shadowBird3);
+	modelList.push_back(&shadowBird4);
 	modelList.push_back(&betweenWaterBird);
 
 	Watertile watertile = Watertile(glm::vec3(-15.0f, 0.0f, 14.0f), glm::vec2(10.0f), 0.03f);
@@ -213,14 +218,16 @@ int main(int argc, char** argv)
 
 	//for good attentuation values, see: http://wiki.ogre3d.org/-Point+Light+Attenuation
 
-	PointLight sun = PointLight(glm::normalize(glm::vec3(0.6f, 0.5f, 0.3f)) * 4.0f, glm::vec3(30.0f, 10.0f, 15.0f), glm::vec3(1.0f, 0.045f, 0.0075f));
-	sun.toggleShadows();
-	pointLights.push_back(&sun);
-	for (int i = 0; i < 3; i++) {
+	PointLight moon = PointLight(glm::normalize(glm::vec3(0.517f, 0.57f, 0.8f)) * 80.0f, glm::vec3(-60.0f, 100.0f, -80.0f), glm::vec3(1.0f, 0.007f, 0.0002f));
+	moon.toggleShadows();
+	pointLights.push_back(&moon);
+	/*for (int i = 0; i < 3; i++) {
 		PointLight* pointL = new PointLight(glm::normalize(glm::vec3(1.0f)) * 4.0f, glm::vec3((-20.0f) + 20.0f * i, 20.0f, 0), glm::vec3(1.0f, 0.045f, 0.0075f));
 		pointL->toggleShadows();
 		pointLights.push_back(pointL);
-	}
+	}*/
+
+	pointLights.push_back(player->getLight());
 
 	/* --------------------------------------------- */
 	// Renderers
@@ -260,7 +267,7 @@ int main(int argc, char** argv)
 		shift = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS;
 		space = glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS;
 		e = glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS;
-
+		
 		//calulate Mouse
 		mouseDelta.x = mouseX - oldX;
 		mouseDelta.y = mouseY - oldY;
@@ -270,14 +277,14 @@ int main(int argc, char** argv)
 
 
 		if (e) {
-			std::vector<glm::vec2> path;
+			/*std::vector<glm::vec2> path;
 			path = pathfinder.findPath(glm::vec2(0, 0), glm::vec2((int)camera->getPosition().x, (int)camera->getPosition().z), gird);
 			
 			for each (glm::vec2 var in path)
 			{
 				std::cout << "(" << var.x << "," << var.y << ")-";
-			}
-		
+			}*/
+			
 
 		}
 
@@ -385,13 +392,13 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 	}
 	else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-		_dragging = false;
+		player->toggleTorch();
 	}
 	else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-		_strafing = true;
+		
 	}
 	else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
-		_strafing = false;
+		
 	}
 }
 

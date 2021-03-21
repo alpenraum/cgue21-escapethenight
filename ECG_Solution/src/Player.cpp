@@ -3,9 +3,10 @@
 Player::Player()
 {
 	camera = new BasicCamera(Settings::fov, ((double)Settings::width / (double)Settings::height), Settings::nearPlane, Settings::farPlane, Settings::mouseSens);
-	torchOffset = glm::vec3(0.2f,-0.10f,-0.2f); //modelspace
-	modelTorch = Model("assets/models/bullfinch_obj/bullfinch.obj", torchOffset, glm::vec3(0.02f));
+	
 	this->setPosition(glm::vec3(0.0f, 3.0f, 10.0f));
+
+	hand = PlayerHand(getPosition());
 }
 
 void Player::update(unsigned int movementDirection, glm::vec2 mouseDelta, float delta)
@@ -54,19 +55,81 @@ BasicCamera* Player::getCamera()
 
 void Player::draw(ICamera* camera, AdvancedShader* shader, float dt)
 {
-	shader->use();
+	if (isTorchLit) {
 
-	
-	glm::mat4 view = camera->getViewMatrix();
-	glm::mat3 newView = glm::mat3(view);
-	newView *= glm::inverse(newView); // m * m^(-1) = I
-	view = glm::mat4(newView);
+		hand.update(this->getPosition());
 
-	shader->setUniform("viewProjMatrix", camera->getProjMatrix() * view);
-	modelTorch.draw(*shader);
-	
-	
-	
+		shader->use();
 
-	shader->unuse();
+
+		glm::mat4 view = camera->getViewMatrix();
+		glm::mat3 newView = glm::mat3(view);
+		newView *= glm::inverse(newView); // m * m^(-1) = I
+		view = glm::mat4(newView);
+
+		shader->setUniform("viewProjMatrix", camera->getProjMatrix() * view);
+		hand.draw(shader, dt);
+
+
+
+
+		shader->unuse();
+	}
+}
+
+PointLight* Player::getLight()
+{
+	return hand.getLight();
+}
+
+void Player::toggleTorch()
+{
+	isTorchLit = !isTorchLit;
+	hand.toggleLight();
+	
+}
+
+PlayerHand::PlayerHand()
+{
+}
+
+PlayerHand::PlayerHand(glm::vec3 playerPos)
+{
+
+	torchOffset = glm::vec3(0.2f, -0.10f, -0.2f); //modelspace
+	modelHand = Model("assets/models/bullfinch_obj/bullfinch.obj", torchOffset, glm::vec3(0.02f));
+
+	glm::vec3 lightPos = playerPos;
+	lightPos.y += 1.5f;
+	lightPos += torchOffset;
+	lightsource = PointLight(glm::normalize(glm::vec3(1.0f,0.4f,0.1f)) * 2.0f, lightPos,glm::vec3(1.0f,0.09f,0.032f));
+	lightsource.toggleShadows();
+}
+
+PointLight* PlayerHand::getLight()
+{
+	return &lightsource;
+}
+
+void PlayerHand::toggleLight()
+{
+	lightsource.enabled = !lightsource.enabled;
+	lightsource.toggleShadows();
+}
+
+bool PlayerHand::isEnabled()
+{
+	return lightsource.enabled;
+}
+
+void PlayerHand::draw(AdvancedShader* shader, float dt)
+{
+	modelHand.draw(*shader);
+}
+
+void PlayerHand::update(glm::vec3 pos)
+{	
+	pos.y += 1.5f;
+	pos.z += -0.5f;
+	lightsource.position = pos;
 }

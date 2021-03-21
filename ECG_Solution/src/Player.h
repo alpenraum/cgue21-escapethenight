@@ -3,6 +3,31 @@
 #include "utils/Utils.h"
 #include "BasicCamera.h"
 #include "Model.h"
+#include "Light.h"
+
+class PlayerHand : public Actor {
+private:
+	Model modelHand;
+	PointLight lightsource;
+	glm::vec3 torchOffset;
+public:
+	PlayerHand();
+
+	PlayerHand(glm::vec3 playerPos);
+
+	PointLight* getLight();
+
+	void toggleLight();
+
+	bool isEnabled();
+
+	void draw(AdvancedShader* shader, float dt);
+
+	void update(glm::vec3 pos);
+
+};
+
+
 class Player : 
     public Actor
 {
@@ -12,8 +37,10 @@ private:
     //model of the leg of the player
     //Model modelLeg; --------------- DONT KNOW HOW TO LIMIT ITS ROTATION ONLY TO CAMERAS YAW AND NOT PITCH
     //model of the torch and arm of the player
-    Model modelTorch;
-	glm::vec3 torchOffset;
+    PlayerHand hand;
+	
+	bool isTorchLit = true;
+	
     
     //The base speed of the player
     const float SPEED = 4.0f;
@@ -57,6 +84,9 @@ public:
 	//TODO: WHEN PHYSX IMPLEMENTED
 	void jump();
 
+	PointLight* getLight();
 	
+	void toggleTorch();
 };
+
 
