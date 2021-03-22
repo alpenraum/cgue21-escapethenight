@@ -23,6 +23,7 @@
 #include "TwoDGridPF.h"
 #include "Pathfinder.h"
 #include "Player.h"
+#include "Killer.h"
 #pragma warning( disable : 4244 )
 
 
@@ -158,12 +159,15 @@ int main(int argc, char** argv)
 		// Load shader(s)
 	std::shared_ptr<Shader> textShader = std::make_shared<Shader>("text.vert", "text.frag");
 
-	// Initialize camera
+	/* --------------------------------------------- */
+	// Player, Camera, other Entities
+	/* --------------------------------------------- */
 	//Camera camera(fov, float(window_width) / float(window_height), nearZ, farZ);
 	BasicCamera freeCamera = BasicCamera(Settings::fov, ((double)Settings::width / (double)Settings::height), Settings::nearPlane, Settings::farPlane, Settings::mouseSens);
 
 	player = new Player();
 
+	Killer killer = Killer();
 
 
 
@@ -221,11 +225,7 @@ int main(int argc, char** argv)
 	PointLight moon = PointLight(glm::normalize(glm::vec3(0.517f, 0.57f, 0.8f)) * 80.0f, glm::vec3(-60.0f, 100.0f, -80.0f), glm::vec3(1.0f, 0.007f, 0.0002f));
 	moon.toggleShadows();
 	pointLights.push_back(&moon);
-	/*for (int i = 0; i < 3; i++) {
-		PointLight* pointL = new PointLight(glm::normalize(glm::vec3(1.0f)) * 4.0f, glm::vec3((-20.0f) + 20.0f * i, 20.0f, 0), glm::vec3(1.0f, 0.045f, 0.0075f));
-		pointL->toggleShadows();
-		pointLights.push_back(pointL);
-	}*/
+	
 
 	pointLights.push_back(player->getLight());
 
@@ -284,8 +284,6 @@ int main(int argc, char** argv)
 			{
 				std::cout << "(" << var.x << "," << var.y << ")-";
 			}*/
-			
-
 		}
 
 
@@ -321,11 +319,12 @@ int main(int argc, char** argv)
 
 		player->update(direction, mouseDelta, dt);
 
+		killer.update(*player, player->isNearLight(&pointLights), dt);
 
 		//glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		worldRenderer.render(camera, dt, false, NORMALMAPPING, player, usePlayerCamera);
+		worldRenderer.render(camera, dt, false, NORMALMAPPING, player, usePlayerCamera, &killer);
 		
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -465,9 +464,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		NORMALMAPPING = !NORMALMAPPING;
 		break;
 	case GLFW_KEY_F4:
-		LOG_TO_CONSOLE("posX:", camera->getPosition().x);
-		LOG_TO_CONSOLE("posY:", camera->getPosition().y);
-		LOG_TO_CONSOLE("posZ:", camera->getPosition().z);
+		LOG_TO_CONSOLE("player posX:", player->getPosition().x);
+		LOG_TO_CONSOLE("player posY:", player->getPosition().y);
+		LOG_TO_CONSOLE("player posZ:", player->getPosition().z);
+
 		break;
 	case GLFW_KEY_F5:
 		usePlayerCamera = !usePlayerCamera;

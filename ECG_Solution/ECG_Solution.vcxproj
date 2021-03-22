@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="src\Killer.cpp" />
     <ClCompile Include="src\Pathfinder.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\AdvancedShader.cpp" />
@@ -19,6 +20,7 @@
     <ClCompile Include="src\WaterFrameBuffer.cpp" />
     <ClCompile Include="src\LevelRenderer.cpp" />
     <ClCompile Include="src\WorldRenderer.cpp" />
+    <ClInclude Include="src\Killer.h" />
     <ClInclude Include="src\TwoDGridPF.h" />
     <ClInclude Include="src\Pathfinder.h" />
     <ClInclude Include="src\Player.h" />

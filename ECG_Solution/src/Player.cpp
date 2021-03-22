@@ -89,6 +89,25 @@ void Player::toggleTorch()
 	
 }
 
+bool Player::isNearLight(std::vector<PointLight*>* lights)
+{
+	if (isTorchLit) {
+		return true;
+	}
+	/*
+	float dist = 0.0f;
+	for each (PointLight* l in *lights)
+	{
+		dist = glm::abs(glm::distance(this->getPosition(),l->position));
+
+		if (dist <= LIGHT_RADIUS) {
+			return true;
+		}
+	}
+	*/
+	return false;
+}
+
 PlayerHand::PlayerHand()
 {
 }
@@ -129,7 +148,7 @@ void PlayerHand::draw(AdvancedShader* shader, float dt)
 
 void PlayerHand::update(glm::vec3 pos)
 {	
-	pos.y += 1.5f;
+	//pos.y += 1.5f;
 	pos.z += -0.5f;
 	lightsource.position = pos;
 }

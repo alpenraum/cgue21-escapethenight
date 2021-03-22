@@ -10,6 +10,8 @@ private:
 	Model modelHand;
 	PointLight lightsource;
 	glm::vec3 torchOffset;
+
+
 public:
 	PlayerHand();
 
@@ -41,7 +43,8 @@ private:
 	
 	bool isTorchLit = true;
 	
-    
+	//radius of when the player is 'near a light'
+	const float LIGHT_RADIUS = 3.0f;
     //The base speed of the player
     const float SPEED = 4.0f;
 	//the current Speed of the player
@@ -60,6 +63,8 @@ private:
 
 	float yaw = 0.0f;
 	float pitch = 0.0f;
+
+	
 
 public:
 	enum Player_Movement {
@@ -87,6 +92,8 @@ public:
 	PointLight* getLight();
 	
 	void toggleTorch();
+
+	bool isNearLight(std::vector<PointLight*>* lights); //TODO: Change to Campfires
 };
 
 
