@@ -5,6 +5,9 @@
 #include "Shader.h"
 #include "ICamera.h"
 
+/*!
+* Manages the rendering process of the skybox
+*/
 class Skybox
 {
 public:

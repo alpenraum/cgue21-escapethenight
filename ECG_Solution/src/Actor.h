@@ -32,6 +32,7 @@ public:
 	 * @return the current position of this Actor
 	 */
 	glm::vec3 getPosition();
+	void setPosition(glm::vec3 pos);
 
 	/*!
 	 * Returns the current transformation matrix for this Actor.

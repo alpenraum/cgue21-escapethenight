@@ -5,6 +5,11 @@
 #include "WaterFrameBuffer.h"
 #include "Skybox.h"
 #include "OmniShadowRenderer.h"
+#include "Player.h"
+#include "Killer.h"
+/*!
+* This manages the whole rendering process of all different renderers and entities
+*/
 class WorldRenderer
 {
 private:
@@ -26,15 +31,11 @@ private:
 	*/
 	std::vector<PointLight*>* pointLights;
 
-
-
-
 public:
 	WorldRenderer();
 	WorldRenderer(std::vector<Model*> models, std::vector<Watertile*> watertiles, std::vector<std::string> skyboxFaces, std::vector<DirectionalLight*>* dirLights, std::vector<PointLight*>* pointLights);
 
-	void render(ICamera* camera, float deltaTime, bool lightMapping, bool normalMapping);
+	void render(ICamera* camera, float deltaTime, bool lightMapping, bool normalMapping, Player* player, bool renderPlayer, Killer* killer);
 
 	void cleanUp();
 };
-

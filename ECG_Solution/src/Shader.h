@@ -15,7 +15,6 @@
 
 #include "utils/Utils.h"
 
-
 /*!
  * Shader class that encapsulates all shader access
  */
@@ -56,7 +55,7 @@ protected:
 	 * @return if the shader could be loaded
 	 */
 	bool loadShader(std::string file, GLenum shaderType, GLuint& handle);
-	
+
 	/*!
 	 * @param uniform: uniform string in shader
 	 * @return the location ID of the uniform
@@ -95,7 +94,7 @@ public:
 	 * @param fs: path to the fragment shader
 	 */
 	Shader(std::string vs, std::string fs);
-	
+
 	~Shader();
 
 	/*!

@@ -1,6 +1,9 @@
 #pragma once
 #include "utils/Utils.h"
 #include "IFBO.h"
+/*!
+* manages the Framebuffers needed to render the reflections and refractions of a watertile
+*/
 class WaterFrameBuffer : public IFBO
 {
 private:
@@ -21,7 +24,6 @@ public:
 	WaterFrameBuffer();
 	WaterFrameBuffer(int width, int height);
 
-
 	void bindReflectionFBO();
 	void bindRefractionFBO();
 	void unbindFBO();
@@ -41,4 +43,3 @@ public:
 
 	void shutdown();
 };
-
