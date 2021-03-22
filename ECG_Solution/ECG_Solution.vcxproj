@@ -2,6 +2,7 @@
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="src\AdvancedShader.cpp" />
+    <ClCompile Include="src\Converter.cpp" />
     <ClCompile Include="src\OmniShadowFrameBuffer.cpp" />
     <ClCompile Include="src\OmniShadowRenderer.cpp" />
     <ClCompile Include="src\Skybox.cpp" />
@@ -17,6 +18,7 @@
     <ClCompile Include="src\LevelRenderer.cpp" />
     <ClCompile Include="src\WorldRenderer.cpp" />
     <ClInclude Include="src\AdvancedShader.h" />
+    <ClInclude Include="src\Converter.h" />
     <ClInclude Include="src\OmniShadowFrameBuffer.h" />
     <ClInclude Include="src\OmniShadowRenderer.h" />
     <ClInclude Include="src\IFBO.h" />
@@ -103,16 +105,17 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>NO_BONUS;WIN32;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)external\include;$(SolutionDir)external\physx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)external\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;ECG_Library_Debug.lib;assimp-vc140-mt.lib;soil2-debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)external\lib;$(SolutionDir)external\physx\libs\debug;$(SolutionDir)external\physx\libs\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;ECG_Library_Debug.lib;assimp-vc140-mt.lib;soil2-debug.lib;PhysXPvdSDK_static_32.lib;PhysXCommon_32.lib;PhysXExtensions_static_32.lib;PhysXFoundation_32.lib;PhysX_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>MSVCRTD;LIBCMT</IgnoreSpecificDefaultLibraries>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <PostBuildEvent>
       <Command>

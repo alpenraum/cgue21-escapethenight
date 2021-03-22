@@ -21,6 +21,9 @@
 #include "WaterFrameBuffer.h"
 #include "utils/Settings.h"
 #include "WorldRenderer.h"
+#include "PxPhysicsAPI.h"
+#include "Converter.h"
+using namespace physx;
 #pragma warning( disable : 4244 )
 
 
@@ -34,6 +37,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void renderQuad();
+void initPhysics(bool interactive);
 /* --------------------------------------------- */
 // Global variables
 /* --------------------------------------------- */
@@ -50,6 +54,10 @@ static bool isFPCamera = false;
 static bool NORMALMAPPING = true;
 static bool won = false;
 
+static PxDefaultErrorCallback gDefaultErrorCallback; 
+static PxDefaultAllocator gDefaultAllocatorCallback; 
+static PxFoundation* gFoundation = NULL;
+
 /* --------------------------------------------- */
 // Main
 /* --------------------------------------------- */
@@ -64,6 +72,9 @@ int main(int argc, char** argv)
 	INIReader reader("assets/settings.ini");
 	Settings::loadSettings(reader);
 	std::string window_title = reader.Get("window", "title", "ECG");
+
+	//init physics
+	initPhysics(true);
 
 	/* --------------------------------------------- */
 	// Create context
@@ -176,19 +187,19 @@ int main(int argc, char** argv)
 	std::vector<Model*> modelList = std::vector<Model*>();
 	std::vector<Watertile*> watertiles = std::vector<Watertile*>();
 
-	Model renderObject = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, 5.0f, -10.0f));
-	Model betweenWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, -10.0f, -10.0f));
-	Model subWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(17.0f, 5.0f, 10.0f));
+	//Model renderObject = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, 5.0f, -10.0f));
+	//Model betweenWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, -10.0f, -10.0f));
+	//Model subWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(17.0f, 5.0f, 10.0f));
 	Model terrain = Model("assets/models/LowPolyMountains_obj/lowpolymountains.obj", glm::vec3(0.0f, 0.5f, 0.0f));
 	modelList.push_back(&terrain);
-	modelList.push_back(&renderObject);
-	modelList.push_back(&subWaterBird);
-	modelList.push_back(&betweenWaterBird);
+	//modelList.push_back(&renderObject);
+	//modelList.push_back(&subWaterBird);
+	//modelList.push_back(&betweenWaterBird);
 
-	Watertile watertile = Watertile(glm::vec3(-15.0f, 0.0f, 14.0f), glm::vec2(10.0f), 0.03f);
-	watertiles.push_back(&watertile);
-	Watertile tile1 = Watertile(glm::vec3(15.0f, 0.0f, 7.0f), glm::vec2(10.0f), 0.1f);
-	watertiles.push_back(&tile1);
+	//Watertile watertile = Watertile(glm::vec3(-15.0f, 0.0f, 14.0f), glm::vec2(10.0f), 0.03f);
+	//watertiles.push_back(&watertile);
+	//Watertile tile1 = Watertile(glm::vec3(15.0f, 0.0f, 7.0f), glm::vec2(10.0f), 0.1f);
+	//watertiles.push_back(&tile1);
 
 	/* --------------------------------------------- */
 	// Lights
@@ -224,6 +235,7 @@ int main(int argc, char** argv)
 	std::cout << "Scene Loaded" << std::endl;
 	while (!glfwWindowShouldClose(window)) {
 		//RENDERING
+
 		// Clear backbuffer
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -534,3 +546,25 @@ static std::string FormatDebugOutput(GLenum source, GLenum type, GLuint id, GLen
 
 	return stringStream.str();
 }
+
+/* Have to implement PhysX Classes
+   TODO: Outsource
+*/
+class PxAllocatorCallback
+{
+public:
+	virtual ~PxAllocatorCallback() {}
+	virtual void* allocate(size_t size, const char* typeName, const char* filename,
+		int line) = 0;
+	virtual void deallocate(void* ptr) = 0;
+};
+
+class UserErrorCallback : public PxErrorCallback
+{
+public:
+	virtual void reportError(PxErrorCode::Enum code, const char* message, const char* file,
+		int line)
+	{
+		// error processing implementation
+	}
+};
