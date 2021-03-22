@@ -37,7 +37,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void renderQuad();
-void initPhysics(bool interactive);
 /* --------------------------------------------- */
 // Global variables
 /* --------------------------------------------- */
@@ -72,9 +71,6 @@ int main(int argc, char** argv)
 	INIReader reader("assets/settings.ini");
 	Settings::loadSettings(reader);
 	std::string window_title = reader.Get("window", "title", "ECG");
-
-	//init physics
-	initPhysics(true);
 
 	/* --------------------------------------------- */
 	// Create context

@@ -35,8 +35,6 @@ void Model::loadModel(string const &path) {
 
 	processNode(scene->mRootNode, scene);
 
-	
-
 }
 
 void Model::processNode(aiNode *node, const aiScene *scene) {
