@@ -7,6 +7,7 @@
 #include "OmniShadowRenderer.h"
 #include "Player.h"
 #include "Killer.h"
+#include "ParticleMaster.h"
 /*!
 * This manages the whole rendering process of all different renderers and entities
 */
@@ -23,6 +24,7 @@ private:
 
 	Skybox skybox;
 
+
 	std::vector<DirectionalLight*>* dirLights;
 
 	/*!
@@ -30,6 +32,8 @@ private:
 	* First one must be the sun/moon of the scene
 	*/
 	std::vector<PointLight*>* pointLights;
+
+
 
 public:
 	WorldRenderer();

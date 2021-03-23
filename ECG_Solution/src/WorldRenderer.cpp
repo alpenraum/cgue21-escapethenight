@@ -19,6 +19,8 @@ WorldRenderer::WorldRenderer(std::vector<Model*> models, std::vector<Watertile*>
 
 	this->dirLights = dirLights;
 	this->pointLights = pointLights;
+
+	
 }
 
 void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, bool normalMapping, Player* player, bool renderPlayer, Killer* killer)
@@ -28,6 +30,8 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 
 	WaterFrameBuffer waterFBO;
 	glm::vec3 cameraPos = camera->getPosition();
+
+	ParticleMaster::update(deltaTime);
 
 	//render shadowmaps
 	std::vector<Model*>* modelList = levelRenderer.getModels();
@@ -93,8 +97,15 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 	{
 		waterRenderer.draw(camera, tile, tile->getWaterFBO(), deltaTime, *pointLights, normalMapping);
 	}
+
+	
+
+
 	// draw skybox as last
 	skybox.draw(camera);
+
+
+	ParticleMaster::renderParticles(camera, deltaTime);
 }
 
 void WorldRenderer::cleanUp()
@@ -108,4 +119,5 @@ void WorldRenderer::cleanUp()
 	levelRenderer.cleanup();
 	waterRenderer.cleanup();
 	omniShadowRenderer.cleanup();
+	ParticleMaster::cleanup();
 }

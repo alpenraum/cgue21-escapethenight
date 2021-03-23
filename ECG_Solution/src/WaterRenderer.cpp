@@ -73,7 +73,7 @@ void WaterRenderer::draw(ICamera* camera, Watertile* tile, WaterFrameBuffer wate
 	glBindTexture(GL_TEXTURE_2D, waterFBO.getRefractionDepthTexture());
 	glUniform1i(refractionDepthTextureLocation, 4);
 
-	// skybox cube
+	
 	glBindVertexArray(waterVAO);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

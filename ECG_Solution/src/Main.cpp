@@ -233,7 +233,7 @@ int main(int argc, char** argv)
 	// Renderers
 	/* --------------------------------------------- */
 	WorldRenderer worldRenderer = WorldRenderer(modelList, watertiles, skyboxFaces, &dirLights, &pointLights);
-
+	ParticleMaster::init();
 
 
 	
@@ -277,13 +277,8 @@ int main(int argc, char** argv)
 
 
 		if (e) {
-			/*std::vector<glm::vec2> path;
-			path = pathfinder.findPath(glm::vec2(0, 0), glm::vec2((int)camera->getPosition().x, (int)camera->getPosition().z), gird);
-			
-			for each (glm::vec2 var in path)
-			{
-				std::cout << "(" << var.x << "," << var.y << ")-";
-			}*/
+			Particle* p = new Particle(glm::vec3(killer.getPosition()), glm::vec3(0, 4.0f, 0), 1.0f, 4, 0, 0.2f);
+
 		}
 
 
