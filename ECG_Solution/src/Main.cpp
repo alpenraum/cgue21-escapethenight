@@ -24,6 +24,7 @@
 #include "Pathfinder.h"
 #include "Player.h"
 #include "Killer.h"
+#include "FireParticleSystem.h"
 #pragma warning( disable : 4244 )
 
 
@@ -235,6 +236,7 @@ int main(int argc, char** argv)
 	WorldRenderer worldRenderer = WorldRenderer(modelList, watertiles, skyboxFaces, &dirLights, &pointLights);
 	ParticleMaster::init();
 
+	FireParticleSystem ps = FireParticleSystem();
 
 	
 	// Render loop
@@ -277,9 +279,10 @@ int main(int argc, char** argv)
 
 
 		if (e) {
-			Particle* p = new Particle(glm::vec3(killer.getPosition()), glm::vec3(0, 4.0f, 0), 1.0f, 4, 0, 0.2f);
+			//Particle* p = new Particle(glm::vec3(killer.getPosition()), glm::vec3(0, 4.0f, 0), 1.0f, 4, 0, 0.2f);
 
 		}
+		ps.generateParticles(shadowBird1.getPosition(), dt);
 
 
 		if (usePlayerCamera) {

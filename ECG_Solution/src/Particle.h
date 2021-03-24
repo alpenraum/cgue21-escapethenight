@@ -3,6 +3,12 @@
 //SOURCE: https://www.youtube.com/watch?v=6PkjU9LaDTQ
 class Particle {
 private:
+	const glm::vec3 WHITE = glm::vec3(1.0f, 1.0f, 1.0f);
+	const glm::vec3 BLUE = glm::vec3(0.0f, 0.0f, 1.0f);
+	const glm::vec3 YELLOW = glm::vec3(1.0f, 1.0f, 0.0f);
+	const glm::vec3 ORANGE = glm::vec3(1.0f, 0.5f, 0.0f);
+	const glm::vec3 RED = glm::vec3(1.0f, 0.0f, 0.0f);
+	
 
 	const float GRAVITY = -9.8f;
 
@@ -16,6 +22,10 @@ private:
 
 	float elapsedTime = 0.0f;
 
+	float alpha = 1.0f;
+
+	glm::vec3 hue;
+
 public:
 	Particle();
 	Particle(glm::vec3 position, glm::vec3 velocity, float gravityEffect, float lifeLength, float rotation, float scale);
@@ -23,6 +33,11 @@ public:
 	glm::vec3 getPosition();
 	float getRotation();
 	float getScale();
+	float getAlpha();
+
+	glm::vec3 getHue();
+
+	//MAKE COLOR HUE GO FROM BLUE OVER YELLOW TO ORANGE TO RED
 
 	/*
 	returns false if particle has exceeded lifeLength

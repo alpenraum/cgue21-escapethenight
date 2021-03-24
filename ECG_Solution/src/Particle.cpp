@@ -32,6 +32,15 @@ float Particle::getScale()
 	return scale;
 }
 
+float Particle::getAlpha()
+{
+	return alpha;
+}
+
+glm::vec3 Particle::getHue() {
+	return hue;
+}
+
 bool Particle::update(float dt)
 {
 	velocity.y += GRAVITY * gravityEffect * dt;
@@ -41,6 +50,30 @@ bool Particle::update(float dt)
 	position += movement;
 
 	elapsedTime += dt;
+
+	float lifeDelta = (elapsedTime / lifeLength);
+
+	if (lifeDelta < 0.1f) {
+		hue = glm::vec3(WHITE);
+	}
+	else if (lifeDelta >= 0.1f && lifeDelta < 0.25f) {
+		hue = glm::vec3(BLUE);
+	}
+	else if (lifeDelta >= 0.25f && lifeDelta < 0.4f) {
+		hue = glm::vec3(YELLOW);
+	}
+	else if (lifeDelta >= 0.4f && lifeDelta < 0.7f) {
+		hue = glm::vec3(ORANGE);
+	}
+	else if (lifeDelta >= 0.7f) {
+		hue = glm::vec3(RED);
+	}
+
+
+
+
+	alpha = 1 - lifeDelta ;
+
 	return elapsedTime < lifeLength;
 
 }

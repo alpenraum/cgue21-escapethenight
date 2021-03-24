@@ -54,13 +54,17 @@ void ParticleRenderer::draw(ICamera* camera, float dt, std::vector<Particle*> pa
 	glDepthMask(GL_FALSE);
 
 	glBindVertexArray(particleVAO);
-
+	int c = 0;
 	shader->setUniform("projectionMatrix", camera->getProjMatrix());
 	for each (Particle* p in particles)
 	{
+		c++;
+		shader->setUniform("alpha", p->getAlpha());
+		shader->setUniform("hue", p->getHue());
 		updateModelViewMatrix(p->getPosition(), p->getRotation(), p->getScale(), view);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	}
+	
 	
 
 	
