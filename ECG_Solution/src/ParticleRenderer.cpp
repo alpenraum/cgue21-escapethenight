@@ -1,4 +1,7 @@
 #include "ParticleRenderer.h"
+#include "utils/TextureLoader.h"
+//Particle texture source: https://www.kenney.nl/assets/particle-pack
+
 
 void ParticleRenderer::updateModelViewMatrix(glm::vec3 position, float rotation, float scale, glm::mat4 viewMatrix)
 {
@@ -19,7 +22,7 @@ void ParticleRenderer::updateModelViewMatrix(glm::vec3 position, float rotation,
 	modelMatrix[2][2] = viewMatrix[2][2];
 	
 	
-	modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
+	//modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
 	modelMatrix = glm::scale(modelMatrix, glm::vec3(scale));
 	
 	glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
@@ -38,31 +41,49 @@ ParticleRenderer::ParticleRenderer()
 	glBindVertexArray(particleVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, particleVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+	//vertex coords
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	//tex coords
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+
+
+	particleTexture = TextureLoader::loadTexture("assets/particles/fireParticle_alpha.png");
+
+	glBindTexture(GL_TEXTURE_2D, particleTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void ParticleRenderer::draw(ICamera* camera, float dt, std::vector<Particle*> particles)
 {
 	glm::mat4 view = camera->getViewMatrix();
-		
+	
 	shader->use();
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDepthMask(GL_FALSE);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, particleTexture);
+	shader->setUniform("particleTexture", 0);
+
 
 	glBindVertexArray(particleVAO);
-	int c = 0;
+	
 	shader->setUniform("projectionMatrix", camera->getProjMatrix());
 	for each (Particle* p in particles)
 	{
-		c++;
-		shader->setUniform("alpha", p->getAlpha());
-		shader->setUniform("hue", p->getHue());
-		updateModelViewMatrix(p->getPosition(), p->getRotation(), p->getScale(), view);
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		if (p->getDistToCamera() < Settings::particleRenderDistance * Settings::particleRenderDistance) {
+			shader->setUniform("alpha", p->getAlpha());
+			shader->setUniform("hue", p->getHue());
+			updateModelViewMatrix(p->getPosition(), p->getRotation(), p->getScale(), view);
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		}
 	}
 	
 	
@@ -70,8 +91,9 @@ void ParticleRenderer::draw(ICamera* camera, float dt, std::vector<Particle*> pa
 	
 
 	glBindVertexArray(0);
-	glDisable(GL_BLEND);
+
 	glDepthMask(GL_TRUE);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	shader->unuse();
 }
 

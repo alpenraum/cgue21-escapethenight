@@ -1,13 +1,19 @@
 #version 430 core
 
+in vec2 texCoords;
+
 out vec4 FragColor;
 
 uniform float alpha;
 uniform vec3 hue;
 
+uniform sampler2D particleTexture;
+
 void main(void){
-	vec3 color =vec3(1.0f);
-	color = normalize(color+hue);
-	FragColor = vec4(color,alpha);
+	vec4 color =texture(particleTexture, texCoords);
+	
+	color.rgb = color.rgb*hue;
+	color.a = color.a * alpha;
+	FragColor = color;
 
 }

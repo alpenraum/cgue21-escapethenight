@@ -14,7 +14,7 @@ public:
 
 	static void init();
 
-	static void update(float dt);
+	static void update(glm::vec3 cameraPos, float dt);
 	static void renderParticles(ICamera* camera, float dt);
 	static void cleanup();
 

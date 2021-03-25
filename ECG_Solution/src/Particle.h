@@ -12,8 +12,12 @@ private:
 
 	const float GRAVITY = -9.8f;
 
+	glm::vec3 origin;
 	glm::vec3 position;
-	glm::vec3 velocity;
+	glm::vec3 direction;
+	glm::vec3 gravity;
+
+	float distSquaredToCamera;
 	
 	float gravityEffect;
 	float lifeLength;
@@ -28,12 +32,13 @@ private:
 
 public:
 	Particle();
-	Particle(glm::vec3 position, glm::vec3 velocity, float gravityEffect, float lifeLength, float rotation, float scale);
+	Particle(glm::vec3 position, glm::vec3 direction,glm::vec3 gravity, float gravityEffect, float lifeLength, float scale);
 	
 	glm::vec3 getPosition();
 	float getRotation();
 	float getScale();
 	float getAlpha();
+	float getDistToCamera();
 
 	glm::vec3 getHue();
 
@@ -42,5 +47,5 @@ public:
 	/*
 	returns false if particle has exceeded lifeLength
 	*/
-	bool update(float dt);
+	bool update(glm::vec3 cameraPos, float dt);
 };

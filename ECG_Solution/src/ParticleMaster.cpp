@@ -9,12 +9,12 @@ void ParticleMaster::init()
 	ParticleMaster::renderer = new ParticleRenderer();
 }
 
-void ParticleMaster::update(float dt)
+void ParticleMaster::update(glm::vec3 cameraPos, float dt)
 {
 	auto it = ParticleMaster::particles->begin();
 	while (it != ParticleMaster::particles->end()){
 		Particle* p = *it;
-		bool isAlive = p->update(dt);
+		bool isAlive = p->update(cameraPos, dt);
 
 		if (!isAlive) {
 			it = ParticleMaster::particles->erase(it);
