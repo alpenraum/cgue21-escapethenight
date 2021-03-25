@@ -1,10 +1,14 @@
 #pragma once
 #include "utils/Utils.h"
 #include <ctime> 
+#include <functional>
+#include <random>
 #include "Particle.h"
 
 class FireParticleSystem {
 private:
+	std::default_random_engine generator;
+	
 	float pps, averageSpeed, particleWeight, averageLifeLength, averageScale;
 	float speedError, lifeError, scaleError;
 	glm::vec3 direction;
@@ -13,7 +17,7 @@ private:
 	void emitParticle(glm::vec3 origin);
 
 	float generateValue(float average, float error);
-	static glm::vec3 generateRandomUnitVectorWithError(glm::vec3 direction, float angle);
+	glm::vec3 generateRandomUnitVectorWithError(glm::vec3 direction, float angle);
 public:
 	FireParticleSystem();
 

@@ -31,8 +31,7 @@ WaterRenderer::~WaterRenderer()
 
 void WaterRenderer::draw(ICamera* camera, Watertile* tile, WaterFrameBuffer waterFBO, float deltaTime, std::vector<PointLight*> pointLights, bool normalMapping) {
 	shader->use();
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
 
 	//MUST BE DONE FOR EVERY TILE
 	shader.get()->setUniform("modelMatrix", tile->getModelMatrix());
@@ -79,7 +78,7 @@ void WaterRenderer::draw(ICamera* camera, Watertile* tile, WaterFrameBuffer wate
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
 
-	glDisable(GL_BLEND);
+
 	shader->unuse();
 }
 

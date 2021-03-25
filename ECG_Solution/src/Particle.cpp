@@ -5,13 +5,14 @@ Particle::Particle()
 {
 }
 
-Particle::Particle(glm::vec3 position, glm::vec3 velocity, float gravityEffect, float lifeLength, float rotation, float scale)
+Particle::Particle(glm::vec3 position, glm::vec3 velocity, glm::vec3 gravity, float gravityEffect, float lifeLength, float scale)
 {
+	this->origin = position;
 	this->position = position;
-	this->velocity = velocity;
+	this->direction = velocity;
 	this->gravityEffect = gravityEffect;
 	this->lifeLength = lifeLength;
-	this->rotation = rotation;
+	this->gravity = gravity;
 	this->scale = scale;
 
 	ParticleMaster::addParticle(this);
@@ -37,17 +38,47 @@ float Particle::getAlpha()
 	return alpha;
 }
 
+float Particle::getDistToCamera()
+{
+	return distSquaredToCamera;
+}
+
 glm::vec3 Particle::getHue() {
 	return hue;
 }
 
-bool Particle::update(float dt)
+bool Particle::update(glm::vec3 cameraPos, float dt)
 {
-	velocity.y += GRAVITY * gravityEffect * dt;
-
-	glm::vec3 movement = glm::vec3(velocity);
+	glm::vec3 vecToCam = cameraPos - position;
+	distSquaredToCamera = glm::dot(vecToCam, vecToCam);
+	
+	glm::vec3 movement = glm::vec3(direction);
 	movement *= dt;
 	position += movement;
+
+	direction += gravity * gravityEffect * dt;
+
+//pull particles towards the center, like a flame
+	if ((position.x > origin.x) && (position.y > (0.1f + origin.y))) {
+		gravity.x = -2.0f;
+	}
+	else if ((position.x < origin.x) && (position.y > (0.1f + origin.y))) {
+		gravity.x = 2.0f;
+	}
+	else {
+		gravity.x = 0.0f;
+	}
+
+	if ((position.z > origin.z) && (position.y > (0.1f + origin.y))) {
+		gravity.z = -2.0f;
+	}
+	else if ((position.z < origin.z) && (position.y > (0.1f + origin.y))) {
+		gravity.z = 2.0f;
+	}
+	else {
+		gravity.z = 0.0f;
+	}
+
 
 	elapsedTime += dt;
 

@@ -21,6 +21,7 @@ public:
 	static int waterTextureDimension;
 	static int shadowTextureDimension;
 	static float shadowDistance;
+	static float particleRenderDistance;
 
 	static void loadSettings(INIReader reader);
 

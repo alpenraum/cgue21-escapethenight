@@ -31,7 +31,7 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 	WaterFrameBuffer waterFBO;
 	glm::vec3 cameraPos = camera->getPosition();
 
-	ParticleMaster::update(deltaTime);
+	ParticleMaster::update(camera->getPosition(),deltaTime);
 
 	//render shadowmaps
 	std::vector<Model*>* modelList = levelRenderer.getModels();

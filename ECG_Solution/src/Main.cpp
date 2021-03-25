@@ -278,10 +278,6 @@ int main(int argc, char** argv)
 
 
 
-		if (e) {
-			//Particle* p = new Particle(glm::vec3(killer.getPosition()), glm::vec3(0, 4.0f, 0), 1.0f, 4, 0, 0.2f);
-
-		}
 		ps.generateParticles(shadowBird1.getPosition(), dt);
 
 
@@ -317,7 +313,7 @@ int main(int argc, char** argv)
 
 		player->update(direction, mouseDelta, dt);
 
-		killer.update(*player, player->isNearLight(&pointLights), dt);
+		//killer.update(*player, player->isNearLight(&pointLights), dt);
 
 		//glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
