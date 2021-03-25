@@ -8,8 +8,6 @@ void ParticleRenderer::updateModelViewMatrix(glm::vec3 position, float rotation,
 	glm::mat3 invRotMatrix = glm::inverse(glm::mat3(viewMatrix));
 	glm::mat4 modelMatrix = glm::mat4(1.0f);
 	modelMatrix = glm::translate(modelMatrix, position);
-	
-
 
 	modelMatrix[0][0] = viewMatrix[0][0];
 	modelMatrix[0][1] = viewMatrix[1][0];
@@ -24,17 +22,15 @@ void ParticleRenderer::updateModelViewMatrix(glm::vec3 position, float rotation,
 	
 	//modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
 	modelMatrix = glm::scale(modelMatrix, glm::vec3(scale));
-	
+
 	glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
 
-	shader->setUniform("modelViewMatrix", modelViewMatrix);
+	return modelViewMatrix;
 }
 
 ParticleRenderer::ParticleRenderer()
 {
 	shader = std::make_shared<AdvancedShader>("particle.vert", "particle.frag");
-
-
 
 	glGenVertexArrays(1, &particleVAO);
 	glGenBuffers(1, &particleVBO);
@@ -76,7 +72,10 @@ void ParticleRenderer::draw(ICamera* camera, float dt, std::vector<Particle*> pa
 	glBindVertexArray(particleVAO);
 	
 	shader->setUniform("projectionMatrix", camera->getProjMatrix());
-	for each (Particle* p in particles)
+
+	std::vector<glm::mat4>* matrices = new std::vector<glm::mat4>();
+
+	for each (Particle * p in particles)
 	{
 		if (p->getDistToCamera() < Settings::particleRenderDistance * Settings::particleRenderDistance) {
 			shader->setUniform("alpha", p->getAlpha());
@@ -85,10 +84,38 @@ void ParticleRenderer::draw(ICamera* camera, float dt, std::vector<Particle*> pa
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		}
 	}
-	
-	
+
+	// vertex attributes
+
+	glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+	glBufferData(GL_ARRAY_BUFFER, matrices->size() * sizeof(glm::mat4), &matrices[0], GL_DYNAMIC_DRAW);
+
+	std::size_t vec4Size = sizeof(glm::vec4);
+
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)0);
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(1 * vec4Size));
+	glEnableVertexAttribArray(5);
+	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(2 * vec4Size));
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(3 * vec4Size));
+
+	glVertexAttribDivisor(3, 1);
+	glVertexAttribDivisor(4, 1);
+	glVertexAttribDivisor(5, 1);
+	glVertexAttribDivisor(6, 1);
 
 	
+
+	for each (Particle * p in particles)
+	{
+		if (p->getDistToCamera() < Settings::particleRenderDistance * Settings::particleRenderDistance) {
+			shader->setUniform("alpha", p->getAlpha());
+			shader->setUniform("hue", p->getHue());
+		}
+	}
+	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, particles.size());
 
 	glBindVertexArray(0);
 
@@ -100,4 +127,27 @@ void ParticleRenderer::draw(ICamera* camera, float dt, std::vector<Particle*> pa
 void ParticleRenderer::cleanup()
 {
 	glDeleteProgram(shader->getProgramId());
+}
+
+GLuint ParticleRenderer::createEmptyVBO(int floatCount) {
+	return 0;
+}
+
+void ParticleRenderer::addInstanceAttribute(int attribute, int dataSize, int instancedDataLength, int offset)
+{
+	glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+	glBindVertexArray(particleVAO);
+	glEnableVertexAttribArray(attribute);
+	glVertexAttribPointer(attribute, dataSize, GL_FLOAT, false, instancedDataLength * sizeof(float), (void*)(offset * sizeof(float)));
+	glVertexAttribDivisor(attribute, 1);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
+void ParticleRenderer::updateVBO(std::vector<float>* data)
+{
+	glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+	glBufferData(GL_ARRAY_BUFFER, data->size() * sizeof(float), &data, GL_DYNAMIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
