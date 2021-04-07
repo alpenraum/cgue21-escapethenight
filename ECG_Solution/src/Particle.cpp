@@ -1,6 +1,11 @@
 #include "Particle.h"
 #include "ParticleMaster.h"
 
+glm::vec3 Particle::mixColours(glm::vec3 c1, glm::vec3 c2, float t)
+{
+	return (c1 * t) + (c2 * (1 - t));
+}
+
 Particle::Particle()
 {
 }
@@ -84,22 +89,25 @@ bool Particle::update(glm::vec3 cameraPos, float dt)
 
 	float lifeDelta = (elapsedTime / lifeLength);
 
-	if (lifeDelta < 0.1f) {
-		hue = glm::vec3(WHITE);
+	if (lifeDelta < 0.05f) {
+		float t = (lifeDelta - 0.0f) / (0.05f - 0.0f);
+		hue = mixColours(WHITE, BLUE, t);
 	}
-	else if (lifeDelta >= 0.1f && lifeDelta < 0.25f) {
-		hue = glm::vec3(BLUE);
+	else if (lifeDelta >= 0.05f && lifeDelta < 0.25f) {
+		float t = (lifeDelta - 0.05f) / (0.25f - 0.05f);
+		hue = mixColours(BLUE, YELLOW, t);
 	}
 	else if (lifeDelta >= 0.25f && lifeDelta < 0.4f) {
-		hue = glm::vec3(YELLOW);
+		float t = (lifeDelta - 0.25f) / (0.4f - 0.25f);
+		hue = mixColours(YELLOW, ORANGE, t);
 	}
 	else if (lifeDelta >= 0.4f && lifeDelta < 0.7f) {
-		hue = glm::vec3(ORANGE);
+		float t = (lifeDelta - 0.4f) / (0.7f - 0.4f);
+		hue = mixColours(ORANGE, RED, t);
 	}
 	else if (lifeDelta >= 0.7f) {
 		hue = glm::vec3(RED);
 	}
-
 
 
 

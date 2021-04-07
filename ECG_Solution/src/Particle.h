@@ -30,6 +30,8 @@ private:
 
 	glm::vec3 hue;
 
+	glm::vec3 mixColours(glm::vec3 c1, glm::vec3 c2, float t);
+
 public:
 	Particle();
 	Particle(glm::vec3 position, glm::vec3 direction,glm::vec3 gravity, float gravityEffect, float lifeLength, float scale);

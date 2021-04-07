@@ -35,14 +35,14 @@ FireParticleSystem::FireParticleSystem()
 {
 
 	//TODO CREATE PS WITH THE CODE FROM FIREPARTICLES DEMO
-	pps = 100.0f;
-	averageSpeed = 2.0f;
+	pps = 500.0f;
+	averageSpeed = 1.5f;
 	particleWeight = 1.0f;
-	averageLifeLength = 2.0f;
-	averageScale = 0.2f;
+	averageLifeLength = 1.0f;
+	averageScale = 0.5f;
 
 	//setDirection(glm::vec3(0.0f,1.0f, 0.0f), 0.0f);
-	setSpeedError(0.5f);
+	setSpeedError(0.2f);
 	setScaleError(0.5f);
 	setLifeError(0.5f);
 
