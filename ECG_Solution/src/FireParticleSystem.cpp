@@ -34,7 +34,7 @@ glm::vec3 FireParticleSystem::generateRandomUnitVectorWithError(glm::vec3 coneDi
 FireParticleSystem::FireParticleSystem()
 {
 
-	//TODO CREATE PS WITH THE CODE FROM FIREPARTICLES DEMO
+	
 	pps = 500.0f;
 	averageSpeed = 1.5f;
 	particleWeight = 1.0f;

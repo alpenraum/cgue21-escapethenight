@@ -8,6 +8,7 @@
 #include "Player.h"
 #include "Killer.h"
 #include "ParticleMaster.h"
+#include "CampFire.h"
 /*!
 * This manages the whole rendering process of all different renderers and entities
 */
@@ -24,6 +25,7 @@ private:
 
 	Skybox skybox;
 
+	CampFire campfire;
 
 	std::vector<DirectionalLight*>* dirLights;
 

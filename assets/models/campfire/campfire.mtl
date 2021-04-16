@@ -1,0 +1,46 @@
+# Blender MTL File: 'campfire.blend'
+# Material Count: 4
+
+newmtl ground
+Ns 16
+Ka 0.8 0.8 0.8
+Kd 0.310814 0.241033 0.130651
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd ground_diffuse.png
+
+newmtl rock
+Ns 99.092964
+Ka 0.8 0.8 0.8
+Kd 0.800000 0.800000 0.800000
+Ks 0.281818 0.281818 0.281818
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd Rock_diffuse.png
+
+newmtl tree_log_end
+Ns 16
+Ka 0.8 0.8 0.8
+Kd 1.000000 0.427499 0.084141
+Ks 0.395454 0.395454 0.395454
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd logs_diffuse.png
+
+newmtl tree_log_inner_end
+Ns 16
+Ka 0.0.8 0.0.8 0.0.8
+Kd 0.577566 0.250483 0.051631
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd logs_diffuse.png

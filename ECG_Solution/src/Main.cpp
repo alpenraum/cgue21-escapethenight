@@ -236,7 +236,6 @@ int main(int argc, char** argv)
 	WorldRenderer worldRenderer = WorldRenderer(modelList, watertiles, skyboxFaces, &dirLights, &pointLights);
 	ParticleMaster::init();
 
-	FireParticleSystem ps = FireParticleSystem();
 
 	
 	// Render loop
@@ -278,7 +277,7 @@ int main(int argc, char** argv)
 
 
 
-		ps.generateParticles(shadowBird1.getPosition(), dt);
+		
 
 
 		if (usePlayerCamera) {

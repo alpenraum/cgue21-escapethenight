@@ -18,7 +18,12 @@ WorldRenderer::WorldRenderer(std::vector<Model*> models, std::vector<Watertile*>
 	this->skybox = Skybox(skyboxFaces);
 
 	this->dirLights = dirLights;
-	this->pointLights = pointLights;
+	this->pointLights = pointLights; //DONT FORGET TO CHANGE SIZE IN SHADER WHEN ALTERING SIZE. CURRENTLY 3
+	
+	this->campfire = CampFire("assets/models/campfire/campfire.obj", glm::vec3(5.0f, 3.0f, 10.0f), glm::vec3(1.0f));
+	levelRenderer.addModel(campfire.getModel());
+	pointLights->push_back(campfire.getLight());
+
 
 	
 }
@@ -63,8 +68,9 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 
 		waterFBO.bindReflectionFBO();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		levelRenderer.setUniforms(true, camera, glm::vec4(0, 1.0f, 0, -tile->getPosition().y + 0.5f), lightMapping, normalMapping, *dirLights, *pointLights);
+		levelRenderer.setUniforms(true, camera, glm::vec4(0, 1.0f, 0, -tile->getPosition().y + 0.5f), lightMapping, normalMapping, *dirLights, *pointLights,deltaTime);
 		levelRenderer.render();
+		
 		skybox.draw(camera);
 
 		//RENDER REFRACTION
@@ -75,8 +81,9 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 
 		waterFBO.bindRefractionFBO();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		levelRenderer.setUniforms(true, camera, glm::vec4(0, -1.0f, 0, tile->getPosition().y), lightMapping, normalMapping, *dirLights, *pointLights);
+		levelRenderer.setUniforms(true, camera, glm::vec4(0, -1.0f, 0, tile->getPosition().y), lightMapping, normalMapping, *dirLights, *pointLights,deltaTime);
 		levelRenderer.render();
+		
 		waterFBO.unbindFBO();
 	}
 
@@ -84,7 +91,7 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, Settings::width, Settings::height);
 	// Set per-frame uniforms
-	levelRenderer.setUniforms(true, camera, glm::vec4(0, 1.0f, 0, 1000000.0f), lightMapping, normalMapping, *dirLights, *pointLights);
+	levelRenderer.setUniforms(true, camera, glm::vec4(0, 1.0f, 0, 1000000.0f), lightMapping, normalMapping, *dirLights, *pointLights,deltaTime);
 
 	levelRenderer.render();
 	killer->draw(levelRenderer.getShader());
@@ -92,6 +99,8 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 	if (renderPlayer) {
 		player->draw(camera, levelRenderer.getShader(), deltaTime);
 	}
+
+	
 	
 	for each (Watertile * tile in watertiles)
 	{
@@ -104,6 +113,7 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 	// draw skybox as last
 	skybox.draw(camera);
 
+	campfire.updateParticles(deltaTime);
 
 	ParticleMaster::renderParticles(camera, deltaTime);
 }
