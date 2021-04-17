@@ -36,3 +36,7 @@ void Killer::draw(AdvancedShader* shader)
 	model.draw(*shader);
 	shader->unuse();
 }
+
+void Killer::resetKiller() {
+	this->setPosition(glm::vec3(20.0f, 30.0f, 12.0f));
+}

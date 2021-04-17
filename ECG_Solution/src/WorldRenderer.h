@@ -25,7 +25,7 @@ private:
 
 	Skybox skybox;
 
-	CampFire campfire;
+	std::vector<CampFire*> campfires;
 
 	std::vector<DirectionalLight*>* dirLights;
 
@@ -44,4 +44,6 @@ public:
 	void render(ICamera* camera, float deltaTime, bool lightMapping, bool normalMapping, Player* player, bool renderPlayer, Killer* killer);
 
 	void cleanUp();
+
+	std::vector<CampFire*>* getCampfires();
 };

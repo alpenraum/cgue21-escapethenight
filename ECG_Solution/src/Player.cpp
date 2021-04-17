@@ -9,7 +9,7 @@ Player::Player()
 	hand = PlayerHand(getPosition());
 }
 
-void Player::update(unsigned int movementDirection, glm::vec2 mouseDelta, float delta)
+void Player::update(unsigned int movementDirection, glm::vec2 mouseDelta, float delta, std::vector<CampFire*>* campfires)
 {
 
 	float velocity = SPEED * delta;
@@ -46,6 +46,28 @@ void Player::update(unsigned int movementDirection, glm::vec2 mouseDelta, float 
 		pitch = -(glm::radians(89.0f));
 
 	camera->updateCamera(yaw, pitch, pos);
+
+
+
+
+	//sanity
+
+	if (isNearLight(campfires) && movementDirection == Player::NO_MOVEMENT) { //if near light and standing still
+		sanity += SANITY_CHANGE_PER_SECOND * delta;
+	}
+	else if ((isNearLight(campfires) && !movementDirection == Player::NO_MOVEMENT)) {
+		//no change in sanity level
+	}
+	else {
+		sanity -= SANITY_CHANGE_PER_SECOND * delta;
+	}
+
+	if (sanity > 100.0f) {
+		sanity = 100.0f;
+	}
+	if (sanity < 0.0f) {
+		sanity = 0.0f;
+	}
 }
 
 BasicCamera* Player::getCamera()
@@ -71,10 +93,11 @@ void Player::draw(ICamera* camera, AdvancedShader* shader, float dt)
 		hand.draw(shader, dt);
 
 
-
-
 		shader->unuse();
 	}
+
+
+	
 }
 
 PointLight* Player::getLight()
@@ -89,23 +112,33 @@ void Player::toggleTorch()
 	
 }
 
-bool Player::isNearLight(std::vector<PointLight*>* lights)
+bool Player::isNearLight(std::vector<CampFire*>* campfires)
 {
 	if (isTorchLit) {
 		return true;
 	}
-	/*
+	
 	float dist = 0.0f;
-	for each (PointLight* l in *lights)
+	for each (CampFire *f in *campfires)
 	{
-		dist = glm::abs(glm::distance(this->getPosition(),l->position));
+		dist = glm::abs(glm::distance(this->getPosition(),f->getPosition()));
 
 		if (dist <= LIGHT_RADIUS) {
 			return true;
 		}
 	}
-	*/
+	
 	return false;
+}
+
+float Player::getSanity()
+{
+	return sanity;
+}
+
+void Player::resetSanity()
+{
+	sanity = 100.0f;
 }
 
 PlayerHand::PlayerHand()

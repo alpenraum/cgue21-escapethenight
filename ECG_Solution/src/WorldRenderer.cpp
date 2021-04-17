@@ -20,9 +20,13 @@ WorldRenderer::WorldRenderer(std::vector<Model*> models, std::vector<Watertile*>
 	this->dirLights = dirLights;
 	this->pointLights = pointLights; //DONT FORGET TO CHANGE SIZE IN SHADER WHEN ALTERING SIZE. CURRENTLY 3
 	
-	this->campfire = CampFire("assets/models/campfire/campfire.obj", glm::vec3(5.0f, 3.0f, 10.0f), glm::vec3(1.0f));
-	levelRenderer.addModel(campfire.getModel());
-	pointLights->push_back(campfire.getLight());
+	this->campfires = std::vector<CampFire*>();
+		
+	CampFire* c = new CampFire("assets/models/campfire/campfire.obj", glm::vec3(5.0f, 3.0f, 10.0f), glm::vec3(1.0f));
+	levelRenderer.addModel(c->getModel());
+	pointLights->push_back(c->getLight());
+
+	campfires.push_back(c);
 
 
 	
@@ -113,7 +117,9 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 	// draw skybox as last
 	skybox.draw(camera);
 
-	campfire.updateParticles(deltaTime);
+	for each (CampFire * campFire in campfires) {
+		campFire->updateParticles(deltaTime);
+	}
 
 	ParticleMaster::renderParticles(camera, deltaTime);
 }
@@ -130,4 +136,9 @@ void WorldRenderer::cleanUp()
 	waterRenderer.cleanup();
 	omniShadowRenderer.cleanup();
 	ParticleMaster::cleanup();
+}
+
+std::vector<CampFire*>* WorldRenderer::getCampfires()
+{
+	return &campfires;
 }
