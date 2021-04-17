@@ -7,6 +7,8 @@
 #include "OmniShadowRenderer.h"
 #include "Player.h"
 #include "Killer.h"
+#include "ParticleMaster.h"
+#include "CampFire.h"
 /*!
 * This manages the whole rendering process of all different renderers and entities
 */
@@ -23,6 +25,8 @@ private:
 
 	Skybox skybox;
 
+	std::vector<CampFire*> campfires;
+
 	std::vector<DirectionalLight*>* dirLights;
 
 	/*!
@@ -31,6 +35,8 @@ private:
 	*/
 	std::vector<PointLight*>* pointLights;
 
+
+
 public:
 	WorldRenderer();
 	WorldRenderer(std::vector<Model*> models, std::vector<Watertile*> watertiles, std::vector<std::string> skyboxFaces, std::vector<DirectionalLight*>* dirLights, std::vector<PointLight*>* pointLights);
@@ -38,4 +44,6 @@ public:
 	void render(ICamera* camera, float deltaTime, bool lightMapping, bool normalMapping, Player* player, bool renderPlayer, Killer* killer);
 
 	void cleanUp();
+
+	std::vector<CampFire*>* getCampfires();
 };

@@ -24,6 +24,7 @@
 #include "Pathfinder.h"
 #include "Player.h"
 #include "Killer.h"
+#include "FireParticleSystem.h"
 #pragma warning( disable : 4244 )
 
 
@@ -37,6 +38,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void renderQuad();
+void showEndScreen();
+
+void printControls();
 
 /* --------------------------------------------- */
 // Global variables
@@ -44,6 +48,7 @@ void renderQuad();
 
 BasicCamera* camera;
 Player* player;
+Killer* killer;
 
 static bool _wireframe = false;
 static bool _culling = true;
@@ -167,7 +172,7 @@ int main(int argc, char** argv)
 
 	player = new Player();
 
-	Killer killer = Killer();
+	 killer = new Killer();
 
 
 
@@ -233,7 +238,7 @@ int main(int argc, char** argv)
 	// Renderers
 	/* --------------------------------------------- */
 	WorldRenderer worldRenderer = WorldRenderer(modelList, watertiles, skyboxFaces, &dirLights, &pointLights);
-
+	ParticleMaster::init();
 
 
 	
@@ -247,6 +252,8 @@ int main(int argc, char** argv)
 	bool w, a, s, d, shift, space, e;
 
 	std::cout << "Scene Loaded" << std::endl;
+
+	printControls();
 	while (!glfwWindowShouldClose(window)) {
 		//RENDERING
 		// Clear backbuffer
@@ -276,15 +283,15 @@ int main(int argc, char** argv)
 
 
 
-		if (e) {
-			/*std::vector<glm::vec2> path;
-			path = pathfinder.findPath(glm::vec2(0, 0), glm::vec2((int)camera->getPosition().x, (int)camera->getPosition().z), gird);
-			
-			for each (glm::vec2 var in path)
-			{
-				std::cout << "(" << var.x << "," << var.y << ")-";
-			}*/
+
+
+
+		//TODO: IMPLEMENT REAL END SCREEN
+		if ((player->getSanity() <= 0.01f) || glm::distance(player->getPosition(),killer->getPosition())<=0.5f) {
+			showEndScreen();
+			dt = 0.0f; // effectively pausing the scene
 		}
+		
 
 
 		if (usePlayerCamera) {
@@ -317,17 +324,19 @@ int main(int argc, char** argv)
 		freeCamera.ProcessMouseMovement(mouseDelta, dt);
 		freeCamera.updateCamera();
 
-		player->update(direction, mouseDelta, dt);
+		player->update(direction, mouseDelta, dt, worldRenderer.getCampfires());
 
-		killer.update(*player, player->isNearLight(&pointLights), dt);
+		killer->update(*player, player->isNearLight(worldRenderer.getCampfires()), dt);
 
 		//glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		worldRenderer.render(camera, dt, false, NORMALMAPPING, player, usePlayerCamera, &killer);
+		worldRenderer.render(camera, dt, false, NORMALMAPPING, player, usePlayerCamera, killer);
 		
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		
 
 		// Compute frame time
 		dt = t;
@@ -353,6 +362,37 @@ int main(int argc, char** argv)
 	glfwTerminate();
 
 	return EXIT_SUCCESS;
+}
+
+
+void showEndScreen() {
+	LOG_TO_CONSOLE("GAME OVER, Sanity is 0 or the killer caught you!", "");
+}
+
+void printControls()
+{
+	std::cout
+		<< "  ______                            _   _            _   _ _       _     _   " << "\n"
+		<< " |  ____|                          | | | |          | \ | (_)     | |   | |  " << "\n"
+		<< " | |__   ___  ___ __ _ _ __   ___  | |_| |__   ___  |  \| |_  __ _| |__ | |_ " << "\n"
+		<< " |  __| / __|/ __/ _` | '_ \ / _ \ | __| '_ \ / _ \ | . ` | |/ _` | '_ \| __|" << "\n"
+		<< " | |____\__ \ (_| (_| | |_) |  __/ | |_| | | |  __/ | |\  | | (_| | | | | |_ " << "\n"
+		<< " |______|___/\___\__,_| .__/ \___|  \__|_| |_|\___| |_| \_|_|\__, |_| |_|\__|" << "\n"
+		<< "                      | |                                     __/ |          " << "\n"
+		<< "                      |_|                                    |___/           " << "\n"
+		<< "=============================================================================" << "\n"
+
+		<< "___Special Controls___" << "\n"
+		<< "\t F -- Print current Sanity Level" << "\n"
+		<< "\t LMB -- Toggle Light of Player" << "\n"
+		<< "___Debug Controls___"
+		<< "\t F1 -- Wireframe" << "\n"
+		<< "\t F2 -- Backface Culling" << "\n"
+		<< "\t F3 -- Toggle Normalmapping (see Water)" << "\n"
+		<< "\t F4 -- Reset the Killers Position and the sanity of the Player." << "\n"
+		<< "\t F5 -- Switch the Camera to an external debugging Camera (will be useful with physx player controller)"
+
+		<< std::endl;
 }
 
 // renderQuad() renders a 1x1 XY quad in NDC
@@ -411,14 +451,9 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
  */
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	// Keyup Events
-	// F1 - Wireframe
-	// F2 - Culling
-	// F3 - Show/Hide HUD permanently
-	// Esc - Exit
 
-	// Keydown Events
-	// Space - Jump
+
+	
 
 	if (action == GLFW_KEY_DOWN) {
 		switch (key)
@@ -428,6 +463,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			break;
 
 		case GLFW_KEY_F:
+			LOG_TO_CONSOLE("Current Sanity Level: ", player->getSanity());
 
 			break;
 		case GLFW_KEY_1:
@@ -464,9 +500,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		NORMALMAPPING = !NORMALMAPPING;
 		break;
 	case GLFW_KEY_F4:
-		LOG_TO_CONSOLE("player posX:", player->getPosition().x);
-		LOG_TO_CONSOLE("player posY:", player->getPosition().y);
-		LOG_TO_CONSOLE("player posZ:", player->getPosition().z);
+		player->resetSanity();
+		killer->resetKiller();
 
 		break;
 	case GLFW_KEY_F5:

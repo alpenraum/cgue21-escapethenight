@@ -15,6 +15,7 @@ float Settings::mouseSens = 0;
 int Settings::waterTextureDimension = 0;
 int Settings::shadowTextureDimension = 0;
 float Settings::shadowDistance = 0.0f;
+float Settings::particleRenderDistance = 0.0f;
 
 void Settings::loadSettings(INIReader reader)
 {
@@ -31,4 +32,5 @@ void Settings::loadSettings(INIReader reader)
 	Settings::waterTextureDimension = (reader.GetInteger("graphics", "water_texture_dimension", 1024));
 	Settings::shadowTextureDimension = (reader.GetInteger("graphics", "shadow_texture_dimension", 1024));
 	Settings::shadowDistance = float(reader.GetReal("graphics", "shadow_distance",50.0f));
+	Settings::particleRenderDistance = float(reader.GetReal("graphics", "particle_render_distance", 50.0f));
 }

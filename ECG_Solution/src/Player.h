@@ -4,6 +4,8 @@
 #include "BasicCamera.h"
 #include "Model.h"
 #include "Light.h"
+#include <cmath>
+#include "CampFire.h"
 
 class PlayerHand : public Actor {
 private:
@@ -64,6 +66,11 @@ private:
 	float yaw = 0.0f;
 	float pitch = 0.0f;
 
+	float sanity = 100.0f;
+	const float SANITY_CHANGE_PER_SECOND = 1.0f;
+	
+
+
 	
 
 public:
@@ -81,7 +88,7 @@ public:
 	* Update the Player state.
 	* @param delta the ammount of time that has passed since the last update.
 	*/
-	void  update(unsigned int movementDirection, glm::vec2 mouseDelta,float delta);
+	void  update(unsigned int movementDirection, glm::vec2 mouseDelta,float delta, std::vector<CampFire*>* campfires);
 
 	BasicCamera* getCamera();
 	void draw(ICamera* camera, AdvancedShader* shader, float dt);
@@ -93,7 +100,10 @@ public:
 	
 	void toggleTorch();
 
-	bool isNearLight(std::vector<PointLight*>* lights); //TODO: Change to Campfires
+	bool isNearLight(std::vector<CampFire*>* campfires); //TODO: Change to Campfires
+
+	float getSanity();
+	void resetSanity();
 };
 
 

@@ -19,4 +19,6 @@ public:
 	void update(Player& player, bool playerNearLight, float dt);
 
 	void draw(AdvancedShader* shader);
+
+	void resetKiller();
 };

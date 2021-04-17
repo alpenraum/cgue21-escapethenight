@@ -23,6 +23,7 @@ struct PointLight {
     bool enabled;
     samplerCube depthMap;
     bool emittingShadows;
+    float flickerOffset;
 };
 
 
@@ -30,7 +31,7 @@ struct PointLight {
 uniform sampler2D texture_diffuse1;
 uniform sampler2D texture_normal1;
 uniform sampler2D texture_lightMap1;
-uniform PointLight pointLights[2];
+uniform PointLight pointLights[3];
 
 uniform DirectionalLight dirLights[8];
 uniform vec3 materialCoefficients; // x = ambient, y = diffuse, z = specular 
