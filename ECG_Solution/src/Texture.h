@@ -15,6 +15,8 @@
 
 /*!
  * 2D texture
+ * 
+ * DEPRECATED
  */
 class Texture
 {

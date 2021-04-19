@@ -49,7 +49,6 @@ vec3 blinnPhongPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 view
     vec3 lightDir = (light.position-fragPos);
     float d= length(lightDir);
 
-    if(d<=100){
 	    lightDir=normalize(lightDir);
 	    // diffuse shading
 	    float diff = max(dot(normal,lightDir), 0.0);
@@ -79,9 +78,7 @@ vec3 blinnPhongPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 view
 	    vec3 specular1 = att * specular;
 
 	    return ((ambient1 + diffuse1)* color.rgb + specular1);
-    }else{
-     	return vec3(0.0f);
-    }
+   
   
 }
 vec3 blinnPhongDirLight(DirectionalLight light, vec3 normal, vec3 viewDir, vec4 color){

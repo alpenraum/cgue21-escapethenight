@@ -24,6 +24,40 @@ void Model::draw(AdvancedShader &shader) {
 	}
 }
 
+glm::vec2 Model::getBottomLeft()
+{
+	glm::vec2 minCoords = glm::vec2(1000.0f, 1000.0f);
+	glm::vec2 meshMin = glm::vec2(0.0f, 0.0f);
+	for each (Mesh  m in meshes)
+	{
+		meshMin = m.getBottomLeft();
+		if (meshMin.x < minCoords.x) {
+			minCoords.x = meshMin.x;
+		}
+		if (meshMin.y < minCoords.y) {
+			minCoords.y = meshMin.y;
+		}
+	}
+	return minCoords;
+}
+
+glm::vec2 Model::getTopRight()
+{
+	glm::vec2 maxCoords = glm::vec2(-1000.0f, -1000.0f);
+	glm::vec2 meshMax = glm::vec2(0.0f, 0.0f);
+	for each (Mesh  m in meshes)
+	{
+		meshMax = m.getBottomLeft();
+		if (meshMax.x > maxCoords.x) {
+			maxCoords.x = meshMax.x;
+		}
+		if (meshMax.y > maxCoords.y) {
+			maxCoords.y = meshMax.y;
+		}
+	}
+	return maxCoords;
+}
+
 void Model::loadModel(string const &path) {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);

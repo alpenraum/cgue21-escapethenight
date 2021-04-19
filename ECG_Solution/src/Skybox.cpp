@@ -13,7 +13,7 @@ Skybox::Skybox(std::vector<string> faces)
 	texture = loadCubemap(faces);
 
 	shader = std::make_shared<Shader>("skybox.vert", "skybox.frag");
-	
+
 	shader.get()->use();
 	shader.get()->setUniform("skybox", 0);
 	shader.get()->unuse();
@@ -25,7 +25,6 @@ Skybox::Skybox(std::vector<string> faces)
 	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	
 }
 
 unsigned int Skybox::loadCubemap(std::vector<std::string> faces)
@@ -64,7 +63,7 @@ void Skybox::draw(ICamera* camera) {
 	shader.get()->use();
 	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
 	glm::mat4 view = glm::mat4(glm::mat3(camera->getViewMatrix())); // remove translation from the view matrix
-	shader.get()->setUniform("viewProjMatrix", camera->getProjMatrix()*view);
+	shader.get()->setUniform("viewProjMatrix", camera->getProjMatrix() * view);
 	// skybox cube
 	glBindVertexArray(skyboxVAO);
 	glActiveTexture(GL_TEXTURE0);
@@ -74,6 +73,4 @@ void Skybox::draw(ICamera* camera) {
 	glDepthFunc(GL_LESS); // set depth function back to default
 
 	shader.get()->unuse();
-
 }
-

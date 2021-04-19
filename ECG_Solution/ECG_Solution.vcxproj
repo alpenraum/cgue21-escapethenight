@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="src\CampFire.cpp" />
+    <ClCompile Include="src\FireParticleSystem.cpp" />
+    <ClCompile Include="src\Killer.cpp" />
+    <ClCompile Include="src\Particle.cpp" />
+    <ClCompile Include="src\ParticleRenderer.cpp" />
+    <ClCompile Include="src\ParticleMaster.cpp" />
+    <ClCompile Include="src\Pathfinder.cpp" />
+    <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\AdvancedShader.cpp" />
     <ClCompile Include="src\Converter.cpp" />
     <ClCompile Include="src\OmniShadowFrameBuffer.cpp" />
@@ -11,6 +19,7 @@
     <ClCompile Include="src\Actor.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\Model.cpp" />
+    <ClCompile Include="src\TwoDGridPF.cpp" />
     <ClCompile Include="src\utils\Settings.cpp" />
     <ClCompile Include="src\utils\Time.cpp" />
     <ClCompile Include="src\utils\Transform.cpp" />
@@ -19,6 +28,15 @@
     <ClCompile Include="src\WaterFrameBuffer.cpp" />
     <ClCompile Include="src\LevelRenderer.cpp" />
     <ClCompile Include="src\WorldRenderer.cpp" />
+    <ClInclude Include="src\CampFire.h" />
+    <ClInclude Include="src\FireParticleSystem.h" />
+    <ClInclude Include="src\ParticleRenderer.h" />
+    <ClInclude Include="src\Killer.h" />
+    <ClInclude Include="src\Particle.h" />
+    <ClInclude Include="src\ParticleMaster.h" />
+    <ClInclude Include="src\TwoDGridPF.h" />
+    <ClInclude Include="src\Pathfinder.h" />
+    <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\AdvancedShader.h" />
     <ClInclude Include="src\Converter.h" />
     <ClInclude Include="src\OmniShadowFrameBuffer.h" />
