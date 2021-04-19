@@ -40,6 +40,8 @@ public:
 	physx::PxRigidActor* rigidactor;
 	void attachRigidActor(physx::PxRigidActor* rigidActor);
 	void removeRigidActor();
+	glm::vec2 getBottomLeft();
+	glm::vec2 getTopRight();
 
 protected:
 	//saves all Meshes from this Model

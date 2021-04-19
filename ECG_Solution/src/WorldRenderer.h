@@ -1,11 +1,17 @@
 #pragma once
 #include "utils/Utils.h"
 #include "LevelRenderer.h"
+#include "WaterRenderer.h"
+#include "WaterFrameBuffer.h"
 #include "Skybox.h"
 #include "OmniShadowRenderer.h"
-#include "WaterFrameBuffer.h"
-#include "Watertile.h"
-#include "WaterRenderer.h"
+#include "Player.h"
+#include "Killer.h"
+#include "ParticleMaster.h"
+#include "CampFire.h"
+/*!
+* This manages the whole rendering process of all different renderers and entities
+*/
 class WorldRenderer
 {
 private:
@@ -19,6 +25,8 @@ private:
 
 	Skybox skybox;
 
+	std::vector<CampFire*> campfires;
+
 	std::vector<DirectionalLight*>* dirLights;
 
 	/*!
@@ -29,13 +37,13 @@ private:
 
 
 
-
 public:
 	WorldRenderer();
 	WorldRenderer(std::vector<Model*> models, std::vector<Watertile*> watertiles, std::vector<std::string> skyboxFaces, std::vector<DirectionalLight*>* dirLights, std::vector<PointLight*>* pointLights);
 
-	void render(ICamera* camera, float deltaTime, bool lightMapping, bool normalMapping);
+	void render(ICamera* camera, float deltaTime, bool lightMapping, bool normalMapping, Player* player, bool renderPlayer, Killer* killer);
 
 	void cleanUp();
-};
 
+	std::vector<CampFire*>* getCampfires();
+};

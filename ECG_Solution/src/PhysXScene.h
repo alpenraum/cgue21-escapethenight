@@ -13,6 +13,6 @@ void stepPhysics();
 void setActiveCamera(BasicCamera* cam);
 void updateKinematics(PxReal timeStep);
 BasicCamera* getActiveCamera();
-px::PxRigidDynamic* createDynamic(const px::PxTransform& t, const px::PxGeometry& geometry, const px::PxVec3& velocity = px::PxVec3(0));
-px::PxRigidStatic* createStatic(const px::PxTransform& t, const px::PxVec3& velocity, px::PxTriangleMeshGeometry* geometry);
+physx::PxRigidDynamic* createDynamic(const physx::PxTransform& t, const physx::PxGeometry& geometry, const physx::PxVec3& velocity = physx::PxVec3(0));
+physx::PxRigidStatic* createStatic(const physx::PxTransform& t, const physx::PxVec3& velocity, physx::PxTriangleMeshGeometry* geometry);
 

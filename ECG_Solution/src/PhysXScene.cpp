@@ -1,5 +1,6 @@
 #pragma once
 #include "PhysXScene.h"
+#include "utils/Time.h"
 using namespace physx;
 
 // PhysX Variables
@@ -135,9 +136,9 @@ void update()
         gScene->fetchResults(true);
     }
 
-    px::PxU32 nbActiveActors;
+    physx::PxU32 nbActiveActors;
 
-    px::PxActor** activeActors = gScene->getActiveActors(nbActiveActors);
+    physx::PxActor** activeActors = gScene->getActiveActors(nbActiveActors);
 
     // update each render object with the new transform
 }
