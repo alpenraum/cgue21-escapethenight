@@ -1,10 +1,11 @@
 #pragma once
 #include "utils/Utils.h"
 #include "LevelRenderer.h"
-#include "WaterRenderer.h"
-#include "WaterFrameBuffer.h"
 #include "Skybox.h"
 #include "OmniShadowRenderer.h"
+#include "WaterFrameBuffer.h"
+#include "Watertile.h"
+#include "WaterRenderer.h"
 class WorldRenderer
 {
 private:
