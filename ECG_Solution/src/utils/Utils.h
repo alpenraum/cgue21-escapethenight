@@ -13,9 +13,11 @@
 #include <GLFW\glfw3.h>
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\glm.hpp>
-
 #include <glm/gtc/type_ptr.hpp>
 #include <math.h>
+#include "Time.h"
+#include "PxPhysicsAPI.h"
+namespace px = physx;
 
 #define EXIT_WITH_ERROR(err) \
 	std::cout << "ERROR: " << err << std::endl; \
@@ -57,7 +59,6 @@ public:
 
 	~DDSImage() { if (image != nullptr) { delete[] image; image = nullptr; } }
 };
-
 
 /* --------------------------------------------- */
 // Framework functions

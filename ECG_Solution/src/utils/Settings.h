@@ -20,8 +20,5 @@ public:
 	static float shadowDistance;
 
 	static void loadSettings(INIReader reader);
-
-
-
-
+	   	 
 };

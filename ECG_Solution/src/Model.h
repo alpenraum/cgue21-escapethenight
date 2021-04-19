@@ -12,6 +12,7 @@
 #include <assimp/postprocess.h>
 #include <SOIL2/SOIL2.h>
 #include "AdvancedShader.h"
+#include "PxPhysicsAPI.h"
 
 
 
@@ -36,6 +37,10 @@ public:
 			mesh.setShininess(shininess);
 		}
 	}
+	physx::PxRigidActor* rigidactor;
+	void attachRigidActor(physx::PxRigidActor* rigidActor);
+	void removeRigidActor();
+
 protected:
 	//saves all Meshes from this Model
 	std::vector<Mesh> meshes;

@@ -6,12 +6,13 @@ Model::Model() {
 }
 Model::Model(string const &path, glm::vec3 position) {
 	this->transform.setPosition(position);
-	
+	this->rigidactor = nullptr;
 	loadModel(path);
 }
 Model::Model(string const &path, glm::vec3 position, glm::vec3 scale) {
 	this->transform.setPosition(position);
 	this->transform.setScale(scale);
+	this->rigidactor = nullptr;
 	loadModel(path);
 }
 
@@ -146,6 +147,19 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
 	Mesh m = Mesh(vertices, indices, textures);
 	m.setMaterialCoefficient(ambientf,diffusef,specularf,shininess);
 	return m;
+}
+
+void Model::attachRigidActor(physx::PxRigidActor* rigidActor)
+{
+	this->rigidactor = rigidActor;
+	this->rigidactor->userData = (this);
+}
+
+void Model::removeRigidActor() {
+	if (this->rigidactor != NULL) {
+		this->rigidactor->release();
+		this->rigidactor = NULL;
+	}
 }
 
 std::vector<TestTexture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName) {

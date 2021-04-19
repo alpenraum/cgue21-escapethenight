@@ -139,6 +139,8 @@ PX_INLINE bool PxTriangleMeshGeometry::isValid() const
 	if(!triangleMesh)
 		return false;
 
+	
+
 	return true;
 }
 

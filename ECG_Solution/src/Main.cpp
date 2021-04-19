@@ -1,9 +1,3 @@
-/*
-* Copyright 2018 Vienna University of Technology.
-* Institute of Computer Graphics and Algorithms.
-* This file is part of the ECG Lab Framework and must not be redistributed.
-*/
-
 #include "utils/Utils.h"
 #include <sstream>
 #include "Shader.h"
@@ -16,13 +10,15 @@
 #include "ICamera.h"
 #include "BasicCamera.h"
 #include "Skybox.h"
+#include "WaterFrameBuffer.h"
 #include "Watertile.h"
 #include "WaterRenderer.h"
-#include "WaterFrameBuffer.h"
 #include "utils/Settings.h"
 #include "WorldRenderer.h"
 #include "PxPhysicsAPI.h"
 #include "Converter.h"
+#include "PhysXScene.h"
+
 using namespace physx;
 #pragma warning( disable : 4244 )
 
@@ -53,8 +49,8 @@ static bool isFPCamera = false;
 static bool NORMALMAPPING = true;
 static bool won = false;
 
-static PxDefaultErrorCallback gDefaultErrorCallback; 
-static PxDefaultAllocator gDefaultAllocatorCallback; 
+static PxDefaultErrorCallback gDefaultErrorCallback;
+static PxDefaultAllocator gDefaultAllocatorCallback;
 static PxFoundation* gFoundation = NULL;
 
 /* --------------------------------------------- */
@@ -182,7 +178,6 @@ int main(int argc, char** argv)
 
 	std::vector<Model*> modelList = std::vector<Model*>();
 	std::vector<Watertile*> watertiles = std::vector<Watertile*>();
-
 	//Model renderObject = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, 5.0f, -10.0f));
 	//Model betweenWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, -10.0f, -10.0f));
 	//Model subWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(17.0f, 5.0f, 10.0f));
@@ -227,6 +222,9 @@ int main(int argc, char** argv)
 	float oldX = mouseX, oldY = mouseY;
 	glm::vec2 mouseDelta = glm::vec2(0.0f);
 	bool w, a, s, d, shift, space, e;
+
+	//inint physx
+	initPhysics;
 
 	std::cout << "Scene Loaded" << std::endl;
 	while (!glfwWindowShouldClose(window)) {
@@ -542,25 +540,3 @@ static std::string FormatDebugOutput(GLenum source, GLenum type, GLuint id, GLen
 
 	return stringStream.str();
 }
-
-/* Have to implement PhysX Classes
-   TODO: Outsource
-*/
-class PxAllocatorCallback
-{
-public:
-	virtual ~PxAllocatorCallback() {}
-	virtual void* allocate(size_t size, const char* typeName, const char* filename,
-		int line) = 0;
-	virtual void deallocate(void* ptr) = 0;
-};
-
-class UserErrorCallback : public PxErrorCallback
-{
-public:
-	virtual void reportError(PxErrorCode::Enum code, const char* message, const char* file,
-		int line)
-	{
-		// error processing implementation
-	}
-};
