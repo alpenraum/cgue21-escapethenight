@@ -1,7 +1,6 @@
 #include "WaterFrameBuffer.h"
 
-
-WaterFrameBuffer::WaterFrameBuffer(){}
+WaterFrameBuffer::WaterFrameBuffer() {}
 WaterFrameBuffer::WaterFrameBuffer(int width, int height) {
 	initRefractionFBO(width, height);
 	initReflectionFBO(width, height);
@@ -20,9 +19,9 @@ void WaterFrameBuffer::unbindFBO()
 }
 void WaterFrameBuffer::shutdown()
 {
-	glDeleteFramebuffers(1,&_reflectionFBO);
-	glDeleteTextures(1,&_reflectionTexture);
-	glDeleteRenderbuffers(1,&_reflectionDepthBuffer);
+	glDeleteFramebuffers(1, &_reflectionFBO);
+	glDeleteTextures(1, &_reflectionTexture);
+	glDeleteRenderbuffers(1, &_reflectionDepthBuffer);
 	glDeleteFramebuffers(1, &_refractionFBO);
 	glDeleteTextures(1, &_refractionTexture);
 	glDeleteTextures(1, &_refractionDepthTexture);
@@ -84,5 +83,4 @@ void WaterFrameBuffer::bindFBO(GLuint fbo)
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
 }

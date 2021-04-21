@@ -12,6 +12,10 @@ glm::vec3 Actor::getPosition()
 {
 	return transform.getPosition();
 }
+
+void Actor::setPosition(glm::vec3 pos) {
+	transform.setPosition(pos);
+}
 Transform Actor::getTransformation() {
 	return this->transform;
 }

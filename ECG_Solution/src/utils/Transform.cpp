@@ -94,8 +94,6 @@ glm::vec3 Transform::getUp()
 
 	return glm::normalize(glm::vec3(v.x, v.y, v.z));
 
-
-
 }
 
 /** Get the Forward vector for this Transform

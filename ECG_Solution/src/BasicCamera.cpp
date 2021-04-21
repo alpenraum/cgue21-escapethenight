@@ -34,6 +34,16 @@ glm::vec3 BasicCamera::getPosition()
 	return _position;
 }
 
+glm::vec3 BasicCamera::getForward()
+{
+	return _forward;
+}
+
+glm::vec3 BasicCamera::getRight()
+{
+	return _right;
+}
+
 void BasicCamera::setPosition(glm::vec3 val)
 {
 	this->_position = val;
@@ -100,6 +110,13 @@ void BasicCamera::updateCamera()
 	_up = glm::normalize(glm::cross(_right,_forward));
 
 	updateCameraVectors();
+}
+
+void BasicCamera::updateCamera(float yaw, float pitch, glm::vec3 position) {
+	_yaw = yaw;
+	_pitch = pitch;
+	_position = position;
+	updateCamera();
 }
 
 void BasicCamera::updateCameraVectors()

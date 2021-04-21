@@ -29,6 +29,9 @@ public:
 	*/
 	glm::mat4 getProjMatrix();
 	glm::vec3 getPosition();
+	glm::vec3 getForward();
+	glm::vec3 getRight();
+
 	void setPosition(glm::vec3 val);
 	void invertPitch();
 
@@ -44,6 +47,11 @@ public:
 	* updates the camera position and viewing direction and calculates the new forward, up, right vectors, as well as the new view Matrix
 	*/
 	void updateCamera();
+
+	/*!
+	* updates the camera position and viewing direction and calculates the new forward, up, right vectors, as well as the new view Matrix
+	*/
+	void updateCamera(float yaw, float pitch, glm::vec3 position);
 private:
 	void updateCameraVectors();
 

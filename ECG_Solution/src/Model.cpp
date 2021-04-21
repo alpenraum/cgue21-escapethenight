@@ -1,16 +1,18 @@
 #include "Model.h"
+#include "Converter.h"
 
 Model::Model() {
 
 }
 Model::Model(string const &path, glm::vec3 position) {
 	this->transform.setPosition(position);
-	
+	this->rigidactor = nullptr;
 	loadModel(path);
 }
 Model::Model(string const &path, glm::vec3 position, glm::vec3 scale) {
 	this->transform.setPosition(position);
 	this->transform.setScale(scale);
+	this->rigidactor = nullptr;
 	loadModel(path);
 }
 
@@ -20,6 +22,40 @@ void Model::draw(AdvancedShader &shader) {
 		meshes[i].draw(shader, transform);
 		
 	}
+}
+
+glm::vec2 Model::getBottomLeft()
+{
+	glm::vec2 minCoords = glm::vec2(1000.0f, 1000.0f);
+	glm::vec2 meshMin = glm::vec2(0.0f, 0.0f);
+	for each (Mesh  m in meshes)
+	{
+		meshMin = m.getBottomLeft();
+		if (meshMin.x < minCoords.x) {
+			minCoords.x = meshMin.x;
+		}
+		if (meshMin.y < minCoords.y) {
+			minCoords.y = meshMin.y;
+		}
+	}
+	return minCoords;
+}
+
+glm::vec2 Model::getTopRight()
+{
+	glm::vec2 maxCoords = glm::vec2(-1000.0f, -1000.0f);
+	glm::vec2 meshMax = glm::vec2(0.0f, 0.0f);
+	for each (Mesh  m in meshes)
+	{
+		meshMax = m.getBottomLeft();
+		if (meshMax.x > maxCoords.x) {
+			maxCoords.x = meshMax.x;
+		}
+		if (meshMax.y > maxCoords.y) {
+			maxCoords.y = meshMax.y;
+		}
+	}
+	return maxCoords;
 }
 
 void Model::loadModel(string const &path) {
@@ -33,8 +69,6 @@ void Model::loadModel(string const &path) {
 	directory = path.substr(0, path.find_last_of('/'));
 
 	processNode(scene->mRootNode, scene);
-
-	
 
 }
 
@@ -147,6 +181,19 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
 	Mesh m = Mesh(vertices, indices, textures);
 	m.setMaterialCoefficient(ambientf,diffusef,specularf,shininess);
 	return m;
+}
+
+void Model::attachRigidActor(physx::PxRigidActor* rigidActor)
+{
+	this->rigidactor = rigidActor;
+	this->rigidactor->userData = (this);
+}
+
+void Model::removeRigidActor() {
+	if (this->rigidactor != NULL) {
+		this->rigidactor->release();
+		this->rigidactor = NULL;
+	}
 }
 
 std::vector<TestTexture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName) {

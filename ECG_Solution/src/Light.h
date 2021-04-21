@@ -80,6 +80,7 @@ struct PointLight {
 		: color(color), position(position), attenuation(attenuation), enabled(enabled)
 	{
 		omniShadowFBO = OmniShadowFrameBuffer();
+
 	}
 
 	/*!
@@ -88,6 +89,9 @@ struct PointLight {
 	bool enabled;
 	bool castShadow = false;
 	OmniShadowFrameBuffer omniShadowFBO;
+
+
+	
 	/*!
 	 * Color of the light
 	 */

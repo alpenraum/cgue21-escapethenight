@@ -1,25 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="src\CampFire.cpp" />
+    <ClCompile Include="src\FireParticleSystem.cpp" />
+    <ClCompile Include="src\Killer.cpp" />
+    <ClCompile Include="src\Particle.cpp" />
+    <ClCompile Include="src\ParticleRenderer.cpp" />
+    <ClCompile Include="src\ParticleMaster.cpp" />
+    <ClCompile Include="src\Pathfinder.cpp" />
+    <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\AdvancedShader.cpp" />
+    <ClCompile Include="src\Converter.cpp" />
     <ClCompile Include="src\OmniShadowFrameBuffer.cpp" />
     <ClCompile Include="src\OmniShadowRenderer.cpp" />
+    <ClCompile Include="src\PhysXScene.cpp" />
     <ClCompile Include="src\Skybox.cpp" />
     <ClCompile Include="src\BasicCamera.cpp" />
     <ClCompile Include="src\Actor.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\Model.cpp" />
+    <ClCompile Include="src\TwoDGridPF.cpp" />
     <ClCompile Include="src\utils\Settings.cpp" />
+    <ClCompile Include="src\utils\Time.cpp" />
     <ClCompile Include="src\utils\Transform.cpp" />
     <ClCompile Include="src\Watertile.cpp" />
     <ClCompile Include="src\WaterRenderer.cpp" />
     <ClCompile Include="src\WaterFrameBuffer.cpp" />
     <ClCompile Include="src\LevelRenderer.cpp" />
     <ClCompile Include="src\WorldRenderer.cpp" />
+    <ClInclude Include="src\CampFire.h" />
+    <ClInclude Include="src\FireParticleSystem.h" />
+    <ClInclude Include="src\ParticleRenderer.h" />
+    <ClInclude Include="src\Killer.h" />
+    <ClInclude Include="src\Particle.h" />
+    <ClInclude Include="src\ParticleMaster.h" />
+    <ClInclude Include="src\TwoDGridPF.h" />
+    <ClInclude Include="src\Pathfinder.h" />
+    <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\AdvancedShader.h" />
+    <ClInclude Include="src\Converter.h" />
     <ClInclude Include="src\OmniShadowFrameBuffer.h" />
     <ClInclude Include="src\OmniShadowRenderer.h" />
     <ClInclude Include="src\IFBO.h" />
+    <ClInclude Include="src\PhysXScene.h" />
     <ClInclude Include="src\Skybox.h" />
     <ClInclude Include="src\BasicCamera.h" />
     <ClInclude Include="src\Actor.h" />
@@ -33,6 +56,7 @@
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\utils\Settings.h" />
+    <ClInclude Include="src\utils\Time.h" />
     <ClInclude Include="src\utils\Utils.h" />
     <ClInclude Include="src\utils\Transform.h" />
     <ClInclude Include="src\Watertile.h" />
@@ -89,6 +113,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)build\$(Configuration)\$(ProjectName)\</IntDir>
+    <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -103,16 +128,17 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>NO_BONUS;WIN32;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)external\include;$(SolutionDir)external\physx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)external\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;ECG_Library_Debug.lib;assimp-vc140-mt.lib;soil2-debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)external\lib;$(SolutionDir)external\physx\libs\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;ECG_Library_Debug.lib;assimp-vc140-mt.lib;soil2-debug.lib;PhysXPvdSDK_static_32.lib;PhysXCommon_32.lib;PhysXExtensions_static_32.lib;PhysXFoundation_32.lib;PhysX_32.lib;PhysXCooking_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>MSVCRTD;LIBCMT</IgnoreSpecificDefaultLibraries>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -132,19 +158,20 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NO_BONUS;WIN32;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)external\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)external\include;$(SolutionDir)external\physx\include</AdditionalIncludeDirectories>
       <PreprocessToFile>false</PreprocessToFile>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>
       </LanguageStandard>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)external\lib-release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;ECG_Library_Release.lib;assimp-vc140-mt.lib;soil2-debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)external\physx\libs\release;$(SolutionDir)external\lib-release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;ECG_Library_Release.lib;assimp-vc140-mt.lib;soil2-debug.lib;PhysXPvdSDK_static_32_release.lib;PhysXCommon_32_release.lib;PhysXExtensions_static_32_release.lib;PhysXFoundation_32_release.lib;PhysX_32_release.lib;PhysXCooking_32_release.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
       <ForceFileOutput>

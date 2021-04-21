@@ -2,6 +2,9 @@
 #include "utils/Utils.h"
 #include "utils/Transform.h"
 #include "WaterFrameBuffer.h"
+/*!
+* A Watertile represents one plane of water with its one reflections and refractions
+*/
 class Watertile
 {
 private:
@@ -31,4 +34,3 @@ public:
 
 
 };
-

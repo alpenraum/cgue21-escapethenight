@@ -9,7 +9,6 @@
 #include "Shader.h"
 #include "Material.h"
 #include "Light.h"
-#include "Texture.h"
 #include <iostream>
 #include "Model.h"
 #include <stdio.h>
@@ -21,6 +20,11 @@
 #include "WaterFrameBuffer.h"
 #include "utils/Settings.h"
 #include "WorldRenderer.h"
+#include "TwoDGridPF.h"
+#include "Pathfinder.h"
+#include "Player.h"
+#include "Killer.h"
+#include "FireParticleSystem.h"
 #pragma warning( disable : 4244 )
 
 
@@ -34,21 +38,27 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void renderQuad();
+void showEndScreen();
+
+void printControls();
+
 /* --------------------------------------------- */
 // Global variables
 /* --------------------------------------------- */
 
-BasicCamera camera;
+BasicCamera* camera;
+Player* player;
+Killer* killer;
 
 static bool _wireframe = false;
 static bool _culling = true;
-static bool _dragging = false;
-static bool _strafing = false;
 static float _zoom = 6.0f;
 static float gamma;
 static bool isFPCamera = false;
 static bool NORMALMAPPING = true;
 static bool won = false;
+
+static bool usePlayerCamera = true;
 
 /* --------------------------------------------- */
 // Main
@@ -154,9 +164,17 @@ int main(int argc, char** argv)
 		// Load shader(s)
 	std::shared_ptr<Shader> textShader = std::make_shared<Shader>("text.vert", "text.frag");
 
-	// Initialize camera
+	/* --------------------------------------------- */
+	// Player, Camera, other Entities
+	/* --------------------------------------------- */
 	//Camera camera(fov, float(window_width) / float(window_height), nearZ, farZ);
-	camera = BasicCamera(Settings::fov, ((double)Settings::width / (double)Settings::height), Settings::nearPlane, Settings::farPlane, Settings::mouseSens);
+	BasicCamera freeCamera = BasicCamera(Settings::fov, ((double)Settings::width / (double)Settings::height), Settings::nearPlane, Settings::farPlane, Settings::mouseSens);
+
+	player = new Player();
+
+	killer = new Killer();
+
+
 
 	/* --------------------------------------------- */
 	// Models
@@ -176,13 +194,20 @@ int main(int argc, char** argv)
 	std::vector<Model*> modelList = std::vector<Model*>();
 	std::vector<Watertile*> watertiles = std::vector<Watertile*>();
 
-	Model renderObject = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, 5.0f, -10.0f));
+	Model renderObject = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, 2.0f, -10.0f));
 	Model betweenWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, -10.0f, -10.0f));
-	Model subWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(17.0f, 5.0f, 10.0f));
 	Model terrain = Model("assets/models/LowPolyMountains_obj/lowpolymountains.obj", glm::vec3(0.0f, 0.5f, 0.0f));
-	modelList.push_back(&terrain);
+
+	Model shadowBird1 = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(2.0f, 3.0f, 12.0f), glm::vec3(0.2f));
+	Model shadowBird2 = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(-2.0f, 3.0f, 12.0f), glm::vec3(0.2f));
+	Model shadowBird3 = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(2.0f, 3.0f, 8.0f), glm::vec3(0.2f));
+	Model shadowBird4 = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(-2.0f, 3.0f, 8.0f), glm::vec3(0.2f));
+
 	modelList.push_back(&renderObject);
-	modelList.push_back(&subWaterBird);
+	modelList.push_back(&shadowBird1);
+	modelList.push_back(&shadowBird2);
+	modelList.push_back(&shadowBird3);
+	modelList.push_back(&shadowBird4);
 	modelList.push_back(&betweenWaterBird);
 
 	Watertile watertile = Watertile(glm::vec3(-15.0f, 0.0f, 14.0f), glm::vec2(10.0f), 0.03f);
@@ -190,6 +215,10 @@ int main(int argc, char** argv)
 	Watertile tile1 = Watertile(glm::vec3(15.0f, 0.0f, 7.0f), glm::vec2(10.0f), 0.1f);
 	watertiles.push_back(&tile1);
 
+
+	TwoDGridPF gird(modelList, glm::vec2(1000));
+	Pathfinder pathfinder = Pathfinder(glm::vec2(1000));
+	modelList.push_back(&terrain);
 	/* --------------------------------------------- */
 	// Lights
 	/* --------------------------------------------- */
@@ -198,19 +227,20 @@ int main(int argc, char** argv)
 
 	//for good attentuation values, see: http://wiki.ogre3d.org/-Point+Light+Attenuation
 
-	PointLight sun = PointLight(glm::normalize(glm::vec3(0.6f, 0.5f, 0.3f)) * 4.0f, glm::vec3(30.0f, 10.0f, 15.0f), glm::vec3(1.0f, 0.045f, 0.0075f));
-	sun.toggleShadows();
-	pointLights.push_back(&sun);
-	for (int i = 0; i < 3; i++) {
-		PointLight* pointL = new PointLight(glm::normalize(glm::vec3(1.0f)) * 4.0f, glm::vec3((-20.0f) + 20.0f * i, 20.0f, 0), glm::vec3(1.0f, 0.045f, 0.0075f));
-		pointL->toggleShadows();
-		pointLights.push_back(pointL);
-	}
+	PointLight moon = PointLight(glm::normalize(glm::vec3(0.517f, 0.57f, 0.8f)) * 80.0f, glm::vec3(-60.0f, 100.0f, -80.0f), glm::vec3(1.0f, 0.007f, 0.0002f));
+	moon.toggleShadows();
+	pointLights.push_back(&moon);
+
+
+	pointLights.push_back(player->getLight());
 
 	/* --------------------------------------------- */
 	// Renderers
 	/* --------------------------------------------- */
 	WorldRenderer worldRenderer = WorldRenderer(modelList, watertiles, skyboxFaces, &dirLights, &pointLights);
+	ParticleMaster::init();
+
+
 
 	// Render loop
 	float t = float(glfwGetTime());
@@ -222,6 +252,8 @@ int main(int argc, char** argv)
 	bool w, a, s, d, shift, space, e;
 
 	std::cout << "Scene Loaded" << std::endl;
+
+	printControls();
 	while (!glfwWindowShouldClose(window)) {
 		//RENDERING
 		// Clear backbuffer
@@ -249,33 +281,62 @@ int main(int argc, char** argv)
 		oldX = mouseX;
 		oldY = mouseY;
 
+
+
+
+
+
+		//TODO: IMPLEMENT REAL END SCREEN
+		if ((player->getSanity() <= 0.01f) || glm::distance(player->getPosition(), killer->getPosition()) <= 0.5f) {
+			showEndScreen();
+			dt = 0.0f; // effectively pausing the scene
+		}
+
+
+
+		if (usePlayerCamera) {
+			camera = player->getCamera();
+		}
+		else {
+			camera = &freeCamera;
+		}
+
+
+
 		//_-------------------------------------------------------------------------------_
 		//TODO ADD CHARACTER CONTROLLER WHICH PARSES WASD SPACE SHIFT TO PLAYER AND CAMERA
-		unsigned int direction = ICamera::NO_MOVEMENT;
+		unsigned int direction = Player::NO_MOVEMENT;
 		if (w) {
-			direction += ICamera::FORWARD;
+			direction += Player::FORWARD;
 		}
 		else if (s) {
-			direction += ICamera::BACKWARD;
+			direction += Player::BACKWARD;
 		}
 
 		if (a) {
-			direction += ICamera::LEFT;
+			direction += Player::LEFT;
 		}
 		else if (d) {
-			direction += ICamera::RIGHT;
+			direction += Player::RIGHT;
 		}
 
-		camera.ProcessKeyboard(direction, dt, shift);
-		camera.ProcessMouseMovement(mouseDelta, dt);
-		camera.updateCamera();
+		freeCamera.ProcessKeyboard(direction, dt, shift);
+		freeCamera.ProcessMouseMovement(mouseDelta, dt);
+		freeCamera.updateCamera();
+
+		player->update(direction, mouseDelta, dt, worldRenderer.getCampfires());
+
+		killer->update(*player, player->isNearLight(worldRenderer.getCampfires()), dt);
 
 		//glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		worldRenderer.render(&camera, dt, false, NORMALMAPPING);
+		worldRenderer.render(camera, dt, false, NORMALMAPPING, player, usePlayerCamera, killer);
+
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
 
 		// Compute frame time
 		dt = t;
@@ -301,6 +362,37 @@ int main(int argc, char** argv)
 	glfwTerminate();
 
 	return EXIT_SUCCESS;
+}
+
+
+void showEndScreen() {
+	LOG_TO_CONSOLE("GAME OVER, Sanity is 0 or the killer caught you!", "");
+}
+
+void printControls()
+{
+	std::cout
+		<< "  ______                            _   _            _   _ _       _     _   " << "\n"
+		<< " |  ____|                          | | | |          | \ | (_)     | |   | |  " << "\n"
+		<< " | |__   ___  ___ __ _ _ __   ___  | |_| |__   ___  |  \| |_  __ _| |__ | |_ " << "\n"
+		<< " |  __| / __|/ __/ _` | '_ \ / _ \ | __| '_ \ / _ \ | . ` | |/ _` | '_ \| __|" << "\n"
+		<< " | |____\__ \ (_| (_| | |_) |  __/ | |_| | | |  __/ | |\  | | (_| | | | | |_ " << "\n"
+		<< " |______|___/\___\__,_| .__/ \___|  \__|_| |_|\___| |_| \_|_|\__, |_| |_|\__|" << "\n"
+		<< "                      | |                                     __/ |          " << "\n"
+		<< "                      |_|                                    |___/           " << "\n"
+		<< "=============================================================================" << "\n"
+
+		<< "___Special Controls___" << "\n"
+		<< "\t F -- Print current Sanity Level" << "\n"
+		<< "\t LMB -- Toggle Light of Player" << "\n"
+		<< "___Debug Controls___"
+		<< "\t F1 -- Wireframe" << "\n"
+		<< "\t F2 -- Backface Culling" << "\n"
+		<< "\t F3 -- Toggle Normalmapping (see Water)" << "\n"
+		<< "\t F4 -- Reset the Killers Position and the sanity of the Player." << "\n"
+		<< "\t F5 -- Switch the Camera to an external debugging Camera (will be useful with physx player controller)"
+
+		<< std::endl;
 }
 
 // renderQuad() renders a 1x1 XY quad in NDC
@@ -339,13 +431,13 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 	}
 	else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-		_dragging = false;
+		player->toggleTorch();
 	}
 	else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-		_strafing = true;
+
 	}
 	else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
-		_strafing = false;
+
 	}
 }
 
@@ -359,14 +451,9 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
  */
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	// Keyup Events
-	// F1 - Wireframe
-	// F2 - Culling
-	// F3 - Show/Hide HUD permanently
-	// Esc - Exit
 
-	// Keydown Events
-	// Space - Jump
+
+
 
 	if (action == GLFW_KEY_DOWN) {
 		switch (key)
@@ -376,6 +463,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			break;
 
 		case GLFW_KEY_F:
+			LOG_TO_CONSOLE("Current Sanity Level: ", player->getSanity());
 
 			break;
 		case GLFW_KEY_1:
@@ -412,9 +500,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		NORMALMAPPING = !NORMALMAPPING;
 		break;
 	case GLFW_KEY_F4:
-		LOG_TO_CONSOLE("posX:", camera.getPosition().x);
-		LOG_TO_CONSOLE("posY:", camera.getPosition().y);
-		LOG_TO_CONSOLE("posZ:", camera.getPosition().z);
+		player->resetSanity();
+		killer->resetKiller();
+
+		break;
+	case GLFW_KEY_F5:
+		usePlayerCamera = !usePlayerCamera;
+		if (!usePlayerCamera) {
+			//if switched to free camera, reset it's position to the player
+			camera->setPosition(player->getPosition());
+		}
 		break;
 	case GLFW_KEY_F6:
 

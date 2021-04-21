@@ -1,6 +1,9 @@
 #pragma once
 #include <stdio.h>
 #include "INIReader.h"
+/*!
+* Static class with all Settings we need available 
+*/
 class Settings
 {
 public:
@@ -18,10 +21,8 @@ public:
 	static int waterTextureDimension;
 	static int shadowTextureDimension;
 	static float shadowDistance;
+	static float particleRenderDistance;
 
 	static void loadSettings(INIReader reader);
-
-
-
-
+	   	 
 };
