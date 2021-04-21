@@ -42,7 +42,6 @@ Alternatively, one can instead directly #include a subset of the below files.
 */
 
 // Foundation SDK 
-
 #include "foundation/Px.h"
 #include "foundation/PxAllocatorCallback.h"
 #include "foundation/PxAssert.h"
