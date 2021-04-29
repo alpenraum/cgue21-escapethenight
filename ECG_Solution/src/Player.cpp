@@ -92,7 +92,7 @@ void Player::draw(ICamera* camera, AdvancedShader* shader, float dt)
 		shader->setUniform("viewProjMatrix", camera->getProjMatrix() * view);
 		hand.draw(shader, dt);
 
-
+		
 		shader->unuse();
 	}
 
@@ -180,7 +180,8 @@ void PlayerHand::draw(AdvancedShader* shader, float dt)
 }
 
 void PlayerHand::update(glm::vec3 pos)
-{	
+{
+	this->setPosition(pos);
 	//pos.y += 1.5f;
 	pos.z += -0.5f;
 	lightsource.position = pos;

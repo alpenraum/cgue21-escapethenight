@@ -13,7 +13,7 @@ private:
 	PointLight lightsource;
 	glm::vec3 torchOffset;
 
-
+	
 public:
 	PlayerHand();
 
