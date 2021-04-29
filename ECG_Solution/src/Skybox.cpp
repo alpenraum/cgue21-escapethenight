@@ -1,5 +1,6 @@
 #include "Skybox.h"
 #include <SOIL2/SOIL2.h>
+#include "utils/Settings.h"
 
 Skybox::Skybox()
 {
@@ -64,6 +65,7 @@ void Skybox::draw(ICamera* camera) {
 	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
 	glm::mat4 view = glm::mat4(glm::mat3(camera->getViewMatrix())); // remove translation from the view matrix
 	shader.get()->setUniform("viewProjMatrix", camera->getProjMatrix() * view);
+	shader.get()->setUniform("gamma", Settings::gamma);
 	// skybox cube
 	glBindVertexArray(skyboxVAO);
 	glActiveTexture(GL_TEXTURE0);

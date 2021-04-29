@@ -7,6 +7,7 @@ out vec4 FragColor;
 
 
 uniform sampler2D particleTexture;
+uniform float gamma;
 
 void main(void){
 	vec4 color =texture(particleTexture, texCoords);
@@ -14,5 +15,7 @@ void main(void){
 	color.rgb = color.rgb*hue_P;
 	color.a = color.a * alpha_P;
 	FragColor = color;
+
+	FragColor.rgb = pow(FragColor.rgb, vec3(1.0/gamma));
 
 }
