@@ -1,5 +1,5 @@
 #include "Transform.h"
-#include "Utils.h"
+
 
 
 
@@ -18,7 +18,12 @@ void Transform::setPosition(glm::vec3 position)
 
 	this->position = position;
 }
-
+void Transform::setPosition(PxVec3 position) {
+	setPosition(convert(position));
+}
+void Transform::setRotation(PxQuat rotation) {
+	this->setRotation(convert(rotation));
+}
 
 
 void Transform::setScale(glm::vec3 scale)
