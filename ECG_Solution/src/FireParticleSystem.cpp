@@ -49,6 +49,18 @@ FireParticleSystem::FireParticleSystem()
 	
 }
 
+FireParticleSystem::FireParticleSystem(float pps, float averageSpeed, float particleWeight, float averageLifeLength, float averageScale) {
+	this->pps = pps;
+	this->averageSpeed = averageSpeed;
+	this->averageLifeLength = averageLifeLength;
+	this->averageScale = averageScale;
+	this->particleWeight = particleWeight;
+
+	setSpeedError(0.2f);
+	setScaleError(0.5f);
+	setLifeError(0.5f);
+}
+
 void FireParticleSystem::setDirection(glm::vec3 direction, float deviation)
 {
 	this->direction = glm::vec3(direction);

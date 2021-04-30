@@ -42,6 +42,7 @@ void WaterRenderer::draw(ICamera* camera, Watertile* tile, WaterFrameBuffer wate
 	shader->setUniform("moveFactor", tile->getMoveFactor(deltaTime));
 	shader->setUniform("cameraPos", camera->getPosition());
 	shader->setUniform("normalMapping", normalMapping);
+	shader->setUniform("gamma", Settings::gamma);
 
 	for (unsigned int i = 0; i < pointLights.size(); i++) {
 		string number = std::to_string(i);

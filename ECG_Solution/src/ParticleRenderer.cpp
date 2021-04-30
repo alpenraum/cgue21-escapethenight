@@ -114,7 +114,7 @@ void ParticleRenderer::draw(ICamera* camera, float dt, std::vector<Particle*> pa
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, particleTexture);
 	shader->setUniform("particleTexture", 0);
-
+	shader->setUniform("gamma", Settings::gamma);
 
 	glBindVertexArray(particleVAO);
 	

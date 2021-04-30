@@ -21,6 +21,8 @@ private:
 public:
 	FireParticleSystem();
 
+	FireParticleSystem(float pps, float averageSpeed, float particleWeight, float averageLifeLength, float averageScale);
+
 	void setDirection(glm::vec3 direction, float deviation);
 	void setSpeedError(float error);
 	void setLifeError(float error);

@@ -22,6 +22,7 @@ uniform float moveFactor;
 uniform float near;
 uniform float far;
 uniform bool normalMapping;
+uniform float gamma;
 
 const float shininess = 20.0f;
 const float reflectivity = 0.5f;
@@ -84,6 +85,8 @@ void main(void) {
 	out_Color = mix (reflectColor,refractColor,refractiveFactor);
 	out_Color = mix (out_Color, vec4(0.0f,0.2f,0.5f,1.0f), 0.2f) + vec4 (specular, 0.0f);
 	out_Color.a =clamp(waterDepth/1.0f, 0.0f,1.0f); ;
+
+	out_Color.rgb = pow(out_Color.rgb, vec3(1.0/gamma));
 
 
 }
