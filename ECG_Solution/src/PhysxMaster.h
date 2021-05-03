@@ -46,8 +46,11 @@ public:
 	PxRigidStatic* createRigidStatic(PxTransform pos);
 	PxRigidDynamic* createRigidDynamic(PxTransform pos);
 
-	
+	PxController* createCapsuleController(PxCapsuleControllerDesc* desc);
 
 	PxCooking* getCooking();
+	PxMaterial* getMaterial();
+
+	PxJoint* createRigidJoint(PxRigidActor* actor1, PxRigidActor* actor2, const PxTransform& localFrame0, const PxTransform& localFrame1);
 };
 

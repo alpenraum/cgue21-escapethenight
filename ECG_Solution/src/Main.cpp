@@ -178,7 +178,7 @@ int main(int argc, char** argv)
 	//Camera camera(fov, float(window_width) / float(window_height), nearZ, farZ);
 	BasicCamera freeCamera = BasicCamera(Settings::fov, ((double)Settings::width / (double)Settings::height), Settings::nearPlane, Settings::farPlane, Settings::mouseSens);
 
-	player = new Player();
+	player = new Player(glm::vec3(0.0f,30.0f,0.0f),&physxMaster);
 
 	killer = new Killer();
 
@@ -227,7 +227,6 @@ int main(int argc, char** argv)
 	watertiles.push_back(&watertile);
 	Watertile tile1 = Watertile(glm::vec3(15.0f, 0.0f, 7.0f), glm::vec2(10.0f), 0.1f);
 	watertiles.push_back(&tile1);
-
 
 	modelList.push_back(&terrain);
 	/* --------------------------------------------- */
@@ -293,7 +292,9 @@ int main(int argc, char** argv)
 		oldX = mouseX;
 		oldY = mouseY;
 
-
+		if (space) {
+			player->jump();
+		}
 
 
 

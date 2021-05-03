@@ -17,6 +17,10 @@ public:
 	DynamicModel(string const& path, glm::vec3 position,glm::vec3 scale, PhysxMaster* physxMaster, bool shapeIsExclusive);
 
 
+	PxRigidDynamic* getCollisionModel() {
+		return collisionModel;
+	}
+
     void draw(AdvancedShader& shader) override;
 
 	void addTorque(PxVec3 torque) {

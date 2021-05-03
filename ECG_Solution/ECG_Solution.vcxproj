@@ -141,7 +141,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)external\lib;$(SolutionDir)external\physx\libs\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;ECG_Library_Debug.lib;assimp-vc140-mt.lib;soil2-debug.lib;PhysXPvdSDK_static_32.lib;PhysXCommon_32.lib;PhysXExtensions_static_32.lib;PhysXFoundation_32.lib;PhysX_32.lib;PhysXCooking_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;ECG_Library_Debug.lib;assimp-vc140-mt.lib;soil2-debug.lib;PhysXPvdSDK_static_32.lib;PhysXCommon_32.lib;PhysXExtensions_static_32.lib;PhysXFoundation_32.lib;PhysX_32.lib;PhysXCooking_32.lib;PhysXCharacterKinematic_static_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>MSVCRTD;LIBCMT</IgnoreSpecificDefaultLibraries>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
@@ -176,7 +176,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)external\lib-release;$(SolutionDir)external\physx\libs\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;ECG_Library_Release.lib;assimp-vc140-mt.lib;soil2-debug.lib;PhysXPvdSDK_static_32_release.lib;PhysXCommon_32_release.lib;PhysXExtensions_static_32_release.lib;PhysXFoundation_32_release.lib;PhysX_32_release.lib;PhysXCooking_32_release.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;ECG_Library_Release.lib;assimp-vc140-mt.lib;soil2-debug.lib;PhysXPvdSDK_static_32_release.lib;PhysXCommon_32_release.lib;PhysXExtensions_static_32_release.lib;PhysXFoundation_32_release.lib;PhysX_32_release.lib;PhysXCooking_32_release.lib;PhysXCharacterKinematic_static_32_release.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
       <ForceFileOutput>

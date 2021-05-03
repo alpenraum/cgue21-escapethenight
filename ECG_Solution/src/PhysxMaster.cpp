@@ -70,6 +70,8 @@ PhysxMaster::PhysxMaster()
 
 
     defaultMaterial = gPhysics->createMaterial(1.0f, 1.0f, 0.5f);
+
+    gManager =PxCreateControllerManager(*gScene);
 }
 
 void PhysxMaster::update()
@@ -119,7 +121,22 @@ PxRigidDynamic* PhysxMaster::createRigidDynamic(PxTransform pos)
     return gPhysics->createRigidDynamic(pos);
 }
 
+PxController* PhysxMaster::createCapsuleController(PxCapsuleControllerDesc* desc)
+{
+    return gManager->createController(*desc);
+}
+
 PxCooking* PhysxMaster::getCooking()
 {
     return mCooking;
+}
+
+PxMaterial* PhysxMaster::getMaterial()
+{
+    return defaultMaterial;
+}
+
+PxJoint* PhysxMaster::createRigidJoint(PxRigidActor* actor1, PxRigidActor* actor2, const PxTransform& localFrame0, const PxTransform& localFrame1)
+{
+    return PxFixedJointCreate(*gPhysics, actor1, localFrame0, actor2, localFrame1);
 }

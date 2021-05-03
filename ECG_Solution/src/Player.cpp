@@ -1,37 +1,87 @@
 #include "Player.h"
 
-Player::Player()
+Player::Player(glm::vec3 position, PhysxMaster* physxMaster)
 {
 	camera = new BasicCamera(Settings::fov, ((double)Settings::width / (double)Settings::height), Settings::nearPlane, Settings::farPlane, Settings::mouseSens);
-	
-	this->setPosition(glm::vec3(0.0f, 3.0f, 10.0f));
 
-	hand = PlayerHand(getPosition());
+	this->setPosition(position);
+
+	hand = PlayerHand(getPosition(), physxMaster);
+
+	PxCapsuleControllerDesc desc;
+	desc.position = PxExtendedVec3(position.x, position.y, position.z); //initial position
+	desc.contactOffset = 0.1f; //controller skin within which contacts generated
+	desc.stepOffset = 0.2f; //max obstacle height the character can climb
+	desc.slopeLimit = cosf(glm::radians(45.0f)); // max slope the character can walk
+	desc.radius = 1.0f; //radius of the capsule
+	desc.height = 4; //height of the controller
+	desc.upDirection = PxVec3(0, 1, 0); // Specifies the 'up' direction
+	desc.material = physxMaster->getMaterial();
+
+	controller = physxMaster->createCapsuleController(&desc);
+
 }
 
 void Player::update(unsigned int movementDirection, glm::vec2 mouseDelta, float delta, std::vector<CampFire*>* campfires)
 {
+	//PHYSX
+	if (collisionFlags.isSet(PxControllerCollisionFlag::eCOLLISION_DOWN)) {
+		onGround = true;
+
+	}
+	else {
+		onGround = false;
+	}
+
+
+	glm::vec3 movement;
+
 
 	float velocity = SPEED * delta;
-	glm::vec3 pos = camera->getPosition();
 
 	if (movementDirection != 0) {
 		
-		glm::vec3 forward = camera->getForward();
-		glm::vec3 right = camera->getRight();
-		if (CHECK_BIT(movementDirection, 0))
-			pos += forward * velocity;
-		if (CHECK_BIT(movementDirection, 1))
-			pos -= forward * velocity;
-		if (CHECK_BIT(movementDirection, 2))
-			pos -= right * velocity;
-		if (CHECK_BIT(movementDirection, 3))
-			pos += right * velocity;
+		//TODO UNFUCK THIS
+		if (CHECK_BIT(movementDirection, 0)) {
+			movement.x += velocity;
+			
+		}
+		
+		if (CHECK_BIT(movementDirection, 1)) {
+			movement.x -= velocity;
+			
+		}
+		
+		if (CHECK_BIT(movementDirection, 2)) {
+			movement.z -= velocity;
+			
+		}
+		
+		if (CHECK_BIT(movementDirection, 3)) {
+			movement.z += velocity;
+	
+		}
+		
 	}
+
+	if (!onGround) {
+		jumpVelocity -= 0.5f * (2 * delta);
+		movement.y += jumpVelocity;
+	}
+
+	movement = glm::rotateY(movement, -camera->getYaw());
+
+	collisionFlags = controller->move(convert(movement), 0.001f, delta, PxControllerFilters());
+	PxExtendedVec3 physxCalculatedPosition = controller->getPosition();
 	//ALL THIS NEEDS TO BE REWRITTEN WHEN PHYSX CONTROLS THE PLAYER POSITION
 
-	this->setPosition(pos);
-	camera->setPosition(pos);
+	physxCalculatedPosition.y += controller->getContactOffset();
+
+	this->setPosition(convert(physxCalculatedPosition));
+	PxQuat xQuat = PxQuat(camera->getYaw(), PxVec3(1.0f, 0.0f, 0.0f));
+	PxQuat yQuat = PxQuat(camera->getPitch(), PxVec3(0.0f, 1.0f, 0.0f));
+	this->transform.setRotation(xQuat * yQuat);
+
 
 	mouseDelta *= Settings::mouseSens;
 
@@ -45,7 +95,7 @@ void Player::update(unsigned int movementDirection, glm::vec2 mouseDelta, float 
 	if (pitch < -(glm::radians(89.0f)))
 		pitch = -(glm::radians(89.0f));
 
-	camera->updateCamera(yaw, pitch, pos);
+	camera->updateCamera(yaw, pitch, glm::vec3(physxCalculatedPosition.x, physxCalculatedPosition.y, physxCalculatedPosition.z));
 
 
 
@@ -92,12 +142,22 @@ void Player::draw(ICamera* camera, AdvancedShader* shader, float dt)
 		shader->setUniform("viewProjMatrix", camera->getProjMatrix() * view);
 		hand.draw(shader, dt);
 
-		
+
 		shader->unuse();
 	}
 
 
-	
+
+}
+
+void Player::jump()
+{
+
+	if (onGround) {
+		jumpVelocity = 0.5f;
+		onGround = false;
+
+	}
 }
 
 PointLight* Player::getLight()
@@ -109,7 +169,7 @@ void Player::toggleTorch()
 {
 	isTorchLit = !isTorchLit;
 	hand.toggleLight();
-	
+
 }
 
 bool Player::isNearLight(std::vector<CampFire*>* campfires)
@@ -117,17 +177,17 @@ bool Player::isNearLight(std::vector<CampFire*>* campfires)
 	if (isTorchLit) {
 		return true;
 	}
-	
+
 	float dist = 0.0f;
-	for each (CampFire *f in *campfires)
+	for each (CampFire * f in *campfires)
 	{
-		dist = glm::abs(glm::distance(this->getPosition(),f->getPosition()));
+		dist = glm::abs(glm::distance(this->getPosition(), f->getPosition()));
 
 		if (dist <= LIGHT_RADIUS) {
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
@@ -154,8 +214,13 @@ PlayerHand::PlayerHand(glm::vec3 playerPos)
 	glm::vec3 lightPos = playerPos;
 	lightPos.y += 1.5f;
 	lightPos += torchOffset;
-	lightsource = PointLight(glm::normalize(glm::vec3(1.0f,0.4f,0.1f)) * 2.0f, lightPos,glm::vec3(1.0f,0.09f,0.032f));
+	lightsource = PointLight(glm::normalize(glm::vec3(1.0f, 0.4f, 0.1f)) * 2.0f, lightPos, glm::vec3(1.0f, 0.09f, 0.032f));
 	lightsource.toggleShadows();
+}
+
+PlayerHand::PlayerHand(glm::vec3 playerPos, PhysxMaster* physxMaster) : PlayerHand(playerPos)
+{
+
 }
 
 PointLight* PlayerHand::getLight()

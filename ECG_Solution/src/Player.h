@@ -6,18 +6,24 @@
 #include "Light.h"
 #include <cmath>
 #include "CampFire.h"
+#include <PxPhysicsAPI.h>
+#include "PhysxMaster.h"
+#include <glm/gtx/vector_angle.hpp>
+#include <glm/gtc/constants.hpp>
 
-class PlayerHand : public Actor {
+using namespace physx;
+
+class PlayerHand : public Actor{
 private:
 	Model modelHand;
 	PointLight lightsource;
 	glm::vec3 torchOffset;
 
-	
 public:
 	PlayerHand();
 
 	PlayerHand(glm::vec3 playerPos);
+	PlayerHand(glm::vec3 playerPos, PhysxMaster* physxMaster);
 
 	PointLight* getLight();
 
@@ -28,23 +34,24 @@ public:
 	void draw(AdvancedShader* shader, float dt);
 
 	void update(glm::vec3 pos);
-
 };
 
-
-class Player : 
+class Player :
     public Actor
 {
-
 private:
+
+	PxController* controller = nullptr;
+	PxControllerCollisionFlags collisionFlags;
+
     BasicCamera* camera = nullptr;
     //model of the leg of the player
     //Model modelLeg; --------------- DONT KNOW HOW TO LIMIT ITS ROTATION ONLY TO CAMERAS YAW AND NOT PITCH
     //model of the torch and arm of the player
     PlayerHand hand;
-	
+
 	bool isTorchLit = true;
-	
+
 	//radius of when the player is 'near a light'
 	const float LIGHT_RADIUS = 3.0f;
     //The base speed of the player
@@ -54,12 +61,6 @@ private:
 
 	bool onGround = true;
 
-	//Current W, A, S, D input
-	bool w = false;
-	bool a = false;
-	bool s = false;
-	bool d = false;
-
 	//the velocity of the vertical movement
 	float jumpVelocity = 0.0f;
 
@@ -68,10 +69,6 @@ private:
 
 	float sanity = 100.0f;
 	const float SANITY_CHANGE_PER_SECOND = 1.0f;
-	
-
-
-	
 
 public:
 	enum Player_Movement {
@@ -82,7 +79,10 @@ public:
 		NO_MOVEMENT = 0
 	};
 
-	Player();
+	PxController* getController() {
+		return controller;
+	}
+	Player(glm::vec3 position, PhysxMaster* physxMaster);
 
 	/**
 	* Update the Player state.
@@ -97,7 +97,7 @@ public:
 	void jump();
 
 	PointLight* getLight();
-	
+
 	void toggleTorch();
 
 	bool isNearLight(std::vector<CampFire*>* campfires); //TODO: Change to Campfires
@@ -105,5 +105,3 @@ public:
 	float getSanity();
 	void resetSanity();
 };
-
-
