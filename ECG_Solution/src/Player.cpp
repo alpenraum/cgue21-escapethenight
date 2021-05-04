@@ -1,6 +1,6 @@
 #include "Player.h"
 
-Player::Player(glm::vec3 position, PhysxMaster* physxMaster)
+Player::Player(glm::vec3 position, PhysxMaster* physxMaster) : Character(position, physxMaster)
 {
 	camera = new BasicCamera(Settings::fov, ((double)Settings::width / (double)Settings::height), Settings::nearPlane, Settings::farPlane, Settings::mouseSens);
 
@@ -8,17 +8,7 @@ Player::Player(glm::vec3 position, PhysxMaster* physxMaster)
 
 	hand = PlayerHand(getPosition(), physxMaster);
 
-	PxCapsuleControllerDesc desc;
-	desc.position = PxExtendedVec3(position.x, position.y, position.z); //initial position
-	desc.contactOffset = 0.1f; //controller skin within which contacts generated
-	desc.stepOffset = 0.2f; //max obstacle height the character can climb
-	desc.slopeLimit = cosf(glm::radians(45.0f)); // max slope the character can walk
-	desc.radius = 1.0f; //radius of the capsule
-	desc.height = 4; //height of the controller
-	desc.upDirection = PxVec3(0, 1, 0); // Specifies the 'up' direction
-	desc.material = physxMaster->getMaterial();
-
-	controller = physxMaster->createCapsuleController(&desc);
+	
 
 }
 
@@ -32,6 +22,7 @@ void Player::update(unsigned int movementDirection, glm::vec2 mouseDelta, float 
 	else {
 		onGround = false;
 	}
+
 
 
 	glm::vec3 movement;
@@ -65,19 +56,15 @@ void Player::update(unsigned int movementDirection, glm::vec2 mouseDelta, float 
 	}
 
 	if (!onGround) {
-		jumpVelocity -= 0.5f * (2 * delta);
+		jumpVelocity -= 0.25f * (2 * delta);
 		movement.y += jumpVelocity;
+		
 	}
+	
 
 	movement = glm::rotateY(movement, -camera->getYaw());
 
-	collisionFlags = controller->move(convert(movement), 0.001f, delta, PxControllerFilters());
-	PxExtendedVec3 physxCalculatedPosition = controller->getPosition();
-	//ALL THIS NEEDS TO BE REWRITTEN WHEN PHYSX CONTROLS THE PLAYER POSITION
-
-	physxCalculatedPosition.y += controller->getContactOffset();
-
-	this->setPosition(convert(physxCalculatedPosition));
+	glm::vec3 physxCalculatedPosition= updatePhysx(movement, delta);
 	PxQuat xQuat = PxQuat(camera->getYaw(), PxVec3(1.0f, 0.0f, 0.0f));
 	PxQuat yQuat = PxQuat(camera->getPitch(), PxVec3(0.0f, 1.0f, 0.0f));
 	this->transform.setRotation(xQuat * yQuat);
@@ -129,7 +116,7 @@ void Player::draw(ICamera* camera, AdvancedShader* shader, float dt)
 {
 	if (isTorchLit) {
 
-		hand.update(this->getPosition());
+		hand.update(this->getPosition(),this->transform.getRotation());
 
 		shader->use();
 
@@ -137,7 +124,7 @@ void Player::draw(ICamera* camera, AdvancedShader* shader, float dt)
 		glm::mat4 view = camera->getViewMatrix();
 		glm::mat3 newView = glm::mat3(view);
 		newView *= glm::inverse(newView); // m * m^(-1) = I
-		view = glm::mat4(newView);
+		//view = glm::mat4(newView);
 
 		shader->setUniform("viewProjMatrix", camera->getProjMatrix() * view);
 		hand.draw(shader, dt);
@@ -154,7 +141,7 @@ void Player::jump()
 {
 
 	if (onGround) {
-		jumpVelocity = 0.5f;
+		jumpVelocity = 0.25f;
 		onGround = false;
 
 	}
@@ -201,6 +188,8 @@ void Player::resetSanity()
 	sanity = 100.0f;
 }
 
+
+
 PlayerHand::PlayerHand()
 {
 }
@@ -209,13 +198,17 @@ PlayerHand::PlayerHand(glm::vec3 playerPos)
 {
 
 	torchOffset = glm::vec3(0.2f, -0.10f, -0.2f); //modelspace
-	modelHand = Model("assets/models/bullfinch_obj/bullfinch.obj", torchOffset, glm::vec3(0.02f));
+	modelHand = Model("assets/models/torch/torch.obj", glm::vec3(playerPos.x,0.0f,playerPos.z), glm::vec3(1.0f));
 
 	glm::vec3 lightPos = playerPos;
 	lightPos.y += 1.5f;
 	lightPos += torchOffset;
-	lightsource = PointLight(glm::normalize(glm::vec3(1.0f, 0.4f, 0.1f)) * 2.0f, lightPos, glm::vec3(1.0f, 0.09f, 0.032f));
+	lightsource = PointLight(glm::normalize(glm::vec3(1.0f, 0.4f, 0.1f)) * 2.0f, lightPos, glm::vec3(1.0f, 0.09f, 0.032f)); //PointLight(glm::normalize(glm::vec3(1.0f, 0.4f, 0.1f)) * 2.0f, lightPos, glm::vec3(1.0f, 0.09f, 0.032f));
 	lightsource.toggleShadows();
+
+	this->setPosition(modelHand.getPosition());
+
+	
 }
 
 PlayerHand::PlayerHand(glm::vec3 playerPos, PhysxMaster* physxMaster) : PlayerHand(playerPos)
@@ -244,10 +237,12 @@ void PlayerHand::draw(AdvancedShader* shader, float dt)
 	modelHand.draw(*shader);
 }
 
-void PlayerHand::update(glm::vec3 pos)
+void PlayerHand::update(glm::vec3 pos, glm::quat Rotation)
 {
 	this->setPosition(pos);
+	this->transform.setRotation(Rotation);
 	//pos.y += 1.5f;
 	pos.z += -0.5f;
 	lightsource.position = pos;
+	
 }

@@ -3,7 +3,7 @@
 #include "Model.h"
 #include "Player.h"
 #include <ctime> 
-class Killer : public Actor
+class Killer : public Character
 {
 private:
 	Model model;
@@ -13,12 +13,17 @@ private:
 
 	//glm::vec3 movementVector;
 	glm::vec3 movementGoal;
+
+	glm::vec3 normalizedForwardVector;
 public:
 	Killer();
+	Killer(glm::vec3 position, PhysxMaster* physxMaster);
 
 	void update(Player& player, bool playerNearLight, float dt);
 
 	void draw(AdvancedShader* shader);
 
 	void resetKiller();
+
+	
 };

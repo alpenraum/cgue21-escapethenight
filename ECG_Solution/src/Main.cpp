@@ -180,7 +180,9 @@ int main(int argc, char** argv)
 
 	player = new Player(glm::vec3(0.0f,30.0f,0.0f),&physxMaster);
 
-	killer = new Killer();
+	killer = new Killer(glm::vec3(5.0f,5.0f,0.0f),&physxMaster);
+
+
 
 
 
@@ -229,6 +231,11 @@ int main(int argc, char** argv)
 	watertiles.push_back(&tile1);
 
 	modelList.push_back(&terrain);
+
+	
+
+	
+
 	/* --------------------------------------------- */
 	// Lights
 	/* --------------------------------------------- */
@@ -294,6 +301,7 @@ int main(int argc, char** argv)
 
 		if (space) {
 			player->jump();
+			
 		}
 
 

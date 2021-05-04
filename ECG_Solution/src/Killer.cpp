@@ -2,7 +2,14 @@
 
 Killer::Killer()
 {
+	normalizedForwardVector = glm::vec3(0);
 	this->setPosition(glm::vec3(20.0f, 30.0f, 12.0f));
+	model = Model("assets/models/bullfinch_obj/bullfinch_inv.obj", this->getPosition(), glm::vec3(0.5f));
+	movementGoal = this->getPosition();
+}
+Killer::Killer(glm::vec3 position, PhysxMaster* physxMaster) : Character(position,physxMaster) {
+	
+	normalizedForwardVector = glm::vec3(0);
 	model = Model("assets/models/bullfinch_obj/bullfinch_inv.obj", this->getPosition(), glm::vec3(0.5f));
 	movementGoal = this->getPosition();
 }
@@ -22,10 +29,16 @@ void Killer::update(Player& player, bool playerNearLight, float dt)
 		}
 	}
 	glm::vec3 movementVector = glm::normalize(movementGoal - this->getPosition());
+	movementVector = movementVector * speed * dt;
+	this->setPosition(this->getPosition() + movementVector);
 
-	this->setPosition(this->getPosition() + movementVector * speed * dt);
+	updatePhysx(movementVector, dt);
 	
+	float rotationAngle = glm::acos(glm::dot(normalizedForwardVector,movementVector) / (glm::length(normalizedForwardVector) * glm::length(movementVector)));
+	PxQuat quat = PxQuat(rotationAngle, PxVec3(0.0f, 1.0f, 0.0f));
+	this->transform.setRotation(quat);
 	
+	this->normalizedForwardVector = glm::vec3(movementVector);
 }
 
 void Killer::draw(AdvancedShader* shader)
@@ -40,3 +53,4 @@ void Killer::draw(AdvancedShader* shader)
 void Killer::resetKiller() {
 	this->setPosition(glm::vec3(20.0f, 30.0f, 12.0f));
 }
+
