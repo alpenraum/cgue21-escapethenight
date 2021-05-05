@@ -52,7 +52,7 @@ private:
 	bool isTorchLit = true;
 
 	//radius of when the player is 'near a light'
-	const float LIGHT_RADIUS = 3.0f;
+	const float LIGHT_RADIUS = 6.0f;
     //The base speed of the player
     const float SPEED = 4.0f;
 	//the current Speed of the player

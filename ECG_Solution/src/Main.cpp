@@ -307,7 +307,7 @@ int main(int argc, char** argv)
 
 
 		//TODO: IMPLEMENT REAL END SCREEN
-		if ((player->getSanity() <= 0.01f) || glm::distance(player->getPosition(), killer->getPosition()) <= 0.5f) {
+		if ((player->getSanity() <= 0.01f) || glm::distance(player->getPosition(), killer->getPosition()) <= 1.0f) {
 			showEndScreen();
 			dt = 0.0f; // effectively pausing the scene
 		}
@@ -482,7 +482,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			break;
 
 		case GLFW_KEY_F:
-			LOG_TO_CONSOLE("Current Sanity Level: ", player->getSanity());
+			
 
 			break;
 		case GLFW_KEY_1:
@@ -532,6 +532,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		break;
 	case GLFW_KEY_F6:
 
+		break;
+	case GLFW_KEY_F:
+		LOG_TO_CONSOLE("Current Sanity Level: ", player->getSanity());
 		break;
 	}
 }
