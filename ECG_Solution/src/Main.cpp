@@ -210,7 +210,7 @@ int main(int argc, char** argv)
 
 	// SCALE NOT WORKING ATM, NOT FOR PHYSX AT LEAST
 	DynamicModel shadowBird1 = DynamicModel("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(2.0f, 10.0f, 12.0f), glm::vec3(0.2f), &physxMaster, false);
-	shadowBird1.setMass(25);
+	shadowBird1.setMass(15.0f);
 	DynamicModel shadowBird2 = DynamicModel("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(-2.0f, 7.0f, 12.0f), glm::vec3(0.2f), &physxMaster, false);
 	shadowBird2.setMass(25);
 	DynamicModel shadowBird3 = DynamicModel("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(2.0f, 5.0f, 8.0f), glm::vec3(0.2f), &physxMaster, false);
@@ -301,7 +301,6 @@ int main(int argc, char** argv)
 
 		if (space) {
 			player->jump();
-			
 		}
 
 

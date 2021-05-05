@@ -43,6 +43,8 @@ public:
 
 	void setRotation(glm::quat rotation);
 	void setRotation(PxQuat rotation);
+	void addRotation(glm::quat rotation);
+	void addRotation(physx::PxQuat rotation);
 	/** Set the local scale
 
 	 @param[in] scale The scale

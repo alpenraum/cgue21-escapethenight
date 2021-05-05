@@ -116,7 +116,7 @@ void Player::draw(ICamera* camera, AdvancedShader* shader, float dt)
 {
 	if (isTorchLit) {
 
-		hand.update(this->getPosition(),this->transform.getRotation());
+		hand.update(this->getPosition(),this->transform.getRotation(),dt);
 
 		shader->use();
 
@@ -124,7 +124,7 @@ void Player::draw(ICamera* camera, AdvancedShader* shader, float dt)
 		glm::mat4 view = camera->getViewMatrix();
 		glm::mat3 newView = glm::mat3(view);
 		newView *= glm::inverse(newView); // m * m^(-1) = I
-		//view = glm::mat4(newView);
+		view = glm::mat4(newView);
 
 		shader->setUniform("viewProjMatrix", camera->getProjMatrix() * view);
 		hand.draw(shader, dt);
@@ -198,7 +198,7 @@ PlayerHand::PlayerHand(glm::vec3 playerPos)
 {
 
 	torchOffset = glm::vec3(0.2f, -0.10f, -0.2f); //modelspace
-	modelHand = Model("assets/models/torch/torch.obj", glm::vec3(playerPos.x,0.0f,playerPos.z), glm::vec3(1.0f));
+	modelHand = Model("assets/models/bullfinch_obj/bullfinch.obj", torchOffset, glm::vec3(0.02f));
 
 	glm::vec3 lightPos = playerPos;
 	lightPos.y += 1.5f;
@@ -207,6 +207,7 @@ PlayerHand::PlayerHand(glm::vec3 playerPos)
 	lightsource.toggleShadows();
 
 	this->setPosition(modelHand.getPosition());
+
 
 	
 }
@@ -235,14 +236,19 @@ bool PlayerHand::isEnabled()
 void PlayerHand::draw(AdvancedShader* shader, float dt)
 {
 	modelHand.draw(*shader);
+
+
 }
 
-void PlayerHand::update(glm::vec3 pos, glm::quat Rotation)
+void PlayerHand::update(glm::vec3 pos, glm::quat Rotation, float dt)
 {
+
+
+	
 	this->setPosition(pos);
 	this->transform.setRotation(Rotation);
-	//pos.y += 1.5f;
-	pos.z += -0.5f;
+	pos.y += 0.7f;
+	//pos.z += -0.5f;
 	lightsource.position = pos;
 	
 }

@@ -25,6 +25,15 @@ void Transform::setRotation(PxQuat rotation) {
 	this->setRotation(convert(rotation));
 }
 
+void Transform::addRotation(glm::quat rotation)
+{
+	this->rotation * rotation;
+}
+void Transform::addRotation(physx::PxQuat rotation)
+{
+	this->rotation * convert(rotation);
+}
+
 
 void Transform::setScale(glm::vec3 scale)
 

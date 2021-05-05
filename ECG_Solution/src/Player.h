@@ -18,6 +18,7 @@ private:
 	Model modelHand;
 	PointLight lightsource;
 	glm::vec3 torchOffset;
+
 	
 
 public:
@@ -34,7 +35,9 @@ public:
 
 	void draw(AdvancedShader* shader, float dt);
 
-	void update(glm::vec3 pos, glm::quat Rotation);
+	void update(glm::vec3 pos, glm::quat Rotation, float dt);
+
+
 };
 
 class Player :
