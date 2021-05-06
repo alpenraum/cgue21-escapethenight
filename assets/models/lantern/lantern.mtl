@@ -1,0 +1,35 @@
+# Blender MTL File: 'uploads_files_2757834_Lantern.blend'
+# Material Count: 2
+
+newmtl Material
+Ns 827.869818
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.709091 0.709091 0.709091
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd glass_diff.png
+
+newmtl Metal
+Ns 225
+Ka 1.0 1.0 1.0
+Kd 0.6 0.60053 0.60053
+Ks 0.350000 0.350000 0.350000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd body_diffuse.png
+
+newmtl Fire
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.378355 0.101059
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd light_diff.png
