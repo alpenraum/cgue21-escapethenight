@@ -1,7 +1,8 @@
 #pragma once
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\glm.hpp>
-
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include "utils/Transform.h"
 
 /*!
@@ -39,10 +40,13 @@ public:
 	 * @return the current transformation matrix for this Actor
 	 */
 	glm::mat4 getTransMatrix();
-	Transform getTransformation();
+	Transform* getTransformation();
 	/*!
 	 * Updates the state of the Actor. Gets called (in)directly in the gameloop. This implementation is empty. Subclasses may override this function to define thier update behaviour.
 	 * @param delta the time that has passed since the last update.
 	 */
 	virtual void update(float delta);
+
+	glm::quat rotateBetweenVectors(glm::vec3 start, glm::vec3 dest);
+	glm::quat rotateTowards(glm::quat q1, glm::quat q2, float maxAngle);
 };

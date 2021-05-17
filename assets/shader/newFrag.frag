@@ -153,13 +153,13 @@ vec3 blinnPhongDirLight(DirectionalLight light, vec3 normal, vec3 viewDir, vec4 
 void main()
 {           
 
-    vec3 texColor = texture(texture_diffuse1, fs_in.TexCoords).rgb;
-    vec4 color = vec4(texColor * materialCoefficients.x, alpha);
+    vec4 texColor = texture(texture_diffuse1, fs_in.TexCoords).rgba;
+    vec4 color = vec4(texColor.rgb * materialCoefficients.x,texColor.a);
     vec3 normal = normalize(fs_in.Normal); 
     vec3 viewDir = normalize(cameraWorld - fs_in.FragPos);
 
     
-    FragColor = vec4(0.0f,0.0f,0.0f,alpha);
+    FragColor = vec4(0.0f,0.0f,0.0f,color.a);
 
     for(int i=0;i<pointLights.length();i++){
         if(pointLights[i].enabled){
@@ -168,6 +168,7 @@ void main()
     }
     
     FragColor.rgb = pow(FragColor.rgb, vec3(1.0/gamma));
+   
 
 }
 

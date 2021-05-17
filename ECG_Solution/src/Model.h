@@ -31,6 +31,10 @@ public:
 	void setScale(float coeff) {
 		this->transform.setScale(glm::vec3(coeff));
 	}
+
+	void setRotation(glm::quat quat) {
+		this->transform.setRotation(quat);
+	}
 	void setShininess(float shininess) {
 		for each (Mesh mesh in meshes)
 		{

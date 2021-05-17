@@ -6,6 +6,11 @@ Killer::Killer()
 	model = Model("assets/models/bullfinch_obj/bullfinch_inv.obj", this->getPosition(), glm::vec3(0.5f));
 	movementGoal = this->getPosition();
 }
+Killer::Killer(glm::vec3 position, PhysxMaster* physxMaster) : Character(position,physxMaster) {
+	
+	model = Model("assets/models/bullfinch_obj/bullfinch_inv.obj", this->getPosition(), glm::vec3(0.5f));
+	movementGoal = this->getPosition();
+}
 
 void Killer::update(Player& player, bool playerNearLight, float dt)
 {
@@ -21,16 +26,25 @@ void Killer::update(Player& player, bool playerNearLight, float dt)
 			movementGoal.z = movementGoal.z * 1.5f * (std::sin(std::rand() % 100));
 		}
 	}
-	glm::vec3 movementVector = glm::normalize(movementGoal - this->getPosition());
+	glm::vec3 movementVectorNormalized = glm::normalize(movementGoal - this->getPosition());
+	glm::vec3 movementVectorSpeed = movementVectorNormalized * speed * dt;
+	this->setPosition(this->getPosition() + movementVectorSpeed);
 
-	this->setPosition(this->getPosition() + movementVector * speed * dt);
+
+	updatePhysx(movementVectorSpeed, dt);
+	movementVectorNormalized.y = 0.0f;
+	movementVectorNormalized = glm::normalize(movementVectorNormalized);
+	glm::quat quat = this->rotateBetweenVectors(normalizedForwardVector, movementVectorNormalized);
 	
+	quat = this->rotateTowards(this->transform.getRotation(), quat, glm::pi<float>()/2.0f * dt);
+	this->transform.setRotation(quat);
 	
 }
 
 void Killer::draw(AdvancedShader* shader)
 {
 	model.setPosition(this->getPosition());
+	model.setRotation(this->transform.getRotation());
 
 	shader->use();
 	model.draw(*shader);
@@ -40,3 +54,4 @@ void Killer::draw(AdvancedShader* shader)
 void Killer::resetKiller() {
 	this->setPosition(glm::vec3(20.0f, 30.0f, 12.0f));
 }
+

@@ -1,5 +1,5 @@
 #include "Model.h"
-#include "Converter.h"
+#include "utils/Converter.cpp"
 
 Model::Model() {
 
@@ -238,10 +238,10 @@ std::vector<TestTexture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureT
 	glGenTextures(1, &textureID);
 
 	int width, height;
-	unsigned char *data = SOIL_load_image(filename.c_str(), &width, &height, 0,SOIL_LOAD_RGB);
+	unsigned char *data = SOIL_load_image(filename.c_str(), &width, &height, 0,SOIL_LOAD_RGBA);
 	// Assign texture to ID
 	glBindTexture(GL_TEXTURE_2D, textureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	// Parameters

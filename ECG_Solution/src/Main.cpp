@@ -25,9 +25,13 @@
 #include "Player.h"
 #include "Killer.h"
 #include "FireParticleSystem.h"
+#include "utils/Time.h"
+#include "PhysxMaster.h"
+#include "StaticModel.h"
+#include "DynamicModel.h"
 #pragma warning( disable : 4244 )
 
-
+using namespace physx;
 /* --------------------------------------------- */
 // Prototypes
 /* --------------------------------------------- */
@@ -156,6 +160,10 @@ int main(int argc, char** argv)
 	//Enable CLipping planes
 	glEnable(GL_CLIP_DISTANCE0);
 
+	std::cout << "PHYSX INIT" << std::endl;
+	PhysxMaster physxMaster = PhysxMaster();
+
+
 	std::cout << "SCENE INIT" << std::endl;
 	/* --------------------------------------------- */
 	// Initialize scene and render loop
@@ -170,9 +178,11 @@ int main(int argc, char** argv)
 	//Camera camera(fov, float(window_width) / float(window_height), nearZ, farZ);
 	BasicCamera freeCamera = BasicCamera(Settings::fov, ((double)Settings::width / (double)Settings::height), Settings::nearPlane, Settings::farPlane, Settings::mouseSens);
 
-	player = new Player();
+	player = new Player(glm::vec3(0.0f,30.0f,0.0f),&physxMaster);
 
-	killer = new Killer();
+	killer = new Killer(glm::vec3(5.0f,5.0f,0.0f),&physxMaster);
+
+
 
 
 
@@ -196,12 +206,17 @@ int main(int argc, char** argv)
 
 	Model renderObject = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, 2.0f, -10.0f));
 	Model betweenWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, -10.0f, -10.0f));
-	Model terrain = Model("assets/models/LowPolyMountains_obj/lowpolymountains.obj", glm::vec3(0.0f, 0.5f, 0.0f));
+	StaticModel terrain = StaticModel("assets/models/LowPolyMountains_obj/lowpolymountains.obj", glm::vec3(0.0f, 0.5f, 0.0f),&physxMaster,true);
 
-	Model shadowBird1 = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(2.0f, 3.0f, 12.0f), glm::vec3(0.2f));
-	Model shadowBird2 = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(-2.0f, 3.0f, 12.0f), glm::vec3(0.2f));
-	Model shadowBird3 = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(2.0f, 3.0f, 8.0f), glm::vec3(0.2f));
-	Model shadowBird4 = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(-2.0f, 3.0f, 8.0f), glm::vec3(0.2f));
+	// SCALE NOT WORKING ATM, NOT FOR PHYSX AT LEAST
+	DynamicModel shadowBird1 = DynamicModel("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(2.0f, 10.0f, 12.0f), glm::vec3(0.2f), &physxMaster, false);
+	shadowBird1.setMass(15.0f);
+	DynamicModel shadowBird2 = DynamicModel("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(-2.0f, 7.0f, 12.0f), glm::vec3(0.2f), &physxMaster, false);
+	shadowBird2.setMass(25);
+	DynamicModel shadowBird3 = DynamicModel("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(2.0f, 5.0f, 8.0f), glm::vec3(0.2f), &physxMaster, false);
+	shadowBird3.setMass(25.0f);
+	DynamicModel shadowBird4 = DynamicModel("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(-2.0f, 3.0f, 8.0f), glm::vec3(0.2f), &physxMaster, false);
+	shadowBird4.setMass(25);
 
 	modelList.push_back(&renderObject);
 	modelList.push_back(&shadowBird1);
@@ -215,10 +230,12 @@ int main(int argc, char** argv)
 	Watertile tile1 = Watertile(glm::vec3(15.0f, 0.0f, 7.0f), glm::vec2(10.0f), 0.1f);
 	watertiles.push_back(&tile1);
 
-
-	TwoDGridPF gird(modelList, glm::vec2(1000));
-	Pathfinder pathfinder = Pathfinder(glm::vec2(1000));
 	modelList.push_back(&terrain);
+
+	
+
+	
+
 	/* --------------------------------------------- */
 	// Lights
 	/* --------------------------------------------- */
@@ -242,10 +259,10 @@ int main(int argc, char** argv)
 
 
 
+	Time::init(glfwGetTime());
+
 	// Render loop
-	float t = float(glfwGetTime());
-	float dt = 0.0f;
-	float t_sum = 0.0f;
+	float dt;
 	double mouseX = Settings::width / 2.0, mouseY = Settings::height / 2.0;
 	float oldX = mouseX, oldY = mouseY;
 	glm::vec2 mouseDelta = glm::vec2(0.0f);
@@ -255,6 +272,7 @@ int main(int argc, char** argv)
 
 	printControls();
 	while (!glfwWindowShouldClose(window)) {
+		dt = Time::getDeltaTime();
 		//RENDERING
 		// Clear backbuffer
 
@@ -281,13 +299,15 @@ int main(int argc, char** argv)
 		oldX = mouseX;
 		oldY = mouseY;
 
-
+		if (space) {
+			player->jump();
+		}
 
 
 
 
 		//TODO: IMPLEMENT REAL END SCREEN
-		if ((player->getSanity() <= 0.01f) || glm::distance(player->getPosition(), killer->getPosition()) <= 0.5f) {
+		if ((player->getSanity() <= 0.01f) || glm::distance(player->getPosition(), killer->getPosition()) <= 1.0f) {
 			showEndScreen();
 			dt = 0.0f; // effectively pausing the scene
 		}
@@ -301,7 +321,7 @@ int main(int argc, char** argv)
 			camera = &freeCamera;
 		}
 
-
+		physxMaster.update();
 
 		//_-------------------------------------------------------------------------------_
 		//TODO ADD CHARACTER CONTROLLER WHICH PARSES WASD SPACE SHIFT TO PLAYER AND CAMERA
@@ -336,13 +356,12 @@ int main(int argc, char** argv)
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+		
 
+		
 
 		// Compute frame time
-		dt = t;
-		t = float(glfwGetTime());
-		dt = t - dt;
-		t_sum += dt;
+		Time::update(glfwGetTime());
 
 		// Swap buffers
 		glfwSwapBuffers(window);
@@ -463,7 +482,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			break;
 
 		case GLFW_KEY_F:
-			LOG_TO_CONSOLE("Current Sanity Level: ", player->getSanity());
+			
 
 			break;
 		case GLFW_KEY_1:
@@ -513,6 +532,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		break;
 	case GLFW_KEY_F6:
 
+		break;
+	case GLFW_KEY_F:
+		LOG_TO_CONSOLE("Current Sanity Level: ", player->getSanity());
 		break;
 	}
 }

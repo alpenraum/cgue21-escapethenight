@@ -4,6 +4,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <PxPhysicsAPI.h>
+#include "Converter.cpp"
+#include "Utils.h"
+
+using namespace physx;
 
 /*!
 * saves the position, scale, and rotation of an entity and can calculate the neccessary matrices
@@ -29,7 +34,7 @@ public:
 	 */
 
 	void setPosition(glm::vec3 position);
-
+	void setPosition(PxVec3 position);
 	/** Set the local rotation
 
 	 @param[in] rotation The rotation
@@ -37,7 +42,9 @@ public:
 	 */
 
 	void setRotation(glm::quat rotation);
-
+	void setRotation(PxQuat rotation);
+	void addRotation(glm::quat rotation);
+	void addRotation(physx::PxQuat rotation);
 	/** Set the local scale
 
 	 @param[in] scale The scale
