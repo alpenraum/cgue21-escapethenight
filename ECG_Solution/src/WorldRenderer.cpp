@@ -50,7 +50,7 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 			for each (Model * m in *modelList) {
 				m->draw(*omniShadowRenderer.getShader());
 			}
-			killer->draw(omniShadowRenderer.getShader().get());
+			killer->drawShadows(omniShadowRenderer.getShader().get());
 			if (renderPlayer) {
 				player->draw(camera, omniShadowRenderer.getShader().get(), deltaTime);
 			}
@@ -75,6 +75,8 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 		levelRenderer.setUniforms(true, camera, glm::vec4(0, 1.0f, 0, -tile->getPosition().y + 0.5f), lightMapping, normalMapping, *dirLights, *pointLights, deltaTime);
 		levelRenderer.render();
 
+		killer->draw(camera, glm::vec4(0, 1.0f, 0, -tile->getPosition().y + 0.5f), lightMapping, normalMapping, *dirLights, *pointLights);
+
 		skybox.draw(camera);
 
 		//RENDER REFRACTION
@@ -87,6 +89,7 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		levelRenderer.setUniforms(true, camera, glm::vec4(0, -1.0f, 0, tile->getPosition().y), lightMapping, normalMapping, *dirLights, *pointLights, deltaTime);
 		levelRenderer.render();
+		killer->draw(camera, glm::vec4(0, 1.0f, 0, -tile->getPosition().y + 0.5f), lightMapping, normalMapping, *dirLights, *pointLights);
 
 		waterFBO.unbindFBO();
 	}
@@ -98,7 +101,9 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 	levelRenderer.setUniforms(true, camera, glm::vec4(0, 1.0f, 0, 1000000.0f), lightMapping, normalMapping, *dirLights, *pointLights, deltaTime);
 
 	levelRenderer.render();
-	killer->draw(levelRenderer.getShader());
+
+	
+	killer->draw(camera,glm::vec4(0,1.0f,0,1000000.0f),lightMapping,normalMapping,*dirLights,*pointLights);
 
 	if (renderPlayer) {
 		player->draw(camera, levelRenderer.getShader(), deltaTime);
@@ -115,7 +120,7 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 
 
 	// draw skybox as last
-	skybox.draw(camera);
+	//skybox.draw(camera);
 
 	for each (CampFire * campFire in campfires) {
 		campFire->updateParticles(deltaTime);

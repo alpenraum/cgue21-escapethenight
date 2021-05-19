@@ -112,35 +112,4 @@ Mesh::~Mesh()
 {
 }
 
-glm::vec2 Mesh::getBottomLeft()
-{
-	glm::vec2 minCoords = glm::vec2(1000.0f, 1000.0f);
-	
-	for each (Vertex v in vertices)
-	{
-		if (v.position.x < minCoords.x) {
-			minCoords.x = v.position.x;
-		}
-		if (v.position.z < minCoords.y) {
-			minCoords.y = v.position.z;
-		}
-	}
-	return minCoords;
 
-}
-
-glm::vec2 Mesh::getTopRight()
-{
-	glm::vec2 maxCoords = glm::vec2(-1000.0f, -1000.0f);
-
-	for each (Vertex v in vertices)
-	{
-		if (v.position.x > maxCoords.x) {
-			maxCoords.x = v.position.x;
-		}
-		if (v.position.z > maxCoords.y) {
-			maxCoords.y = v.position.z;
-		}
-	}
-	return maxCoords;
-}

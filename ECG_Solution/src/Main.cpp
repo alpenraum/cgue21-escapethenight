@@ -29,6 +29,7 @@
 #include "PhysxMaster.h"
 #include "StaticModel.h"
 #include "DynamicModel.h"
+#include "AnimatedModel.h"
 #pragma warning( disable : 4244 )
 
 using namespace physx;
@@ -204,7 +205,7 @@ int main(int argc, char** argv)
 	std::vector<Model*> modelList = std::vector<Model*>();
 	std::vector<Watertile*> watertiles = std::vector<Watertile*>();
 
-	Model renderObject = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, 2.0f, -10.0f));
+	Model renderObject = Model("assets/models/killer/killer.dae", glm::vec3(0.0f, 2.0f, -10.0f));
 	Model betweenWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, -10.0f, -10.0f));
 	StaticModel terrain = StaticModel("assets/models/LowPolyMountains_obj/lowpolymountains.obj", glm::vec3(0.0f, 0.5f, 0.0f),&physxMaster,true);
 
@@ -233,8 +234,12 @@ int main(int argc, char** argv)
 	modelList.push_back(&terrain);
 
 	
-
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//TEST
+	AnimatedModel am = AnimatedModel("assets/models/killer/killer.dae", glm::vec3(-2.0f, 3.0f, 8.0f), glm::vec3(1.0f));
 	
+
+
 
 	/* --------------------------------------------- */
 	// Lights

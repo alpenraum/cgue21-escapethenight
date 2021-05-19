@@ -14,9 +14,12 @@
 
 struct Vertex {
 	glm::vec3 position;
-	glm::vec3 normal;
 	glm::vec2 texCoords;
+	glm::vec3 normal;
 	glm::vec2 lightMapCoords;
+	glm::vec4 jointWeights;
+	glm::ivec4 jointIDs;
+	int id;
 };
 
 struct TestTexture {
@@ -31,7 +34,7 @@ struct TestTexture {
 class Mesh
 
 {
-private:
+protected:
 	//stores the vertices of a Mesh
 	std::vector<Vertex> vertices;
 	//stores the indices of a Mesh
@@ -56,8 +59,7 @@ public:
 	~Mesh();
 
 
-	glm::vec2 getBottomLeft();
-	glm::vec2 getTopRight();
+	
 	/*
 	draws a Mesh
 	@param shader - Shader which is used for drawing this mesh
@@ -68,6 +70,10 @@ public:
 
 	std::vector<Vertex> getVertices() {
 		return vertices;
+	}
+
+	void setVertices(std::vector<Vertex> vertices) {
+		this->vertices = vertices;
 	}
 	std::vector<GLuint> getIndices() {
 		return indices;
