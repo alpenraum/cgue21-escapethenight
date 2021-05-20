@@ -4,8 +4,9 @@
 class Joint
 {
 private:
-	glm::mat4 animatedTransform;
-	glm::mat4 localBindTransform;
+	glm::mat4 animatedTransform; //finalBoneMatrix -> is loaded into shader
+	glm::mat4 localBindTransform; 
+	glm::mat4 offsetMatrix;
 	glm::mat4 inverseBindTransform;
 public:
 	 int id;
@@ -18,6 +19,7 @@ public:
 
 	Joint();
 	Joint(int index, string name, glm::mat4 bindLocalTransform);
+	Joint(int index, string name, glm::mat4 bindLocalTransform, glm::mat4 offsetMatrix);
 	Joint(int index, string name, glm::mat4 bindLocalTransform, string parentName);
 
 	void addChild(Joint child);
@@ -25,9 +27,12 @@ public:
 	glm::mat4 getAnimatedTransform();
 	void setAnimatedTransform(glm::mat4 animatedTransform);
 
-	glm::mat4 getInverseBindTransform();
+	glm::mat4 getLocalBindTransform();
+
+	glm::mat4 getOffsetTransform();
 
 	void calcInverseBindTransform(glm::mat4 parentBindTransform);
+
 
 
 	void setParentName(string name) {

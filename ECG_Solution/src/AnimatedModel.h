@@ -31,7 +31,7 @@ private:
 	void loadModel(string const& path);
 	void processNode(aiNode* node, const aiScene* scene);
 	AnimatedMesh processMesh(aiMesh* mesh, const aiScene* scene);
-	std::vector<Joint> loadBones(int meshIndex, const aiMesh* mesh);
+	std::vector<Joint> loadBones(int meshIndex, const aiMesh* mesh, aiNode* rootNode);
 	bool findRootBone(aiNode* node, AnimatedMesh* mesh);
 	bool findNameinJoints(string name, std::vector<Joint>* joints);
 	void createBoneHierarchy(const aiScene* scene);

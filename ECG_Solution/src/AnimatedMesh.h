@@ -13,15 +13,13 @@
 #include "utils/Transform.h"
 #include "Joint.h"
 
-
+#define MAX_BONE_INFLUENCE 4
 struct AnimatedVertex {
 	glm::vec3 position;
-	glm::vec2 texCoords;
 	glm::vec3 normal;
-	glm::vec2 lightMapCoords;
-	glm::vec4 jointWeights;
-	glm::ivec4 jointIDs;
-	int id;
+	glm::vec2 texCoords;
+	int jointIDs[MAX_BONE_INFLUENCE];
+	float jointWeights[MAX_BONE_INFLUENCE];
 };
 
 struct AnimatedTexture {

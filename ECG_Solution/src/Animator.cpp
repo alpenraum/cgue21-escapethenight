@@ -66,14 +66,19 @@ std::map<string, glm::mat4> Animator::calculateCurrentAnimationPose()
 
 void Animator::applyPoseToJoints(std::map<string, glm::mat4> currentPose, Joint* joint, glm::mat4 parentTransform)
 {
-	glm::mat4 currentLocalTransform = currentPose.find(joint->name)->second;
-	glm::mat4 currentTransform = parentTransform * currentLocalTransform;
+
+	glm::mat4 nodeTransform = joint->getLocalBindTransform();
+	if (currentPose.find(joint->name) != currentPose.end()) {
+		nodeTransform = currentPose[joint->name];
+	}
+
+	glm::mat4 globalTransform = parentTransform * nodeTransform;
+	
 
 	for each (Joint * childJoint in joint->children) {
-		applyPoseToJoints(currentPose, childJoint, currentTransform);
+		applyPoseToJoints(currentPose, childJoint, globalTransform);
 	}
-	currentTransform *= joint->getInverseBindTransform();
-	joint->setAnimatedTransform(currentTransform);
+	joint->setAnimatedTransform(globalTransform * joint->getOffsetTransform());
 }
 
 Animator::Animator()

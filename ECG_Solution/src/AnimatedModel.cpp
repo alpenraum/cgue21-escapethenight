@@ -57,7 +57,7 @@ void AnimatedModel::loadModel(string const& path)
 	//find root bone
 
 	for (unsigned int i = 0; i < scene->mRootNode->mNumChildren; i++) {
-		bool x = findRootBone(scene->mRootNode->mChildren[i], &meshes[i]);
+		bool x = findRootBone(scene->mRootNode->mChildren[i], &meshes[0]);
 		if (x) {
 			break;
 		}
@@ -66,7 +66,6 @@ void AnimatedModel::loadModel(string const& path)
 	//create bone hierarchy
 	createBoneHierarchy(scene);
 
-	testPrintBoneNames();
 	//loading animations:
 	if (scene->HasAnimations()) {
 		for (unsigned int i = 0; i < scene->mNumAnimations; i++) {
@@ -95,12 +94,11 @@ AnimatedMesh AnimatedModel::processMesh(aiMesh* mesh, const aiScene* scene)
 	std::vector<unsigned int> indices;
 	std::vector<AnimatedTexture> textures;
 
-	std::vector<Joint> joints = loadBones(0, mesh);
+	std::vector<Joint> joints = loadBones(0, mesh, scene->mRootNode);
 
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
 		AnimatedVertex vertex;
 		glm::vec3 vector;
-		vertex.id = i;
 		// positions
 		vector.x = mesh->mVertices[i].x;
 		vector.y = mesh->mVertices[i].y;
@@ -124,17 +122,6 @@ AnimatedMesh AnimatedModel::processMesh(aiMesh* mesh, const aiScene* scene)
 		}
 		else {
 			vertex.texCoords = glm::vec2(0.0f, 0.0f);
-		}
-		if (mesh->mTextureCoords[1]) {
-			glm::vec2 lightVec;
-
-			lightVec.x = mesh->mTextureCoords[1][i].x;
-			lightVec.y = mesh->mTextureCoords[1][i].y;
-
-			vertex.lightMapCoords = lightVec;
-		}
-		else {
-			vertex.lightMapCoords = glm::vec2(0.5f, 0.5f);
 		}
 		vertices.push_back(vertex);
 	}
@@ -191,7 +178,7 @@ AnimatedMesh AnimatedModel::processMesh(aiMesh* mesh, const aiScene* scene)
 	return m;
 }
 
-std::vector<Joint> AnimatedModel::loadBones(int meshIndex, const aiMesh* mesh)
+std::vector<Joint> AnimatedModel::loadBones(int meshIndex, const aiMesh* mesh, aiNode* rootNode)
 {
 	std::vector<Joint> joints;
 	for (unsigned int i = 0; i < mesh->mNumBones; i++) {
@@ -199,14 +186,19 @@ std::vector<Joint> AnimatedModel::loadBones(int meshIndex, const aiMesh* mesh)
 		string boneName = mesh->mBones[i]->mName.data;
 		boneIndex = jointCount;
 		jointCount++;
-		aiMatrix4x4 offsetMatrix = mesh->mBones[i]->mOffsetMatrix;
-		glm::mat4 mat1 = convertToglm(offsetMatrix);
-		Joint joint = Joint(boneIndex, boneName, mat1);
+		aiMatrix4x4 offsetMatrixai = mesh->mBones[i]->mOffsetMatrix;
+		glm::mat4 offsetMatrix = convertToglm(offsetMatrixai);
+
+		glm::mat4 localBindTransform = convertToglm(findNodeByName(boneName, rootNode)->mTransformation);
+
+		Joint joint = Joint(boneIndex, boneName,localBindTransform, offsetMatrix);
 
 		joints.push_back(joint);
 	}
 	return joints;
 }
+
+
 
 bool AnimatedModel::findRootBone(aiNode* node, AnimatedMesh* mesh)
 {
@@ -277,6 +269,11 @@ std::vector<AnimatedVertex> AnimatedModel::loadJointWeightsToVertices(aiMesh* me
 	//HERE SPACE FOR 4 INDICES PER VERTEX IS BEING ALLOCATED
 	std::vector<float> boneWeights;
 	boneWeights.resize(boneArraysSize);
+
+	for (int i = 0; i < boneArraysSize; i++) {
+		boneIDs[i] = -1;
+		boneWeights[i] = -1;
+	}
 	//HERE SPACE FOR 4 WEIGHTS PER VERTEX IS BEING ALLOCATED
 
 //HERE WE FILL THE ARRAYS, (below)
@@ -300,7 +297,7 @@ std::vector<AnimatedVertex> AnimatedModel::loadJointWeightsToVertices(aiMesh* me
 			//HERE WE'LL ACTUALLY FILL THE ARRAYS, WITH BOTH INDICES AND WEIGHTS.
 			for (int k = 0; k < WEIGHTS_PER_VERTEX; k++)
 			{
-				if (boneWeights.at(vertexStart + k) == 0)
+				if (boneWeights.at(vertexStart + k) == -1)
 				{
 					//(above) IF THE CURRENT BONE WEIGHT IS EQUAL TO 0,
 					//THEN IT HASN'T BEEN FILLED YET WITH AN ACTUAL WEIGHT.
@@ -397,6 +394,7 @@ AnimatedModel::AnimatedModel(string const& path, glm::vec3 position, glm::vec3 s
 
 	this->animator = new Animator(this);
 	doAnimation(Animation::WALK);
+	
 	rootJoint.calcInverseBindTransform(glm::mat4());
 }
 
@@ -525,5 +523,10 @@ void AnimatedModel::testPrintBoneNames()
 
 Animation AnimatedModel::getAnimation(string name)
 {
-	return animations.at(0);
+	for each (Animation a in animations) {
+		if (a.getName().find(name) != std::string::npos) {
+			return a;
+		}
+	}
+	return animations[0];
 }

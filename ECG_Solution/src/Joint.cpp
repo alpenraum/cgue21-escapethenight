@@ -11,6 +11,11 @@ Joint::Joint(int index, string name, glm::mat4 bindLocalTransform)
 	this->localBindTransform = bindLocalTransform;
 }
 
+Joint::Joint(int index, string name, glm::mat4 bindLocalTransform, glm::mat4 offsetMatrix):Joint(index, name, bindLocalTransform)
+{
+	this->offsetMatrix = offsetMatrix;
+}
+
 Joint::Joint(int index, string name, glm::mat4 bindLocalTransform, string parentName): Joint(index,name,bindLocalTransform)
 {
 	this->parentName = parentName;
@@ -31,17 +36,22 @@ void Joint::setAnimatedTransform(glm::mat4 animatedTransform)
 	this->animatedTransform = animatedTransform;
 }
 
-glm::mat4 Joint::getInverseBindTransform()
+glm::mat4 Joint::getLocalBindTransform()
 {
 	return inverseBindTransform;
 }
 
+glm::mat4 Joint::getOffsetTransform()
+{
+	return offsetMatrix;
+}
+
 void Joint::calcInverseBindTransform(glm::mat4 parentBindTransform)
 {
-	glm::mat4 bindTransform = parentBindTransform * localBindTransform;
-	inverseBindTransform = glm::inverse(bindTransform); //==ERROR HERE==
+	//glm::mat4 bindTransform = parentBindTransform * localBindTransform;
+	inverseBindTransform = (localBindTransform); //==ERROR HERE==
 	for each (Joint* child in children)
 	{
-		child->calcInverseBindTransform(bindTransform);
+		child->calcInverseBindTransform(localBindTransform);
 	}
 }

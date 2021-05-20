@@ -3,7 +3,7 @@
 void AnimatedMesh::setupMesh()
 {
 
-	LOG_TO_CONSOLE("ANIMATED MESH SETUP CALL", "");
+
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -21,17 +21,18 @@ void AnimatedMesh::setupMesh()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(AnimatedVertex), (GLvoid*)0);
 
-	// vertex tex Coordinates
-		glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(AnimatedVertex), (GLvoid*)offsetof(AnimatedVertex, texCoords));
-
 	//vertex normals
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(AnimatedVertex), (GLvoid*)offsetof(AnimatedVertex, normal));
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(AnimatedVertex), (GLvoid*)offsetof(AnimatedVertex, normal));
+
+	// vertex tex Coordinates
+		glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(AnimatedVertex), (GLvoid*)offsetof(AnimatedVertex, texCoords));
 
 
 	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedVertex), (GLvoid*)offsetof(AnimatedVertex, jointIDs));
+	glVertexAttribIPointer(3, 4, GL_INT, sizeof(AnimatedVertex), (GLvoid*)offsetof(AnimatedVertex, jointIDs));
+
 	glEnableVertexAttribArray(4);
 	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedVertex), (GLvoid*)offsetof(AnimatedVertex, jointWeights));
 
@@ -65,9 +66,9 @@ AnimatedMesh::AnimatedMesh(std::vector<AnimatedVertex>& vertices, std::vector<GL
 
 void AnimatedMesh::normalizeJointWeights()
 {
-	for each (AnimatedVertex v in vertices) {
-		v.jointWeights = glm::normalize(v.jointWeights);
-	}
+	//for each (AnimatedVertex v in vertices) {
+		//v.jointWeights = glm::normalize(v.jointWeights);
+	//}
 }
 
 void AnimatedMesh::draw(AdvancedShader& shader)
@@ -86,13 +87,7 @@ void AnimatedMesh::draw(AdvancedShader& shader)
 		if (name == "texture_diffuse") {
 			ss << diffuseNr++;
 		}
-		else if (name == "texture_normal") {
-			ss << normalNr++;
-		}
-		else if (name == "texture_lightMap") {
-			ss << lightMapNr++;
-		}
-
+		
 		number = ss.str();
 
 		shader.setUniform((name + number).c_str(), i);

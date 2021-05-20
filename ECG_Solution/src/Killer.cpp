@@ -3,12 +3,11 @@
 Killer::Killer()
 {
 	this->setPosition(glm::vec3(6.0f, 4.0f, 10.0f));
-	model = AnimatedModel("assets/models/killer/killer.dae", this->getPosition(), glm::vec3(0.5f));
 	movementGoal = this->getPosition();
 }
 Killer::Killer(glm::vec3 position, PhysxMaster* physxMaster) : Character(position,physxMaster) {
 	
-	model = AnimatedModel("assets/models/killer/killer.dae", this->getPosition(), glm::vec3(0.5f));
+	model = AnimatedModel("assets/models/killer/CharacterRunning.dae", this->getPosition(), glm::vec3(1.0f));
 	movementGoal = this->getPosition();
 }
 
