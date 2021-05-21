@@ -74,8 +74,6 @@ void AnimatedMesh::normalizeJointWeights()
 void AnimatedMesh::draw(AdvancedShader& shader)
 {
 	GLuint diffuseNr = 1;
-	GLuint normalNr = 1;
-	GLuint lightMapNr = 1;
 
 	for (GLint i = 0; i < textures.size(); i++) {
 		glActiveTexture(GL_TEXTURE0 + i);

@@ -21,7 +21,7 @@ glm::mat4 JointTransform::getLocalTransform()
 JointTransform JointTransform::interpolate(JointTransform frameA, JointTransform frameB, float progression)
 {
 	glm::vec3 pos = interpolate(frameA.position, frameB.position, progression);
-	glm::quat rot = interpolate(frameA.rotation, frameB.rotation, progression);
+	glm::quat rot = glm::normalize(glm::slerp(frameA.rotation, frameB.rotation, progression));//interpolate(frameA.rotation, frameB.rotation, progression);
 	return JointTransform(pos,rot);
 }
 

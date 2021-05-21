@@ -6,7 +6,6 @@ in VS_OUT {
     vec3 FragPos;
     vec3 Normal;
     vec2 TexCoords;
-    vec2 lightMapCoords;
 } fs_in;
 
 
@@ -29,8 +28,6 @@ struct PointLight {
 
 
 uniform sampler2D texture_diffuse1;
-uniform sampler2D texture_normal1;
-uniform sampler2D texture_lightMap1;
 uniform PointLight pointLights[3];
 
 uniform DirectionalLight dirLights[8];
@@ -41,9 +38,6 @@ uniform vec3 cameraWorld;
 uniform float alpha;
 
 uniform float gamma;
-
-uniform bool lightMapping;
-uniform bool normalMapping;
 
 
 uniform float farPlane;

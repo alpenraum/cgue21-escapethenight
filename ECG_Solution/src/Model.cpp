@@ -115,13 +115,6 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
 		// 1. diffuse maps
 		std::vector<TestTexture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-		// 2. light maps
-		std::vector<TestTexture> lightMaps = loadMaterialTextures(material, aiTextureType_LIGHTMAP, "texture_lightMap");
-		textures.insert(textures.end(), lightMaps.begin(), lightMaps.end());
-		// 3. normal maps
-		std::vector<TestTexture> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal");
-		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-
 	}
 
 	float shininess;

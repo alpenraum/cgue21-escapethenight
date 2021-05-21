@@ -69,6 +69,7 @@ public:
 		this->transform.setRotation(quat);
 	}
 
+
 	void draw(AdvancedShader* shader);
 
 	void doAnimation(Animation::ANIMATION anim);

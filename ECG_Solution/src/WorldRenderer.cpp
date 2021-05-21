@@ -120,7 +120,7 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 
 
 	// draw skybox as last
-	//skybox.draw(camera);
+	skybox.draw(camera);
 
 	for each (CampFire * campFire in campfires) {
 		campFire->updateParticles(deltaTime);

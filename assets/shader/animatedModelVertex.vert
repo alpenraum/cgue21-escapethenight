@@ -13,7 +13,6 @@ out VS_OUT {
     vec3 FragPos;
     vec3 Normal;
     vec2 TexCoords;
-    vec2 lightMapCoords;
 } vs_out;
 
 uniform mat4 jointTransforms[MAX_JOINTS];

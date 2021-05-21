@@ -38,7 +38,7 @@ void Joint::setAnimatedTransform(glm::mat4 animatedTransform)
 
 glm::mat4 Joint::getLocalBindTransform()
 {
-	return inverseBindTransform;
+	return localBindTransform;
 }
 
 glm::mat4 Joint::getOffsetTransform()
@@ -46,12 +46,4 @@ glm::mat4 Joint::getOffsetTransform()
 	return offsetMatrix;
 }
 
-void Joint::calcInverseBindTransform(glm::mat4 parentBindTransform)
-{
-	//glm::mat4 bindTransform = parentBindTransform * localBindTransform;
-	inverseBindTransform = (localBindTransform); //==ERROR HERE==
-	for each (Joint* child in children)
-	{
-		child->calcInverseBindTransform(localBindTransform);
-	}
-}
+

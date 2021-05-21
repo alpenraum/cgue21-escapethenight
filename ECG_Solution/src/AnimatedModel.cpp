@@ -73,6 +73,8 @@ void AnimatedModel::loadModel(string const& path)
 			animations.push_back(a);
 		}
 	}
+
+	
 }
 
 void AnimatedModel::processNode(aiNode* node, const aiScene* scene)
@@ -140,12 +142,6 @@ AnimatedMesh AnimatedModel::processMesh(aiMesh* mesh, const aiScene* scene)
 		// 1. diffuse maps
 		std::vector<AnimatedTexture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-		// 2. light maps
-		std::vector<AnimatedTexture> lightMaps = loadMaterialTextures(material, aiTextureType_LIGHTMAP, "texture_lightMap");
-		textures.insert(textures.end(), lightMaps.begin(), lightMaps.end());
-		// 3. normal maps
-		std::vector<AnimatedTexture> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal");
-		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 	}
 
 	float shininess;
@@ -155,7 +151,7 @@ AnimatedMesh AnimatedModel::processMesh(aiMesh* mesh, const aiScene* scene)
 
 	aiColor4D ambient;
 	if (AI_SUCCESS != aiGetMaterialColor(material, AI_MATKEY_COLOR_AMBIENT, &ambient)) {
-		ambient = aiColor4D(0.0f, 0.0f, 0.0f, 1.0f);
+		ambient = aiColor4D(0.8f, 0.8f, 0.8f, 1.0f);
 	}
 	aiColor4D diffuse;
 	if (AI_SUCCESS != aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &diffuse)) {
@@ -169,6 +165,9 @@ AnimatedMesh AnimatedModel::processMesh(aiMesh* mesh, const aiScene* scene)
 	float ambientf = (ambient.r * 0.2126f + ambient.b * 0.0722f + ambient.g * 0.7152f);
 	float diffusef = (diffuse.r * 0.2126f + diffuse.b * 0.0722f + diffuse.g * 0.7152f);
 
+	ambientf = 0.8f;
+	diffusef = 0.5f;
+	specularf = 0.2f;
 
 	vertices = loadJointWeightsToVertices(mesh,vertices);
 
@@ -395,7 +394,6 @@ AnimatedModel::AnimatedModel(string const& path, glm::vec3 position, glm::vec3 s
 	this->animator = new Animator(this);
 	doAnimation(Animation::WALK);
 	
-	rootJoint.calcInverseBindTransform(glm::mat4());
 }
 
 std::vector<glm::mat4> AnimatedModel::getJointTransforms()
@@ -505,15 +503,16 @@ void AnimatedModel::update(float dt)
 }
 
 glm::mat4 AnimatedModel::convertToglm(aiMatrix4x4 aiMat) {
-	glm::mat4 mat = glm::mat4(0);
+	glm::mat4 to;
 
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
-			mat[i][j] = aiMat[i][j];
-		}
-	}
+	//ROW MAJOR
 
-	return mat;
+	//the a,b,c,d in assimp is the row ; the 1,2,3,4 is the column
+	to[0][0] = aiMat.a1; to[1][0] = aiMat.a2; to[2][0] = aiMat.a3; to[3][0] = aiMat.a4;
+	to[0][1] = aiMat.b1; to[1][1] = aiMat.b2; to[2][1] = aiMat.b3; to[3][1] = aiMat.b4;
+	to[0][2] = aiMat.c1; to[1][2] = aiMat.c2; to[2][2] = aiMat.c3; to[3][2] = aiMat.c4;
+	to[0][3] = aiMat.d1; to[1][3] = aiMat.d2; to[2][3] = aiMat.d3; to[3][3] = aiMat.d4;
+	return to;
 }
 
 void AnimatedModel::testPrintBoneNames()

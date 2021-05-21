@@ -53,8 +53,6 @@ void Mesh::setupMesh() {
 
 void Mesh::draw(AdvancedShader& shader) {
 	GLuint diffuseNr = 1;
-	GLuint normalNr = 1;
-	GLuint lightMapNr = 1;
 
 	for (GLint i = 0; i < textures.size(); i++) {
 		glActiveTexture(GL_TEXTURE0 + i);
@@ -65,12 +63,6 @@ void Mesh::draw(AdvancedShader& shader) {
 
 		if (name == "texture_diffuse") {
 			ss << diffuseNr++;
-		}
-		else if (name == "texture_normal") {
-			ss << normalNr++;
-		}
-		else if (name == "texture_lightMap") {
-			ss << lightMapNr++;
 		}
 
 		number = ss.str();

@@ -67,18 +67,21 @@ std::map<string, glm::mat4> Animator::calculateCurrentAnimationPose()
 void Animator::applyPoseToJoints(std::map<string, glm::mat4> currentPose, Joint* joint, glm::mat4 parentTransform)
 {
 
-	glm::mat4 nodeTransform = joint->getLocalBindTransform();
+	glm::mat4 localBoneTransform = joint->getLocalBindTransform();
 	if (currentPose.find(joint->name) != currentPose.end()) {
-		nodeTransform = currentPose[joint->name];
+			localBoneTransform = currentPose[joint->name];
+		
 	}
 
-	glm::mat4 globalTransform = parentTransform * nodeTransform;
+	glm::mat4 globalTransform = ((parentTransform) * (localBoneTransform));
 	
+
+	joint->setAnimatedTransform(globalTransform * joint->getOffsetTransform());
 
 	for each (Joint * childJoint in joint->children) {
 		applyPoseToJoints(currentPose, childJoint, globalTransform);
 	}
-	joint->setAnimatedTransform(globalTransform * joint->getOffsetTransform());
+	
 }
 
 Animator::Animator()
@@ -106,5 +109,5 @@ void Animator::update(float dt, Joint* rootJoint)
 	}
 	increaseAnimationTime(dt);
 	std::map<string, glm::mat4> currentPose = calculateCurrentAnimationPose();
-	applyPoseToJoints(currentPose, rootJoint, glm::mat4(1.0f));
+	applyPoseToJoints(currentPose, rootJoint, glm::mat4());
 }

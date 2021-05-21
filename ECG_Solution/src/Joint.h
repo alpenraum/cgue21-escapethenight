@@ -7,7 +7,7 @@ private:
 	glm::mat4 animatedTransform; //finalBoneMatrix -> is loaded into shader
 	glm::mat4 localBindTransform; 
 	glm::mat4 offsetMatrix;
-	glm::mat4 inverseBindTransform;
+	
 public:
 	 int id;
 	 string name;
@@ -30,8 +30,16 @@ public:
 	glm::mat4 getLocalBindTransform();
 
 	glm::mat4 getOffsetTransform();
+	
 
-	void calcInverseBindTransform(glm::mat4 parentBindTransform);
+	void calcOffsetMatrix(glm::mat4 parentTransform) {
+		offsetMatrix = parentTransform * offsetMatrix;
+
+		
+		for each(Joint* j in children) {
+			j->calcOffsetMatrix(offsetMatrix);
+		}
+	}
 
 
 

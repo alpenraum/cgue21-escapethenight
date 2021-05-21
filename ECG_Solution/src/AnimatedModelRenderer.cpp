@@ -21,8 +21,6 @@ void AnimatedModelRenderer::prepareRender(ICamera* camera, glm::vec4 clippingPla
 	shader->setUniform("cameraWorld", camera->getPosition());
 	shader->setUniform("alpha", 1.0f);
 	shader->setUniform("gamma", Settings::gamma);
-	shader->setUniform("lightMapping", lightMapping);
-	shader->setUniform("normaMapping", normalMapping);
 	shader->setUniform("farPlane", Settings::farPlane);
 	for (GLint i = 0; i < dirLights.size(); i++) {
 		string number = std::to_string(i);

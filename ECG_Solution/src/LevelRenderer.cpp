@@ -42,8 +42,6 @@ void LevelRenderer::setUniforms(bool shadows, ICamera* camera, glm::vec4 clippin
 	s->setUniform("cameraWorld", camera->getPosition());
 	s->setUniform("alpha", 1.0f);
 	s->setUniform("gamma", Settings::gamma);
-	s->setUniform("lightMapping", lightMapping);
-	s->setUniform("normaMapping", normalMapping);
 	s->setUniform("farPlane", Settings::farPlane);
 
 	for (GLint i = 0; i < dirLights.size(); i++) {
