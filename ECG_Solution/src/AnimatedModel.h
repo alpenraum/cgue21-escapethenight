@@ -66,7 +66,7 @@ public:
 		return &rootJoint;
 	}
 	void setRotation(glm::quat quat) {
-		this->transform.setRotation(quat);
+		this->transform.setRotation(glm::quat(quat));
 	}
 
 

@@ -7,7 +7,8 @@ Killer::Killer()
 }
 Killer::Killer(glm::vec3 position, PhysxMaster* physxMaster) : Character(position,physxMaster) {
 	
-	model = AnimatedModel("assets/models/killer/CharacterRunning.dae", this->getPosition(), glm::vec3(1.0f));
+	model = AnimatedModel("assets/models/killer/killer_noRot.dae", this->getPosition(), glm::vec3(1.0f));
+	model.setRotation(glm::quat(glm::vec3(glm::pi<float>() / 2.0f, 0, 0)));
 	movementGoal = this->getPosition();
 }
 
@@ -34,10 +35,10 @@ void Killer::update(Player& player, bool playerNearLight, float dt)
 	glm::vec3 movementVectorSpeed = movementVectorNormalized * speed * dt;
 
 
-	//this->setPosition(this->getPosition() + movementVectorSpeed);
+	this->setPosition(this->getPosition() + movementVectorSpeed);
 
 
-	//updatePhysx(movementVectorSpeed, dt);
+	updatePhysx(movementVectorSpeed, dt);
 	movementVectorNormalized.y = 0.0f;
 	movementVectorNormalized = glm::normalize(movementVectorNormalized);
 	glm::quat quat = this->rotateBetweenVectors(normalizedForwardVector, movementVectorNormalized);
@@ -62,9 +63,9 @@ void Killer::update(Player& player, bool playerNearLight, float dt)
 void Killer::draw(ICamera* camera, glm::vec4 clippingPlane, bool lightMapping, bool normalMapping, std::vector<DirectionalLight*> dirLights, std::vector<PointLight*> pointLights)
 {
 	model.setPosition(this->getPosition());
-	model.setRotation(this->transform.getRotation());
-
+	model.setRotation(this->transform.getRotation()* glm::quat(glm::vec3(glm::pi<float>() / 2.0f, 0, 0)));
 	
+
 	renderer.prepareRender(camera, clippingPlane, lightMapping, normalMapping, dirLights, pointLights);
 	renderer.render(&model, camera);
 	renderer.finish();
@@ -74,8 +75,8 @@ void Killer::drawShadows(AdvancedShader* shader)
 {
 	model.setPosition(this->getPosition());
 	model.setRotation(this->transform.getRotation());
-
-	model.draw(shader);
+	//model.setRotation(glm::quat(glm::vec3(glm::pi<float>() / 2.0f, 0, 0)));
+	//model.draw(shader);
 }
 
 void Killer::resetKiller() {

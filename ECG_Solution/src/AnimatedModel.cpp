@@ -407,7 +407,8 @@ std::vector<glm::mat4> AnimatedModel::getJointTransforms()
 
 void AnimatedModel::setUniforms(AdvancedShader* shader)
 {
-	shader->setUniform("modelMatrix", transform.getModelMatrix());
+	this->transform.setScale(glm::vec3(1.5f));
+	shader->setUniform("modelMatrix", this->transform.getModelMatrix());
 	std::vector<glm::mat4> jointTransforms = getJointTransforms();
 
 	for (GLint i = 0; i < jointTransforms.size(); i++) {
