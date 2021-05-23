@@ -21,6 +21,7 @@ void Killer::update(Player& player, bool playerNearLight, float dt)
 	if (glm::abs(glm::distance(this->getPosition(), movementGoal)) <= 2.0f || playerNearLight || distToPlayer<=5.0f) { //only calculates the goal position once the old one has been reach or the player is visible)
 
 		movementGoal = player.getPosition();
+		movementGoal.y = 0.0f;
 		
 		if (!playerNearLight && distToPlayer>5.0f ) { //killer walks around randomly when player not visible
 			playerInSight = false;
@@ -29,16 +30,16 @@ void Killer::update(Player& player, bool playerNearLight, float dt)
 		}
 	}
 
-	
 
 	glm::vec3 movementVectorNormalized = glm::normalize(movementGoal - this->getPosition());
 	glm::vec3 movementVectorSpeed = movementVectorNormalized * speed * dt;
 
+	
+	
+	//this->setPosition(this->getPosition() + movementVectorSpeed);
 
-	this->setPosition(this->getPosition() + movementVectorSpeed);
 
-
-	updatePhysx(movementVectorSpeed, dt);
+	//updatePhysx(movementVectorSpeed, dt);
 	movementVectorNormalized.y = 0.0f;
 	movementVectorNormalized = glm::normalize(movementVectorNormalized);
 	glm::quat quat = this->rotateBetweenVectors(normalizedForwardVector, movementVectorNormalized);
@@ -62,7 +63,9 @@ void Killer::update(Player& player, bool playerNearLight, float dt)
 
 void Killer::draw(ICamera* camera, glm::vec4 clippingPlane, bool lightMapping, bool normalMapping, std::vector<DirectionalLight*> dirLights, std::vector<PointLight*> pointLights)
 {
-	model.setPosition(this->getPosition());
+	glm::vec3 pos = this->getPosition();
+	pos.y -= 2.0f;
+	model.setPosition(pos);
 	model.setRotation(this->transform.getRotation()* glm::quat(glm::vec3(glm::pi<float>() / 2.0f, 0, 0)));
 	
 
@@ -73,10 +76,13 @@ void Killer::draw(ICamera* camera, glm::vec4 clippingPlane, bool lightMapping, b
 
 void Killer::drawShadows(AdvancedShader* shader)
 {
-	model.setPosition(this->getPosition());
-	model.setRotation(this->transform.getRotation());
-	//model.setRotation(glm::quat(glm::vec3(glm::pi<float>() / 2.0f, 0, 0)));
-	//model.draw(shader);
+	/*
+	glm::vec3 pos = this->getPosition();
+	pos.y -= 2.0f;
+	model.setPosition(pos);
+	model.setRotation(this->transform.getRotation()* glm::quat(glm::vec3(-glm::pi<float>() / 2.0f, 0, 0)));
+	model.draw(shader);
+	*/
 }
 
 void Killer::resetKiller() {
