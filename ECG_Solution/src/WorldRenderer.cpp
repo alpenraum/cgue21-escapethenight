@@ -28,6 +28,8 @@ WorldRenderer::WorldRenderer(std::vector<Model*> models, std::vector<Watertile*>
 
 	campfires.push_back(c);
 
+	postProcessingRenderer = PostProcessingRenderer();
+
 
 
 }
@@ -94,7 +96,8 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 		waterFBO.unbindFBO();
 	}
 
-	//RENDER SCENE TO SCREEN
+	//FINAL RENDER SCENE TO SCREEN
+	postProcessingRenderer.bindFBO();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, Settings::width, Settings::height);
 	// Set per-frame uniforms
@@ -127,6 +130,10 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 	}
 
 	ParticleMaster::renderParticles(camera, deltaTime);
+
+	postProcessingRenderer.renderBloom();
+
+
 }
 
 void WorldRenderer::cleanUp()

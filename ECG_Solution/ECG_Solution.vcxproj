@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="src\BloomFrameBuffer.cpp" />
+    <ClCompile Include="src\PostProcessingRenderer.cpp" />
     <ClCompile Include="src\AnimationKeyFrame.cpp" />
     <ClCompile Include="src\JointAnimation.cpp" />
     <ClCompile Include="src\Animator.cpp" />
@@ -42,6 +44,8 @@
     <ClCompile Include="src\LevelRenderer.cpp" />
     <ClCompile Include="src\WorldRenderer.cpp" />
     <ClCompile Include="src\StaticModel.cpp" />
+    <ClInclude Include="src\BloomFrameBuffer.h" />
+    <ClInclude Include="src\PostProcessingRenderer.h" />
     <ClInclude Include="src\AnimationKeyFrame.h" />
     <ClInclude Include="src\JointAnimation.h" />
     <ClInclude Include="src\Animator.h" />

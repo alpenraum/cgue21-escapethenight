@@ -9,6 +9,7 @@
 #include "Killer.h"
 #include "ParticleMaster.h"
 #include "CampFire.h"
+#include "PostProcessingRenderer.h"
 /*!
 * This manages the whole rendering process of all different renderers and entities
 */
@@ -34,6 +35,8 @@ private:
 	* First one must be the sun/moon of the scene
 	*/
 	std::vector<PointLight*>* pointLights;
+
+	PostProcessingRenderer postProcessingRenderer;
 
 
 
