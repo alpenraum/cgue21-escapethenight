@@ -61,6 +61,8 @@ protected:
 	*/
 	void loadModel(string const &path);
 
+	glm::mat4 convertToglm(aiMatrix4x4 aiMat);
+
 	/*
 	Processes a node from a scene (i.e. retrieves the meshes from each node)
 	Calls itself recursively until all child-nodes are processed aswell

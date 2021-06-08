@@ -7,9 +7,10 @@ Killer::Killer()
 }
 Killer::Killer(glm::vec3 position, PhysxMaster* physxMaster) : Character(position,physxMaster) {
 	
-	model = AnimatedModel("assets/models/killer/killer_noRot.dae", this->getPosition(), glm::vec3(1.0f));
-	model.setRotation(glm::quat(glm::vec3(glm::pi<float>() / 2.0f, 0, 0)));
+	model = AnimatedModel("assets/models/killer/killer_classic_noroot.dae", this->getPosition(), glm::vec3(1.0f));
+	//this->transform.setRotation(glm::quat(glm::vec3(glm::pi<float>(), 0, 0)));
 	movementGoal = this->getPosition();
+	model.doAnimation(Animation::WALK);
 }
 
 void Killer::update(Player& player, bool playerNearLight, float dt)
@@ -36,10 +37,10 @@ void Killer::update(Player& player, bool playerNearLight, float dt)
 
 	
 	
-	//this->setPosition(this->getPosition() + movementVectorSpeed);
+	this->setPosition(this->getPosition() + movementVectorSpeed);
 
 
-	//updatePhysx(movementVectorSpeed, dt);
+	updatePhysx(movementVectorSpeed, dt);
 	movementVectorNormalized.y = 0.0f;
 	movementVectorNormalized = glm::normalize(movementVectorNormalized);
 	glm::quat quat = this->rotateBetweenVectors(normalizedForwardVector, movementVectorNormalized);
@@ -47,14 +48,6 @@ void Killer::update(Player& player, bool playerNearLight, float dt)
 	quat = this->rotateTowards(this->transform.getRotation(), quat, glm::pi<float>()/2.0f * dt);
 	this->transform.setRotation(quat);
 
-	
-
-	if (playerInSight && !playerInSightLastFrame) { //player was spotted right now
-		model.doAnimation(Animation::RUN);
-	}
-	else if (!playerInSight && playerInSightLastFrame) { //player has hid in this frame
-		model.doAnimation(Animation::WALK);
-	}
 
 	model.update(dt);
 
@@ -64,9 +57,8 @@ void Killer::update(Player& player, bool playerNearLight, float dt)
 void Killer::draw(ICamera* camera, glm::vec4 clippingPlane, bool lightMapping, bool normalMapping, std::vector<DirectionalLight*> dirLights, std::vector<PointLight*> pointLights)
 {
 	glm::vec3 pos = this->getPosition();
-	pos.y -= 2.0f;
 	model.setPosition(pos);
-	model.setRotation(this->transform.getRotation()* glm::quat(glm::vec3(glm::pi<float>() / 2.0f, 0, 0)));
+	model.setRotation(this->transform.getRotation() * glm::quat(glm::vec3(-glm::pi<float>()/2.0f, 0, 0)));
 	
 
 	renderer.prepareRender(camera, clippingPlane, lightMapping, normalMapping, dirLights, pointLights);
@@ -78,7 +70,6 @@ void Killer::drawShadows(AdvancedShader* shader)
 {
 	/*
 	glm::vec3 pos = this->getPosition();
-	pos.y -= 2.0f;
 	model.setPosition(pos);
 	model.setRotation(this->transform.getRotation()* glm::quat(glm::vec3(-glm::pi<float>() / 2.0f, 0, 0)));
 	model.draw(shader);

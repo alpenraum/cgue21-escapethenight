@@ -205,7 +205,6 @@ int main(int argc, char** argv)
 	std::vector<Model*> modelList = std::vector<Model*>();
 	std::vector<Watertile*> watertiles = std::vector<Watertile*>();
 
-	Model renderObject = Model("assets/models/killer/killer.dae", glm::vec3(0.0f, 2.0f, -10.0f));
 	Model betweenWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, -10.0f, -10.0f));
 	StaticModel terrain = StaticModel("assets/models/LowPolyMountains_obj/lowpolymountains.obj", glm::vec3(0.0f, 0.5f, 0.0f),&physxMaster,true);
 
@@ -219,7 +218,6 @@ int main(int argc, char** argv)
 	DynamicModel shadowBird4 = DynamicModel("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(-2.0f, 3.0f, 8.0f), glm::vec3(0.2f), &physxMaster, false);
 	shadowBird4.setMass(25);
 
-	modelList.push_back(&renderObject);
 	modelList.push_back(&shadowBird1);
 	modelList.push_back(&shadowBird2);
 	modelList.push_back(&shadowBird3);
@@ -311,7 +309,7 @@ int main(int argc, char** argv)
 
 
 		//TODO: IMPLEMENT REAL END SCREEN
-		if ((player->getSanity() <= 0.01f) || glm::distance(player->getPosition(), killer->getPosition()) <= 1.0f) {
+		if ((player->getSanity() <= 0.01f) || glm::distance(player->getPosition(), killer->getPosition()) <= 2.3f) {
 			showEndScreen();
 			dt = 0.0f; // effectively pausing the scene
 		}

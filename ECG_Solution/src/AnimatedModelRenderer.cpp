@@ -41,9 +41,13 @@ void AnimatedModelRenderer::prepareRender(ICamera* camera, glm::vec4 clippingPla
 		glBindTexture(GL_TEXTURE_CUBE_MAP, temp->omniShadowFBO.getDepthMap());
 		shader->setUniform(("pointLights[" + number + "].depthMap").c_str(), 0 + 3 + i);
 	}
+
+	glDisable(GL_CULL_FACE);
+	
 }
 
 void AnimatedModelRenderer::finish()
 {
+	glEnable(GL_CULL_FACE);
 	shader->unuse();
 }

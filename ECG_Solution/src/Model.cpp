@@ -36,6 +36,21 @@ void Model::loadModel(string const &path) {
 
 	processNode(scene->mRootNode, scene);
 
+	
+
+}
+
+glm::mat4 Model::convertToglm(aiMatrix4x4 aiMat) {
+	glm::mat4 to;
+
+	//ROW MAJOR
+
+	//the a,b,c,d in assimp is the row ; the 1,2,3,4 is the column
+	to[0][0] = aiMat.a1; to[1][0] = aiMat.a2; to[2][0] = aiMat.a3; to[3][0] = aiMat.a4;
+	to[0][1] = aiMat.b1; to[1][1] = aiMat.b2; to[2][1] = aiMat.b3; to[3][1] = aiMat.b4;
+	to[0][2] = aiMat.c1; to[1][2] = aiMat.c2; to[2][2] = aiMat.c3; to[3][2] = aiMat.c4;
+	to[0][3] = aiMat.d1; to[1][3] = aiMat.d2; to[2][3] = aiMat.d3; to[3][3] = aiMat.d4;
+	return to;
 }
 
 void Model::processNode(aiNode *node, const aiScene *scene) {

@@ -35,7 +35,7 @@ AnimationKeyFrame Animation::getKeyFrame(int index)
 	}
 	timeStamp = jointAnimations.at(0).getFrames().at(index).getTimeStamp();
 
-	return AnimationKeyFrame(timeStamp, keyFrame);;
+	return AnimationKeyFrame(timeStamp, keyFrame);
 }
 
 std::vector<AnimationKeyFrame> Animation::getKeyFrames()
@@ -47,6 +47,7 @@ std::vector<AnimationKeyFrame> Animation::getKeyFrames()
 	}
 
 	return keyFrames;
+	
 }
 
 float Animation::getTimeStampOfKeyFrame(int index)
