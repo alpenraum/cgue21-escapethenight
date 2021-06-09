@@ -6,13 +6,11 @@ Model::Model() {
 }
 Model::Model(string const &path, glm::vec3 position) {
 	this->transform.setPosition(position);
-	this->rigidactor = nullptr;
 	loadModel(path);
 }
 Model::Model(string const &path, glm::vec3 position, glm::vec3 scale) {
 	this->transform.setPosition(position);
 	this->transform.setScale(scale);
-	this->rigidactor = nullptr;
 	loadModel(path);
 }
 
@@ -24,39 +22,7 @@ void Model::draw(AdvancedShader &shader) {
 	}
 }
 
-glm::vec2 Model::getBottomLeft()
-{
-	glm::vec2 minCoords = glm::vec2(1000.0f, 1000.0f);
-	glm::vec2 meshMin = glm::vec2(0.0f, 0.0f);
-	for each (Mesh  m in meshes)
-	{
-		meshMin = m.getBottomLeft();
-		if (meshMin.x < minCoords.x) {
-			minCoords.x = meshMin.x;
-		}
-		if (meshMin.y < minCoords.y) {
-			minCoords.y = meshMin.y;
-		}
-	}
-	return minCoords;
-}
 
-glm::vec2 Model::getTopRight()
-{
-	glm::vec2 maxCoords = glm::vec2(-1000.0f, -1000.0f);
-	glm::vec2 meshMax = glm::vec2(0.0f, 0.0f);
-	for each (Mesh  m in meshes)
-	{
-		meshMax = m.getBottomLeft();
-		if (meshMax.x > maxCoords.x) {
-			maxCoords.x = meshMax.x;
-		}
-		if (meshMax.y > maxCoords.y) {
-			maxCoords.y = meshMax.y;
-		}
-	}
-	return maxCoords;
-}
 
 void Model::loadModel(string const &path) {
 	Assimp::Importer importer;
@@ -70,6 +36,21 @@ void Model::loadModel(string const &path) {
 
 	processNode(scene->mRootNode, scene);
 
+	
+
+}
+
+glm::mat4 Model::convertToglm(aiMatrix4x4 aiMat) {
+	glm::mat4 to;
+
+	//ROW MAJOR
+
+	//the a,b,c,d in assimp is the row ; the 1,2,3,4 is the column
+	to[0][0] = aiMat.a1; to[1][0] = aiMat.a2; to[2][0] = aiMat.a3; to[3][0] = aiMat.a4;
+	to[0][1] = aiMat.b1; to[1][1] = aiMat.b2; to[2][1] = aiMat.b3; to[3][1] = aiMat.b4;
+	to[0][2] = aiMat.c1; to[1][2] = aiMat.c2; to[2][2] = aiMat.c3; to[3][2] = aiMat.c4;
+	to[0][3] = aiMat.d1; to[1][3] = aiMat.d2; to[2][3] = aiMat.d3; to[3][3] = aiMat.d4;
+	return to;
 }
 
 void Model::processNode(aiNode *node, const aiScene *scene) {
@@ -149,13 +130,6 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
 		// 1. diffuse maps
 		std::vector<TestTexture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-		// 2. light maps
-		std::vector<TestTexture> lightMaps = loadMaterialTextures(material, aiTextureType_LIGHTMAP, "texture_lightMap");
-		textures.insert(textures.end(), lightMaps.begin(), lightMaps.end());
-		// 3. normal maps
-		std::vector<TestTexture> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal");
-		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-
 	}
 
 	float shininess;
@@ -183,18 +157,6 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
 	return m;
 }
 
-void Model::attachRigidActor(physx::PxRigidActor* rigidActor)
-{
-	this->rigidactor = rigidActor;
-	this->rigidactor->userData = (this);
-}
-
-void Model::removeRigidActor() {
-	if (this->rigidactor != NULL) {
-		this->rigidactor->release();
-		this->rigidactor = NULL;
-	}
-}
 
 std::vector<TestTexture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName) {
 	std::vector<TestTexture> textures;

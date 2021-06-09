@@ -41,11 +41,7 @@ public:
 			mesh.setShininess(shininess);
 		}
 	}
-	physx::PxRigidActor* rigidactor;
-	void attachRigidActor(physx::PxRigidActor* rigidActor);
-	void removeRigidActor();
-	glm::vec2 getBottomLeft();
-	glm::vec2 getTopRight();
+
 
 protected:
 	//saves all Meshes from this Model
@@ -64,6 +60,8 @@ protected:
 	@param path - path to the file which should be loaded
 	*/
 	void loadModel(string const &path);
+
+	glm::mat4 convertToglm(aiMatrix4x4 aiMat);
 
 	/*
 	Processes a node from a scene (i.e. retrieves the meshes from each node)

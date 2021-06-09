@@ -13,18 +13,7 @@ TwoDGridPF::TwoDGridPF(std::vector<Model*> modelList, glm::vec2 size)
 
 void TwoDGridPF::insertModel(Model* model)
 {
-	glm::vec2 pos = glm::vec2 (model->getPosition().x, model->getPosition().z);
-	glm::vec2 bottomLeft = model->getBottomLeft();
-	glm::vec2 topRight = model->getTopRight();
-
-	bottomLeft = pos - bottomLeft;
-	topRight = pos + topRight;
-
-	for (int x = (int)bottomLeft.x; x < ((int)topRight.x - (int)bottomLeft.x); x++) {
-		for (int y = (int)bottomLeft.y; y < ((int)topRight.y - (int)bottomLeft.y); y++) {
-			grid[x + (size.x / 2)][y + (size.y / 2)] = { x,y,true };
-		}
-	}
+	
 }
 
 void TwoDGridPF::insertModels(std::vector<Model*> modelList)

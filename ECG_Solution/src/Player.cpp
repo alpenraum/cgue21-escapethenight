@@ -250,7 +250,7 @@ void PlayerHand::update(glm::vec3 pos, glm::quat Rotation, float dt)
 	this->setPosition(pos);
 	this->transform.setRotation(Rotation);
 	
-	pos.y -= 0.5f;
+	pos.y += 0.5f;
 	lightsource.position = pos;
 
 	

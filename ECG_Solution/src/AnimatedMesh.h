@@ -11,36 +11,34 @@
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\gtx\euler_angles.hpp>
 #include "utils/Transform.h"
+#include "Joint.h"
 
-struct Vertex {
+#define MAX_BONE_INFLUENCE 4
+struct AnimatedVertex {
 	glm::vec3 position;
-	glm::vec2 texCoords;
 	glm::vec3 normal;
-	glm::vec2 lightMapCoords;
-	glm::vec4 jointWeights;
-	glm::ivec4 jointIDs;
-	int id;
+	glm::vec2 texCoords;
+	int jointIDs[MAX_BONE_INFLUENCE];
+	float jointWeights[MAX_BONE_INFLUENCE];
 };
 
-struct TestTexture {
+struct AnimatedTexture {
 	GLuint id;
 	string type;
 	aiString path;
 };
-
-/*!
-* A Mesh is an Actor that has geometry, one or more textures, a shader and a bounding box or sphere. Every Mesh can be rendered.
-*/
-class Mesh
-
+class AnimatedMesh :
+    public Actor
 {
-protected:
+private:
 	//stores the vertices of a Mesh
-	std::vector<Vertex> vertices;
+	std::vector<AnimatedVertex> vertices;
 	//stores the indices of a Mesh
 	std::vector<GLuint> indices;
 	//stores the textures of a Mesh
-	std::vector<TestTexture> textures;
+	std::vector<AnimatedTexture> textures;
+
+    std::vector<Joint> joints;
 
 	//all Buffer Objects
 	GLuint VAO, VBO, EBO;
@@ -48,18 +46,16 @@ protected:
 	//material coefficient
 	float ambient, diffuse, specular, shininess;
 
-	/*
-	creates all buffer objects, binds the vertices, indices, and texture-Coordinates to the Vertex-Array-Object
-	so it can be passed to the gpu when this Mesh is drawn
-	*/
-	void setupMesh();
+    void setupMesh();
 public:
-	Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices, std::vector<TestTexture>& textures);
-	Mesh();
-	~Mesh();
+    AnimatedMesh();
+    AnimatedMesh(std::vector<AnimatedVertex>& vertices, std::vector<GLuint>& indices, std::vector<AnimatedTexture>& textures, std::vector<Joint>& joints);
+    std::vector<Joint>* getJoints() {
+        return &joints;
+    }
 
+    void normalizeJointWeights();
 
-	
 	/*
 	draws a Mesh
 	@param shader - Shader which is used for drawing this mesh
@@ -68,18 +64,18 @@ public:
 
 	void draw(AdvancedShader& shader, Transform tm);
 
-	std::vector<Vertex> getVertices() {
+	std::vector<AnimatedVertex> getVertices() {
 		return vertices;
 	}
 
-	void setVertices(std::vector<Vertex> vertices) {
+	void setVertices(std::vector<AnimatedVertex> vertices) {
 		this->vertices = vertices;
 	}
 	std::vector<GLuint> getIndices() {
 		return indices;
 	}
 
-	TestTexture getFirstTexture() {
+	AnimatedTexture getFirstTexture() {
 		return textures[0];
 	}
 
@@ -87,4 +83,7 @@ public:
 	void setShininess(float shininess) {
 		this->shininess = shininess;
 	}
+
+   
 };
+

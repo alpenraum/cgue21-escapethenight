@@ -1,19 +1,10 @@
-#include "Mesh.h"
+#include "AnimatedMesh.h"
 
-Mesh::Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices, std::vector<TestTexture>& textures)
+void AnimatedMesh::setupMesh()
 {
-	this->vertices = vertices;
-	this->indices = indices;
-	this->textures = textures;
-	this->ambient = 0.0f;
-	this->diffuse = 0.0f;
-	this->specular = 0.0f;
 
-	setupMesh();
-}
-Mesh::Mesh() {
-}
-void Mesh::setupMesh() {
+
+
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
@@ -21,25 +12,29 @@ void Mesh::setupMesh() {
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(AnimatedVertex), &vertices[0], GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
 
 	//vertex positions
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(AnimatedVertex), (GLvoid*)0);
 
 	//vertex normals
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, normal));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(AnimatedVertex), (GLvoid*)offsetof(AnimatedVertex, normal));
 
-	//vertex tex Coordinates
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texCoords));
+	// vertex tex Coordinates
+		glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(AnimatedVertex), (GLvoid*)offsetof(AnimatedVertex, texCoords));
+
 
 	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, lightMapCoords));
+	glVertexAttribIPointer(3, 4, GL_INT, sizeof(AnimatedVertex), (GLvoid*)offsetof(AnimatedVertex, jointIDs));
+
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedVertex), (GLvoid*)offsetof(AnimatedVertex, jointWeights));
 
 	//unbind
 	glBindVertexArray(0);
@@ -51,7 +46,33 @@ void Mesh::setupMesh() {
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, -0.4f);
 }
 
-void Mesh::draw(AdvancedShader& shader) {
+AnimatedMesh::AnimatedMesh()
+{
+}
+
+AnimatedMesh::AnimatedMesh(std::vector<AnimatedVertex>& vertices, std::vector<GLuint>& indices, std::vector<AnimatedTexture>& textures, std::vector<Joint>& joints)
+{
+	this->vertices = vertices;
+	this->indices = indices;
+	this->textures = textures;
+	this->joints = joints;
+	this->ambient = 0.0f;
+	this->diffuse = 0.0f;
+	this->specular = 0.0f;
+
+	setupMesh();
+}
+
+
+void AnimatedMesh::normalizeJointWeights()
+{
+	//for each (AnimatedVertex v in vertices) {
+		//v.jointWeights = glm::normalize(v.jointWeights);
+	//}
+}
+
+void AnimatedMesh::draw(AdvancedShader& shader)
+{
 	GLuint diffuseNr = 1;
 
 	for (GLint i = 0; i < textures.size(); i++) {
@@ -64,7 +85,7 @@ void Mesh::draw(AdvancedShader& shader) {
 		if (name == "texture_diffuse") {
 			ss << diffuseNr++;
 		}
-
+		
 		number = ss.str();
 
 		shader.setUniform((name + number).c_str(), i);
@@ -87,21 +108,17 @@ void Mesh::draw(AdvancedShader& shader) {
 	}
 }
 
-void Mesh::draw(AdvancedShader& shader, Transform tm) {
+void AnimatedMesh::draw(AdvancedShader& shader, Transform tm)
+{
 	shader.setUniform("modelMatrix", tm.getModelMatrix());
 	shader.setUniform("normalMatrix", glm::transpose(glm::inverse(tm.getModelMatrix())));
-	Mesh::draw(shader);
+	draw(shader);
 }
 
-void Mesh::setMaterialCoefficient(float ambient, float diffuse, float specular, float shininess) {
+void AnimatedMesh::setMaterialCoefficient(float ambient, float diffuse, float specular, float shininess)
+{
 	this->ambient = ambient;
 	this->diffuse = diffuse;
 	this->specular = specular;
 	this->shininess = shininess;
 }
-
-Mesh::~Mesh()
-{
-}
-
-

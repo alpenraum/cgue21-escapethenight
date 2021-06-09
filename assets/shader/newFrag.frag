@@ -1,12 +1,13 @@
 #version 430 core
 
 layout(location=0) out vec4 FragColor;
+layout(location=1) out vec4 BrightColor;
+
 
 in VS_OUT {
     vec3 FragPos;
     vec3 Normal;
     vec2 TexCoords;
-    vec2 lightMapCoords;
 } fs_in;
 
 
@@ -29,8 +30,6 @@ struct PointLight {
 
 
 uniform sampler2D texture_diffuse1;
-uniform sampler2D texture_normal1;
-uniform sampler2D texture_lightMap1;
 uniform PointLight pointLights[3];
 
 uniform DirectionalLight dirLights[8];
@@ -41,9 +40,6 @@ uniform vec3 cameraWorld;
 uniform float alpha;
 
 uniform float gamma;
-
-uniform bool lightMapping;
-uniform bool normalMapping;
 
 
 uniform float farPlane;
@@ -168,7 +164,17 @@ void main()
     }
     
     FragColor.rgb = pow(FragColor.rgb, vec3(1.0/gamma));
-   
+    //FragColor.rgb = fs_in.FragPos;
+
+    //Luma conversion
+    
+    float brightness = dot(FragColor.rgb, vec3(0.2126,0.7152,0.0722));
+    
+    if(brightness>1.2f){
+    BrightColor = vec4(FragColor.rgb * brightness,1.0);
+    }else{
+    	BrightColor = vec4(0,0,0,1.0f);
+    }
 
 }
 
