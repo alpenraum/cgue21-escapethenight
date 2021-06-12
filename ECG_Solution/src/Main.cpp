@@ -29,6 +29,7 @@
 #include "PhysxMaster.h"
 #include "StaticModel.h"
 #include "DynamicModel.h"
+#include "SoundManager.h"
 #pragma warning( disable : 4244 )
 
 using namespace physx;
@@ -165,6 +166,9 @@ int main(int argc, char** argv)
 
 
 	std::cout << "SCENE INIT" << std::endl;
+
+
+	SoundManager::initialize();
 	/* --------------------------------------------- */
 	// Initialize scene and render loop
 	/* --------------------------------------------- */
@@ -203,7 +207,7 @@ int main(int argc, char** argv)
 
 	std::vector<Model*> modelList = std::vector<Model*>();
 	std::vector<Watertile*> watertiles = std::vector<Watertile*>();
-
+	
 	Model renderObject = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, 2.0f, -10.0f));
 	Model betweenWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, -10.0f, -10.0f));
 	StaticModel terrain = StaticModel("assets/models/LowPolyMountains_obj/lowpolymountains.obj", glm::vec3(0.0f, 0.5f, 0.0f),&physxMaster,true);
@@ -233,7 +237,7 @@ int main(int argc, char** argv)
 	modelList.push_back(&terrain);
 
 	
-
+	
 	
 
 	/* --------------------------------------------- */
@@ -257,7 +261,7 @@ int main(int argc, char** argv)
 	WorldRenderer worldRenderer = WorldRenderer(modelList, watertiles, skyboxFaces, &dirLights, &pointLights);
 	ParticleMaster::init();
 
-
+	
 
 	Time::init(glfwGetTime());
 
@@ -271,6 +275,8 @@ int main(int argc, char** argv)
 	std::cout << "Scene Loaded" << std::endl;
 
 	printControls();
+
+	SoundManager::playEvent("event:/AmbientSound");
 	while (!glfwWindowShouldClose(window)) {
 		dt = Time::getDeltaTime();
 		//RENDERING
@@ -307,7 +313,7 @@ int main(int argc, char** argv)
 
 
 		//TODO: IMPLEMENT REAL END SCREEN
-		if ((player->getSanity() <= 0.01f) || glm::distance(player->getPosition(), killer->getPosition()) <= 1.0f) {
+		if ((player->getSanity() <= 0.01f) || glm::distance(player->getPosition(), killer->getPosition()) <= 2.3f) {
 			showEndScreen();
 			dt = 0.0f; // effectively pausing the scene
 		}
@@ -354,9 +360,12 @@ int main(int argc, char** argv)
 		worldRenderer.render(camera, dt, false, NORMALMAPPING, player, usePlayerCamera, killer);
 
 
+		//----AUDIO
+		SoundManager::update();
+
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		
+	
 
 		
 
@@ -385,11 +394,14 @@ int main(int argc, char** argv)
 
 
 void showEndScreen() {
+	SoundManager::stopEvent("event: / AmbientSound");
 	LOG_TO_CONSOLE("GAME OVER, Sanity is 0 or the killer caught you!", "");
 }
 
 void printControls()
 {
+	std::cout << "Made with FMOD Studio by Firelight Technologies Pty Ltd." << std::endl;
+	std::cout << "Sound from Zapsplat.com" << std::endl;
 	std::cout
 		<< "  ______                            _   _            _   _ _       _     _   " << "\n"
 		<< " |  ____|                          | | | |          | \ | (_)     | |   | |  " << "\n"
@@ -521,6 +533,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	case GLFW_KEY_F4:
 		player->resetSanity();
 		killer->resetKiller();
+		SoundManager::playEvent("event:/AmbientSound");
 
 		break;
 	case GLFW_KEY_F5:

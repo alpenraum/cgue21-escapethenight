@@ -44,6 +44,11 @@ glm::vec3 BasicCamera::getRight()
 	return _right;
 }
 
+glm::vec3 BasicCamera::getUp()
+{
+	return _up;
+}
+
 void BasicCamera::setPosition(glm::vec3 val)
 {
 	this->_position = val;

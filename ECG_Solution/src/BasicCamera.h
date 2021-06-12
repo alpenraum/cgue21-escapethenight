@@ -31,6 +31,7 @@ public:
 	glm::vec3 getPosition();
 	glm::vec3 getForward();
 	glm::vec3 getRight();
+	glm::vec3 getUp();
 
 	void setPosition(glm::vec3 val);
 	void invertPitch();

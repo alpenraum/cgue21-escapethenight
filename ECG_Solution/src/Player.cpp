@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "SoundManager.h"
 
 Player::Player(glm::vec3 position, PhysxMaster* physxMaster) : Character(position, physxMaster)
 {
@@ -9,7 +10,8 @@ Player::Player(glm::vec3 position, PhysxMaster* physxMaster) : Character(positio
 	hand = PlayerHand(getPosition(), physxMaster);
 
 	
-
+	SoundManager::set3dListenerAndOrientation(getPosition(), getCamera()->getForward(), getCamera()->getUp());
+	
 }
 
 void Player::update(unsigned int movementDirection, glm::vec2 mouseDelta, float delta, std::vector<CampFire*>* campfires)
@@ -29,8 +31,9 @@ void Player::update(unsigned int movementDirection, glm::vec2 mouseDelta, float 
 
 
 	float velocity = SPEED * delta;
-
+	
 	if (movementDirection != 0) {
+		SoundManager::playEvent("event:/Player Footsteps");
 		
 		//TODO UNFUCK THIS
 		if (CHECK_BIT(movementDirection, 0)) {
@@ -54,11 +57,14 @@ void Player::update(unsigned int movementDirection, glm::vec2 mouseDelta, float 
 		}
 		
 	}
+	else {
+		SoundManager::stopEvent("event:/Player Footsteps");
+	}
 
 	if (!onGround) {
 		jumpVelocity -= 0.25f * (2 * delta);
 		movement.y += jumpVelocity;
-		
+	
 	}
 	
 
@@ -105,6 +111,12 @@ void Player::update(unsigned int movementDirection, glm::vec2 mouseDelta, float 
 	if (sanity < 0.0f) {
 		sanity = 0.0f;
 	}
+
+
+
+
+	
+	SoundManager::set3dListenerAndOrientation(getPosition(), getCamera()->getForward(), getCamera()->getUp());
 }
 
 BasicCamera* Player::getCamera()
