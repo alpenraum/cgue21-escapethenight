@@ -32,6 +32,7 @@ PostProcessingRenderer::PostProcessingRenderer()
 	bloomFBO = BloomFrameBuffer();
 	bloomShader = std::make_shared<AdvancedShader>("bloom.vert", "bloom.frag");
 
+	hudShader = std::make_shared<AdvancedShader>("hud.vert", "hud.frag");
 
 
 	glGenFramebuffers(1, &fbo);
@@ -61,6 +62,19 @@ PostProcessingRenderer::PostProcessingRenderer()
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << "Framebuffer not complete!" << std::endl;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+
+	hudEntities = std::vector<HudEntity>();
+
+	std::vector<string> paths = std::vector<string>();
+	paths.push_back("assets/hud/sanity_GUI_lowScale.png");
+	paths.push_back("assets/hud/sanity_SCALE_lowScale.png");
+	HudEntity sanity = HudEntity(paths, glm::vec2(-0.75f,-0.75f), glm::vec2(0.2f));
+	hudEntities.push_back(sanity);
+
+
+
 }
 
 void PostProcessingRenderer::renderBloom()
@@ -97,9 +111,35 @@ void PostProcessingRenderer::renderBloom()
 	renderQuad();
 }
 
+void PostProcessingRenderer::renderHud(float normalizedSanity)
+{
+	hudShader->use();
+	glDisable(GL_DEPTH_TEST);
+	for each (HudEntity en in hudEntities)
+	{
+		hudShader->setUniform("sanity", normalizedSanity);
+		hudShader->setUniform("transformationMatrix", en.getTransformationMatrix()); 
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, en.getTextures()[0]);
+		hudShader->setUniform("texGUI", 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, en.getTextures()[1]);
+		hudShader->setUniform("texSCALE", 1);
+
+		renderQuad();
+	}
+	glEnable(GL_DEPTH_TEST);
+	hudShader->unuse();
+}
+
 void PostProcessingRenderer::bindFBO()
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+}
+
+void PostProcessingRenderer::addHudEntity(HudEntity en)
+{
+	hudEntities.push_back(en);
 }
 
