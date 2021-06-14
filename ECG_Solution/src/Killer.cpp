@@ -1,4 +1,5 @@
 #include "Killer.h"
+#include "SoundManager.h"
 
 Killer::Killer()
 {
@@ -11,6 +12,7 @@ Killer::Killer(glm::vec3 position, PhysxMaster* physxMaster) : Character(positio
 	//this->transform.setRotation(glm::quat(glm::vec3(glm::pi<float>(), 0, 0)));
 	movementGoal = this->getPosition();
 	model.doAnimation(Animation::WALK);
+	//SoundManager::playEvent("event:/Killer Audio");
 }
 
 void Killer::update(Player& player, bool playerNearLight, float dt)
@@ -37,10 +39,10 @@ void Killer::update(Player& player, bool playerNearLight, float dt)
 
 	
 	
-	this->setPosition(this->getPosition() + movementVectorSpeed);
+	//this->setPosition(this->getPosition() + movementVectorSpeed);
 
 
-	updatePhysx(movementVectorSpeed, dt);
+	//updatePhysx(movementVectorSpeed, dt);
 	movementVectorNormalized.y = 0.0f;
 	movementVectorNormalized = glm::normalize(movementVectorNormalized);
 	glm::quat quat = this->rotateBetweenVectors(normalizedForwardVector, movementVectorNormalized);
@@ -52,6 +54,8 @@ void Killer::update(Player& player, bool playerNearLight, float dt)
 	model.update(dt);
 
 	playerInSightLastFrame = playerInSight;
+
+	//SoundManager::setEvent3dPosition("event:/Killer Audio", this->getPosition());
 }
 
 void Killer::draw(ICamera* camera, glm::vec4 clippingPlane, bool lightMapping, bool normalMapping, std::vector<DirectionalLight*> dirLights, std::vector<PointLight*> pointLights)

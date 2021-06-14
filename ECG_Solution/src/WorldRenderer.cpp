@@ -134,6 +134,8 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 	postProcessingRenderer.renderBloom();
 
 
+	postProcessingRenderer.renderHud(player->getSanity()/100.0f);
+
 }
 
 void WorldRenderer::cleanUp()
