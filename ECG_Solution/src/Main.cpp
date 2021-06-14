@@ -54,6 +54,7 @@ void printControls();
 BasicCamera* camera;
 Player* player;
 Killer* killer;
+PhysxMaster* physxMaster;
 
 static bool _wireframe = false;
 static bool _culling = true;
@@ -162,7 +163,7 @@ int main(int argc, char** argv)
 	glEnable(GL_CLIP_DISTANCE0);
 
 	std::cout << "PHYSX INIT" << std::endl;
-	PhysxMaster physxMaster = PhysxMaster();
+	physxMaster = new PhysxMaster();
 
 
 	std::cout << "SCENE INIT" << std::endl;
@@ -182,9 +183,9 @@ int main(int argc, char** argv)
 	//Camera camera(fov, float(window_width) / float(window_height), nearZ, farZ);
 	BasicCamera freeCamera = BasicCamera(Settings::fov, ((double)Settings::width / (double)Settings::height), Settings::nearPlane, Settings::farPlane, Settings::mouseSens);
 
-	player = new Player(glm::vec3(0.0f,30.0f,0.0f),&physxMaster);
+	player = new Player(glm::vec3(0.0f,30.0f,0.0f),physxMaster);
 
-	killer = new Killer(glm::vec3(5.0f,5.0f,0.0f),&physxMaster);
+	killer = new Killer(glm::vec3(5.0f,5.0f,0.0f),physxMaster);
 
 
 
@@ -210,16 +211,16 @@ int main(int argc, char** argv)
 	
 	Model renderObject = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, 2.0f, -10.0f));
 	Model betweenWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, -10.0f, -10.0f));
-	StaticModel terrain = StaticModel("assets/models/LowPolyMountains_obj/lowpolymountains.obj", glm::vec3(0.0f, 0.5f, 0.0f),&physxMaster,true);
+	StaticModel terrain = StaticModel("assets/models/LowPolyMountains_obj/lowpolymountains.obj", glm::vec3(0.0f, 0.5f, 0.0f),physxMaster,true);
 
 	// SCALE NOT WORKING ATM, NOT FOR PHYSX AT LEAST
-	DynamicModel shadowBird1 = DynamicModel("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(2.0f, 10.0f, 12.0f), glm::vec3(0.2f), &physxMaster, false);
+	DynamicModel shadowBird1 = DynamicModel("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(2.0f, 10.0f, 12.0f), glm::vec3(0.2f), physxMaster, false);
 	shadowBird1.setMass(15.0f);
-	DynamicModel shadowBird2 = DynamicModel("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(-2.0f, 7.0f, 12.0f), glm::vec3(0.2f), &physxMaster, false);
+	DynamicModel shadowBird2 = DynamicModel("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(-2.0f, 7.0f, 12.0f), glm::vec3(0.2f), physxMaster, false);
 	shadowBird2.setMass(25);
-	DynamicModel shadowBird3 = DynamicModel("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(2.0f, 5.0f, 8.0f), glm::vec3(0.2f), &physxMaster, false);
+	DynamicModel shadowBird3 = DynamicModel("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(2.0f, 5.0f, 8.0f), glm::vec3(0.2f), physxMaster, false);
 	shadowBird3.setMass(25.0f);
-	DynamicModel shadowBird4 = DynamicModel("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(-2.0f, 3.0f, 8.0f), glm::vec3(0.2f), &physxMaster, false);
+	DynamicModel shadowBird4 = DynamicModel("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(-2.0f, 3.0f, 8.0f), glm::vec3(0.2f), physxMaster, false);
 	shadowBird4.setMass(25);
 
 	modelList.push_back(&renderObject);
@@ -236,7 +237,6 @@ int main(int argc, char** argv)
 
 	modelList.push_back(&terrain);
 
-	
 	
 	
 
@@ -315,51 +315,54 @@ int main(int argc, char** argv)
 		//TODO: IMPLEMENT REAL END SCREEN
 		if ((player->getSanity() <= 0.01f) || glm::distance(player->getPosition(), killer->getPosition()) <= 2.3f) {
 			showEndScreen();
+			worldRenderer.renderLoseScreen();
 			dt = 0.0f; // effectively pausing the scene
-		}
-
-
-
-		if (usePlayerCamera) {
-			camera = player->getCamera();
+			
 		}
 		else {
-			camera = &freeCamera;
+
+
+
+			if (usePlayerCamera) {
+				camera = player->getCamera();
+			}
+			else {
+				camera = &freeCamera;
+			}
+
+			physxMaster->update();
+
+			//_-------------------------------------------------------------------------------_
+			//TODO ADD CHARACTER CONTROLLER WHICH PARSES WASD SPACE SHIFT TO PLAYER AND CAMERA
+			unsigned int direction = Player::NO_MOVEMENT;
+			if (w) {
+				direction += Player::FORWARD;
+			}
+			else if (s) {
+				direction += Player::BACKWARD;
+			}
+
+			if (a) {
+				direction += Player::LEFT;
+			}
+			else if (d) {
+				direction += Player::RIGHT;
+			}
+
+			freeCamera.ProcessKeyboard(direction, dt, shift);
+			freeCamera.ProcessMouseMovement(mouseDelta, dt);
+			freeCamera.updateCamera();
+
+			player->update(direction, mouseDelta, dt, worldRenderer.getCampfires());
+
+			killer->update(*player, player->isNearLight(worldRenderer.getCampfires()), dt);
+
+			//glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			worldRenderer.render(camera, dt, false, NORMALMAPPING, player, usePlayerCamera, killer);
+
 		}
-
-		physxMaster.update();
-
-		//_-------------------------------------------------------------------------------_
-		//TODO ADD CHARACTER CONTROLLER WHICH PARSES WASD SPACE SHIFT TO PLAYER AND CAMERA
-		unsigned int direction = Player::NO_MOVEMENT;
-		if (w) {
-			direction += Player::FORWARD;
-		}
-		else if (s) {
-			direction += Player::BACKWARD;
-		}
-
-		if (a) {
-			direction += Player::LEFT;
-		}
-		else if (d) {
-			direction += Player::RIGHT;
-		}
-
-		freeCamera.ProcessKeyboard(direction, dt, shift);
-		freeCamera.ProcessMouseMovement(mouseDelta, dt);
-		freeCamera.updateCamera();
-
-		player->update(direction, mouseDelta, dt, worldRenderer.getCampfires());
-
-		killer->update(*player, player->isNearLight(worldRenderer.getCampfires()), dt);
-
-		//glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		worldRenderer.render(camera, dt, false, NORMALMAPPING, player, usePlayerCamera, killer);
-
-
 		//----AUDIO
 		SoundManager::update();
 
@@ -394,7 +397,7 @@ int main(int argc, char** argv)
 
 
 void showEndScreen() {
-	SoundManager::stopEvent("event: / AmbientSound");
+	SoundManager::stopEvent("event: / AmbientSound",true);
 	LOG_TO_CONSOLE("GAME OVER, Sanity is 0 or the killer caught you!", "");
 }
 
@@ -421,7 +424,7 @@ void printControls()
 		<< "\t F2 -- Backface Culling" << "\n"
 		<< "\t F3 -- Toggle Normalmapping (see Water)" << "\n"
 		<< "\t F4 -- Reset the Killers Position and the sanity of the Player." << "\n"
-		<< "\t F5 -- Switch the Camera to an external debugging Camera (will be useful with physx player controller)"
+		
 
 		<< std::endl;
 }
@@ -531,17 +534,13 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		NORMALMAPPING = !NORMALMAPPING;
 		break;
 	case GLFW_KEY_F4:
-		player->resetSanity();
-		killer->resetKiller();
+		player = new Player(glm::vec3(0.0f, 5.0f, 0.0f), physxMaster);
+		killer = new Killer(glm::vec3(5.0f), physxMaster);
 		SoundManager::playEvent("event:/AmbientSound");
 
 		break;
 	case GLFW_KEY_F5:
-		usePlayerCamera = !usePlayerCamera;
-		if (!usePlayerCamera) {
-			//if switched to free camera, reset it's position to the player
-			camera->setPosition(player->getPosition());
-		}
+		
 		break;
 	case GLFW_KEY_F6:
 

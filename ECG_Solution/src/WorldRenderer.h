@@ -46,6 +46,9 @@ public:
 
 	void render(ICamera* camera, float deltaTime, bool lightMapping, bool normalMapping, Player* player, bool renderPlayer, Killer* killer);
 
+
+	void renderLoseScreen();
+	void renderWinScreen();
 	void cleanUp();
 
 	std::vector<CampFire*>* getCampfires();

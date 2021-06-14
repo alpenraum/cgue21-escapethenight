@@ -73,6 +73,16 @@ PostProcessingRenderer::PostProcessingRenderer()
 	HudEntity sanity = HudEntity(paths, glm::vec2(-0.75f,-0.75f), glm::vec2(0.2f));
 	hudEntities.push_back(sanity);
 
+	paths.clear();
+	paths.push_back("assets/hud/loose.png");
+	paths.push_back("assets/hud/empty.png");
+
+	loseScreen = HudEntity(paths, glm::vec2(0.0f), glm::vec2(1.0f));
+
+	paths[0] = "assets/hud/win.png";
+
+	winScreen = HudEntity(paths, glm::vec2(0.0f), glm::vec2(1.0f));
+
 
 
 }
@@ -132,6 +142,8 @@ void PostProcessingRenderer::renderHud(float normalizedSanity)
 	hudShader->unuse();
 }
 
+
+
 void PostProcessingRenderer::bindFBO()
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -141,5 +153,40 @@ void PostProcessingRenderer::bindFBO()
 void PostProcessingRenderer::addHudEntity(HudEntity en)
 {
 	hudEntities.push_back(en);
+}
+
+void PostProcessingRenderer::renderLoseScreen()
+{
+	hudShader->use();
+	glDisable(GL_DEPTH_TEST);
+	hudShader->setUniform("sanity", 0.0f);
+	hudShader->setUniform("transformationMatrix", loseScreen.getTransformationMatrix());
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, loseScreen.getTextures()[0]);
+	hudShader->setUniform("texGUI", 0);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, loseScreen.getTextures()[1]);
+	hudShader->setUniform("texSCALE", 1);
+	renderQuad();
+	glEnable(GL_DEPTH_TEST);
+	hudShader->unuse();
+
+}
+
+void PostProcessingRenderer::renderWinScreen()
+{
+	hudShader->use();
+	glDisable(GL_DEPTH_TEST);
+	hudShader->setUniform("sanity", 0.0f);
+	hudShader->setUniform("transformationMatrix", winScreen.getTransformationMatrix());
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, winScreen.getTextures()[0]);
+	hudShader->setUniform("texGUI", 0);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, winScreen.getTextures()[1]);
+	hudShader->setUniform("texSCALE", 1);
+	renderQuad();
+	glEnable(GL_DEPTH_TEST);
+	hudShader->unuse();
 }
 

@@ -198,6 +198,7 @@ float Player::getSanity()
 
 void Player::resetSanity()
 {
+	this->setPosition(glm::vec3(0.0f, 3.0f, 0.0f));
 	sanity = 100.0f;
 }
 

@@ -10,6 +10,7 @@ private:
 
 	std::vector<GLuint> textures;
 public:
+	HudEntity();
 	HudEntity(std::vector<string> paths, glm::vec2 position, glm::vec2 scale);
 	
 	glm::vec2 getPosition();

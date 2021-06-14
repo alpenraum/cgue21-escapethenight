@@ -21,6 +21,9 @@ private:
 
 	std::vector<HudEntity> hudEntities;
 
+	HudEntity loseScreen;
+	HudEntity winScreen;
+
 
 public:
 	PostProcessingRenderer();
@@ -32,5 +35,8 @@ public:
 	void bindFBO();
 
 	void addHudEntity(HudEntity en);
+
+	void renderLoseScreen();
+	void renderWinScreen();
 };
 

@@ -138,6 +138,16 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 
 }
 
+void WorldRenderer::renderLoseScreen()
+{
+	postProcessingRenderer.renderLoseScreen();
+}
+
+void WorldRenderer::renderWinScreen()
+{
+	postProcessingRenderer.renderWinScreen();
+}
+
 void WorldRenderer::cleanUp()
 {
 	for each (Watertile * tile in watertiles) {

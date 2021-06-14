@@ -39,10 +39,10 @@ void Killer::update(Player& player, bool playerNearLight, float dt)
 
 	
 	
-	//this->setPosition(this->getPosition() + movementVectorSpeed);
+	this->setPosition(this->getPosition() + movementVectorSpeed);
 
 
-	//updatePhysx(movementVectorSpeed, dt);
+	updatePhysx(movementVectorSpeed, dt);
 	movementVectorNormalized.y = 0.0f;
 	movementVectorNormalized = glm::normalize(movementVectorNormalized);
 	glm::quat quat = this->rotateBetweenVectors(normalizedForwardVector, movementVectorNormalized);
@@ -81,6 +81,7 @@ void Killer::drawShadows(AdvancedShader* shader)
 }
 
 void Killer::resetKiller() {
-	this->setPosition(glm::vec3(20.0f, 30.0f, 12.0f));
+	Character::setPosition(glm::vec3(6.0f, 4.0f, 10.0f));
+	movementGoal = this->getPosition();
 }
 

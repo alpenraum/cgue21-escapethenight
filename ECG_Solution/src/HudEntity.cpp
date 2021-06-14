@@ -1,5 +1,9 @@
 #include "HudEntity.h"
 
+HudEntity::HudEntity()
+{
+}
+
 HudEntity::HudEntity(std::vector<string> paths, glm::vec2 position, glm::vec2 scale)
 {
 	for (string path : paths){
