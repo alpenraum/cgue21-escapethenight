@@ -67,26 +67,6 @@ int SoundManager::checkError(FMOD_RESULT result)
 	return 0;
 }
 
-void SoundManager::loadSound(const string& soundName, bool b3d, bool bLooping, bool bStream)
-{
-	auto foundIt = m_AudioEngine->m_Sounds.find(soundName);
-	if (foundIt != m_AudioEngine->m_Sounds.end()) {
-		return;
-	}
-
-	FMOD_MODE eMode = FMOD_DEFAULT;
-
-	eMode |= b3d ? FMOD_3D : FMOD_2D;
-	eMode |= bLooping ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF;
-	eMode |= bStream ? FMOD_CREATESTREAM : FMOD_CREATECOMPRESSEDSAMPLE;
-
-	FMOD::Sound* sound = nullptr;
-
-	SoundManager::checkError(m_AudioEngine->m_System->createSound(soundName.c_str(), eMode, nullptr, &sound));
-	if (sound) {
-		m_AudioEngine->m_Sounds[soundName] = sound;
-	}
-}
 
 void SoundManager::loadBank(const string& bankName, FMOD_STUDIO_LOAD_BANK_FLAGS flags)
 {
@@ -125,15 +105,6 @@ void SoundManager::loadEvent(const string& eventName)
 	
 }
 
-void SoundManager::unLoadSound(const string& soundName)
-{
-	auto it = m_AudioEngine->m_Sounds.find(soundName);
-	if (it == m_AudioEngine->m_Sounds.end()) {
-		return;
-	}
-	SoundManager::checkError(it->second->release());
-	m_AudioEngine->m_Sounds.erase(it);
-}
 
 void SoundManager::set3dListenerAndOrientation(const glm::vec3& pos, const glm::vec3& forward, const glm::vec3& up)
 {
@@ -156,39 +127,6 @@ void SoundManager::setEvent3dPosition(const string& eventName, glm::vec3 pos) {
 	SoundManager::checkError(foundIt->second->set3DAttributes(&attrib));
 }
 
-int SoundManager::playSound(const string& soundName, const glm::vec3& pos, float volumeDB)
-{
-
-	int channelId = m_AudioEngine->m_NextChannelId++;
-	auto it = m_AudioEngine->m_Sounds.find(soundName);
-	if (it == m_AudioEngine->m_Sounds.end()) {
-		loadSound(soundName);
-		it = m_AudioEngine->m_Sounds.find(soundName);
-		if (it == m_AudioEngine->m_Sounds.end()) {
-			//sound cannot be found even after loading
-			return channelId;
-		}
-	}
-
-	FMOD::Channel* channel = nullptr;
-
-	SoundManager::checkError(m_AudioEngine->m_System->playSound(it->second, nullptr, true, &channel));
-
-	if (channel) {
-		FMOD_MODE currentMode;
-		it->second->getMode(&currentMode);
-		if (currentMode & FMOD_3D) {
-			FMOD_VECTOR position = glmToFmod(pos);
-			SoundManager::checkError(channel->set3DAttributes(&position, nullptr));
-		}
-		SoundManager::checkError(channel->setVolume(dbToVolume(volumeDB)));
-		SoundManager::checkError(channel->setPaused(false));
-
-		m_AudioEngine->m_Channels[channelId] = channel;
-	}
-
-	return channelId;
-}
 
 void SoundManager::playEvent(const string& eventName)
 {
@@ -239,27 +177,6 @@ void SoundManager::setEventParameter(const string& eventName, const string& para
 	SoundManager::checkError(foundIt->second->setParameterByName(parameterName.c_str(), value));
 }
 
-void SoundManager::setChannel3dPosition(int channelId, const glm::vec3& pos)
-{
-	auto foundIt = m_AudioEngine->m_Channels.find(channelId);
-	if (foundIt != m_AudioEngine->m_Channels.end()) {
-		return;
-	}
-	
-	SoundManager::checkError(foundIt->second->set3DAttributes(&glmToFmod(pos), NULL));
-
-}
-
-void SoundManager::setChannelvolume(int channelId, float volumeDB)
-{
-	auto foundIt = m_AudioEngine->m_Channels.find(channelId);
-	if (foundIt != m_AudioEngine->m_Channels.end()) {
-		return;
-	}
-
-	SoundManager::checkError(foundIt->second->setVolume(dbToVolume(volumeDB)));
-}
-
 bool SoundManager::isEventPlaying(const string& eventName)
 {
 	auto foundIt = m_AudioEngine->m_Events.find(eventName);
@@ -280,10 +197,6 @@ float SoundManager::dbToVolume(float db)
 	return std::powf(10.0f, 0.05f * db);
 }
 
-float SoundManager::volumeTodb(float volume)
-{
-	return 20.0f * std::log10f(volume);
-}
 
 FMOD_VECTOR SoundManager::glmToFmod(const glm::vec3& vector)
 {

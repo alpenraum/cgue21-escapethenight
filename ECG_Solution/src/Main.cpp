@@ -220,8 +220,8 @@ int main(int argc, char** argv)
 	StaticModel Safehouse = StaticModel("assets/models/terrain/safehouse.dae", glm::vec3(0.0f, 0.0f, 0.0f), physxMaster, true);
 	LOG_TO_CONSOLE("trees", "");
 	StaticModel leafTree = StaticModel("assets/models/terrain/tree1.dae", glm::vec3(0.0f, 0.0f, 0.0f), PxQuat(-PxHalfPi, PxVec3(1.0f, 0.0f, 0.0f)), physxMaster, true);
-	StaticModel tree2 = StaticModel("assets/models/terrain/tree2.dae", glm::vec3(0.0f, 0.0f, 0.0f), PxQuat(-PxHalfPi, PxVec3(1.0f, 0.0f, 0.0f)), physxMaster, true);
-	StaticModel tree3 = StaticModel("assets/models/terrain/tree3.dae", glm::vec3(0.0f, 0.0f, 0.0f), PxQuat(-PxHalfPi, PxVec3(1.0f, 0.0f, 0.0f)), physxMaster, true);
+	StaticModel tree2 = StaticModel("assets/models/terrain/tree2_highDensity.dae", glm::vec3(0.0f, 0.0f, 0.0f), PxQuat(-PxHalfPi, PxVec3(1.0f, 0.0f, 0.0f)), physxMaster, true);
+	StaticModel tree3 = StaticModel("assets/models/terrain/tree3_highDensity.dae", glm::vec3(0.0f, 0.0f, 0.0f), PxQuat(-PxHalfPi, PxVec3(1.0f, 0.0f, 0.0f)), physxMaster, true);
 
 
 	Watertile watertile = Watertile(glm::vec3(0.0f,2.0f,0.0f), glm::vec2(50.0f), 0.03f);
@@ -234,6 +234,7 @@ int main(int argc, char** argv)
 	modelList.push_back(&Safehouse);
 	modelList.push_back(&leafTree);
 	modelList.push_back(&tree2);
+	modelList.push_back(&tree3);
 
 	/* --------------------------------------------- */
 	// Lights
