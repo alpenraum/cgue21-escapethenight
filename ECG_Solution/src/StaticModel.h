@@ -11,6 +11,7 @@ private:
 public:
     StaticModel();
     StaticModel(string const& path, glm::vec3 position, PhysxMaster* physxMaster, bool shapeIsExclusive);
+    StaticModel(string const& path, glm::vec3 position, PxQuat rot, PhysxMaster* physxMaster, bool shapeIsExclusive);
     StaticModel(string const& path, glm::vec3 position, glm::vec3 scale, PhysxMaster* physxMaster, bool shapeIsExclusive);
 };
 

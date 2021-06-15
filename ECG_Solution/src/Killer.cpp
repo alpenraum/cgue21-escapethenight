@@ -3,7 +3,7 @@
 
 Killer::Killer()
 {
-	this->setPosition(glm::vec3(6.0f, 4.0f, 10.0f));
+	this->setPosition(glm::vec3(30.0f, 4.0f, 10.0f));
 	movementGoal = this->getPosition();
 }
 Killer::Killer(glm::vec3 position, PhysxMaster* physxMaster) : Character(position,physxMaster) {
@@ -17,12 +17,13 @@ Killer::Killer(glm::vec3 position, PhysxMaster* physxMaster) : Character(positio
 
 void Killer::update(Player& player, bool playerNearLight, float dt)
 {
+	timePassedSinceUpdate += dt;
 	bool playerInSight = true;
 	std::srand(std::time(nullptr));
 	float distToPlayer = glm::abs(glm::distance(this->getPosition(), player.getPosition()));
 	float speed = playerNearLight? ATTACK_SPEED : MOVEMENT_SPEED;
-	if (glm::abs(glm::distance(this->getPosition(), movementGoal)) <= 2.0f || playerNearLight || distToPlayer<=5.0f) { //only calculates the goal position once the old one has been reach or the player is visible)
-
+	if (this->timePassedSinceUpdate >= UPDATE_TICK || playerNearLight || distToPlayer<=15.0f) { //only calculates the goal position once the old one has been reach or the player is visible)
+		timePassedSinceUpdate = 0.0f;
 		movementGoal = player.getPosition();
 		movementGoal.y = 0.0f;
 		
@@ -31,6 +32,7 @@ void Killer::update(Player& player, bool playerNearLight, float dt)
 			movementGoal.x = movementGoal.x * 1.5f * (std::sin(std::rand() % 100));
 			movementGoal.z = movementGoal.z * 1.5f * (std::sin(std::rand() % 100));
 		}
+		
 	}
 
 
@@ -81,7 +83,7 @@ void Killer::drawShadows(AdvancedShader* shader)
 }
 
 void Killer::resetKiller() {
-	Character::setPosition(glm::vec3(6.0f, 4.0f, 10.0f));
+	Character::setPosition(glm::vec3(30.0f, 4.0f, 10.0f));
 	movementGoal = this->getPosition();
 }
 

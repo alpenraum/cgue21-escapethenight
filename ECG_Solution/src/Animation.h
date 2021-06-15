@@ -9,6 +9,8 @@ private:
 	string name;
 	float length; //seconds
 	std::vector<JointAnimation> jointAnimations;
+
+	std::vector<AnimationKeyFrame> animationKeyFrames;
 	int numberOfKeyFrames;
 public:
 	enum ANIMATION {

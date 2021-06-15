@@ -35,7 +35,7 @@ FireParticleSystem::FireParticleSystem()
 {
 
 	
-	pps = 500.0f;
+	pps = 100.0f;
 	averageSpeed = 1.5f;
 	particleWeight = 1.0f;
 	averageLifeLength = 1.0f;

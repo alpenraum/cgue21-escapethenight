@@ -12,7 +12,10 @@ private:
 	AnimatedModelRenderer renderer;
 
 	const float MOVEMENT_SPEED = 2.0f;
-	const float ATTACK_SPEED = 3.5f;
+	const float ATTACK_SPEED = 3.8f;
+	const float UPDATE_TICK = 3.0f;
+
+	float timePassedSinceUpdate = 3.0f;
 
 	bool playerInSightLastFrame = false;
 

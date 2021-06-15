@@ -28,6 +28,13 @@ WorldRenderer::WorldRenderer(std::vector<Model*> models, std::vector<Watertile*>
 
 	campfires.push_back(c);
 
+	CampFire* c1 = new CampFire("assets/models/campfire/campfire.obj", glm::vec3(31, 4.0f, -19.0f), glm::vec3(1.0f));
+	levelRenderer.addModel(c1->getModel());
+	pointLights->push_back(c1->getLight());
+
+	campfires.push_back(c1);
+
+
 	postProcessingRenderer = PostProcessingRenderer();
 
 
@@ -41,16 +48,19 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 
 	WaterFrameBuffer waterFBO;
 	glm::vec3 cameraPos = camera->getPosition();
-
+	
 	ParticleMaster::update(camera->getPosition(), deltaTime);
 
 	//render shadowmaps
+	
 	std::vector<Model*>* modelList = levelRenderer.getModels();
 	for each (PointLight * light in *pointLights) {
 		if (light->castsShadows()) {
 			omniShadowRenderer.prepareRender(light);
 			for each (Model * m in *modelList) {
-				m->draw(*omniShadowRenderer.getShader());
+				if (m->renderShadows) {
+					m->draw(*omniShadowRenderer.getShader());
+				}
 			}
 			killer->drawShadows(omniShadowRenderer.getShader().get());
 			if (renderPlayer) {
@@ -59,10 +69,11 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 			omniShadowRenderer.cleanUpAfterRender(light);
 		}
 	}
+	
 
 	//in case water textures have a different size to Screen
 	glViewport(0, 0, Settings::waterTextureDimension, Settings::waterTextureDimension);
-
+	
 	for each (Watertile * tile in watertiles) {
 		//RENDER REFLECTION
 		waterFBO = tile->getWaterFBO();
@@ -77,7 +88,7 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 		levelRenderer.setUniforms(true, camera, glm::vec4(0, 1.0f, 0, -tile->getPosition().y + 0.5f), lightMapping, normalMapping, *dirLights, *pointLights, deltaTime);
 		levelRenderer.render();
 
-		killer->draw(camera, glm::vec4(0, 1.0f, 0, -tile->getPosition().y + 0.5f), lightMapping, normalMapping, *dirLights, *pointLights);
+		//killer->draw(camera, glm::vec4(0, 1.0f, 0, -tile->getPosition().y + 0.5f), lightMapping, normalMapping, *dirLights, *pointLights);
 
 		skybox.draw(camera);
 
@@ -91,11 +102,12 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		levelRenderer.setUniforms(true, camera, glm::vec4(0, -1.0f, 0, tile->getPosition().y), lightMapping, normalMapping, *dirLights, *pointLights, deltaTime);
 		levelRenderer.render();
-		killer->draw(camera, glm::vec4(0, 1.0f, 0, -tile->getPosition().y + 0.5f), lightMapping, normalMapping, *dirLights, *pointLights);
+		//killer->draw(camera, glm::vec4(0, 1.0f, 0, -tile->getPosition().y + 0.5f), lightMapping, normalMapping, *dirLights, *pointLights);
 
 		waterFBO.unbindFBO();
+		
 	}
-
+	
 	//FINAL RENDER SCENE TO SCREEN
 	postProcessingRenderer.bindFBO();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

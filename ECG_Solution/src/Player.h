@@ -66,7 +66,7 @@ private:
 	
 
 	float sanity = 100.0f;
-	const float SANITY_CHANGE_PER_SECOND = 1.5f;
+	const float SANITY_CHANGE_PER_SECOND = 2.0f;
 
 public:
 	

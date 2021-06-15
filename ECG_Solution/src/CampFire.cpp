@@ -14,7 +14,7 @@ CampFire::CampFire(string const& path, glm::vec3 position, glm::vec3 scale) {
 
     glm::vec3 lightPos = glm::vec3(position);
     lightPos.y += 0.5f;
-    light = PointLight(glm::normalize(glm::vec3(255, 128, 0)), this->getPosition(), glm::vec3(1.0f, 0.14f, 0.07f));
+    light = PointLight(glm::normalize(glm::vec3(255, 128, 0)*4.0f), this->getPosition(), glm::vec3(1.0f, 0.14f, 0.07f));
     light.castShadow = true;
 
 }

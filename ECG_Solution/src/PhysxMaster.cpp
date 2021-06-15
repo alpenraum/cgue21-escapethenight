@@ -60,14 +60,6 @@ PhysxMaster::PhysxMaster()
     }
 
 
-    //Default settings from the PhysX Documentation
-    gScene->setVisualizationParameter(PxVisualizationParameter::eSCALE, 1.0f);
-    gScene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_SHAPES, 1.0f);
-    gScene->setVisualizationParameter(PxVisualizationParameter::eBODY_LIN_VELOCITY, 1.0f);
-    gScene->setVisualizationParameter(PxVisualizationParameter::eBODY_AXES, 1.0f);
-    gScene->setVisualizationParameter(PxVisualizationParameter::eJOINT_LOCAL_FRAMES, 1.0f);
-    gScene->setVisualizationParameter(PxVisualizationParameter::eJOINT_LIMITS, 1.0f);
-
 
     defaultMaterial = gPhysics->createMaterial(1.0f, 1.0f, 0.5f);
 

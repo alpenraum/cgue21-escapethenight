@@ -6,6 +6,8 @@ Model::Model() {
 }
 Model::Model(string const &path, glm::vec3 position) {
 	this->transform.setPosition(position);
+	PxQuat rot(-PxHalfPi, PxVec3(1.0f, 0.0f, 0.0f));
+	this->transform.setRotation(rot);
 	loadModel(path);
 }
 Model::Model(string const &path, glm::vec3 position, glm::vec3 scale) {
@@ -138,17 +140,17 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
 	}
 	
 	aiColor4D ambient;
-		if (AI_SUCCESS != aiGetMaterialColor(material, AI_MATKEY_COLOR_AMBIENT, &ambient)) {
-			ambient = aiColor4D(0.0f,0.0f,0.0f,1.0f);
-		}
+		//if (AI_SUCCESS != aiGetMaterialColor(material, AI_MATKEY_COLOR_AMBIENT, &ambient)) {
+			ambient = aiColor4D(1.0f,1.0f,1.0f,1.0f);
+		//}
 		aiColor4D diffuse;
-		if (AI_SUCCESS != aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &diffuse)) {
-			diffuse = aiColor4D(0.2f, 0.2f, 0.2f, 1.0f);;
-		}
+		//if (AI_SUCCESS != aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &diffuse)) {
+			diffuse = aiColor4D(0.5f, 0.5f, 0.5f, 1.0f);;
+		//}
 		aiColor4D specular;
-		if (AI_SUCCESS != aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, &specular)) {
-			specular = aiColor4D(0.55f, 0.55f, 0.55f, 1.0f);
-		}
+		//if (AI_SUCCESS != aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, &specular)) {
+			specular = aiColor4D(0.2f, 0.2f, 0.2f, 1.0f);
+		//}
 		float specularf = (specular.r * 0.2126f + specular.b * 0.0722f + specular.g * 0.7152f);
 		float ambientf = (ambient.r * 0.2126f + ambient.b * 0.0722f + ambient.g * 0.7152f);
 		float diffusef = (diffuse.r * 0.2126f + diffuse.b * 0.0722f + diffuse.g * 0.7152f);

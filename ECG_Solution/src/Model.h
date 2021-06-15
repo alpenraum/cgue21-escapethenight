@@ -42,7 +42,7 @@ public:
 		}
 	}
 
-
+	bool renderShadows = true;
 protected:
 	//saves all Meshes from this Model
 	std::vector<Mesh> meshes;

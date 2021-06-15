@@ -30,7 +30,7 @@ struct PointLight {
 
 
 uniform sampler2D texture_diffuse1;
-uniform PointLight pointLights[3];
+uniform PointLight pointLights[4];
 
 uniform DirectionalLight dirLights[8];
 uniform vec3 materialCoefficients; // x = ambient, y = diffuse, z = specular 
@@ -118,8 +118,8 @@ vec3 blinnPhongPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 view
 
         if(light.emittingShadows){
            float shadow = ShadowCalculation(fs_in.FragPos, light,index);
-           diffuse1*= (1.0f-shadow);
-           specular1*=(1.0f-shadow);
+           diffuse1*= (1.0f-(shadow));
+           specular1*=(1.0f-(shadow));
           
         }
 	    

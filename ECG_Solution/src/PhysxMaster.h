@@ -7,7 +7,7 @@ class PhysxMaster
 {
 private:
 
-	const PxReal M_STEPSIZE = 1.0f / 60.0f;
+	const PxReal M_STEPSIZE = 1.0f / 30.0f;
 	PxReal M_ACCUMULATOR = 0.0f;
 	// PhysX Variables
 	PxDefaultAllocator      gAllocator;

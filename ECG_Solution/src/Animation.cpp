@@ -13,6 +13,8 @@ Animation::Animation(string name,float lengthInSeconds, std::vector<JointAnimati
 	this->length = lengthInSeconds;
 	this->jointAnimations = jointAnimations;
 	this->numberOfKeyFrames = numberOfKeyFrames;
+
+	animationKeyFrames = std::vector<AnimationKeyFrame>();
 }
 
 float Animation::getlength()
@@ -40,13 +42,13 @@ AnimationKeyFrame Animation::getKeyFrame(int index)
 
 std::vector<AnimationKeyFrame> Animation::getKeyFrames()
 {
-	std::vector<AnimationKeyFrame> keyFrames = std::vector<AnimationKeyFrame>();
 
-	for (int i = 0; i < numberOfKeyFrames; i++) {
-		keyFrames.push_back(getKeyFrame(i));
+	if (animationKeyFrames.size() == 0) {
+		for (int i = 0; i < numberOfKeyFrames; i++) {
+			animationKeyFrames.push_back(getKeyFrame(i));
+		}
 	}
-
-	return keyFrames;
+	return animationKeyFrames;
 	
 }
 

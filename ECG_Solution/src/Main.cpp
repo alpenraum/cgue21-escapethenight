@@ -93,11 +93,11 @@ int main(int argc, char** argv)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Request core profile
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);  // Create an OpenGL debug context
-	glfwWindowHint(GLFW_REFRESH_RATE, Settings::refreshRate); // Set refresh rate
+	//glfwWindowHint(GLFW_REFRESH_RATE, Settings::refreshRate); // Set refresh rate
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 	// Enable antialiasing (4xMSAA)
-	glfwWindowHint(GLFW_SAMPLES, 4);
+	glfwWindowHint(GLFW_SAMPLES, 2);
 
 	// Open window
 	GLFWmonitor* monitor = nullptr;
@@ -114,6 +114,7 @@ int main(int argc, char** argv)
 
 	// This function makes the context of the specified window current on the calling thread.
 	glfwMakeContextCurrent(window);
+	glfwSwapInterval(0);
 
 	// Initialize GLEW
 	glewExperimental = true;
@@ -183,9 +184,9 @@ int main(int argc, char** argv)
 	//Camera camera(fov, float(window_width) / float(window_height), nearZ, farZ);
 	BasicCamera freeCamera = BasicCamera(Settings::fov, ((double)Settings::width / (double)Settings::height), Settings::nearPlane, Settings::farPlane, Settings::mouseSens);
 
-	player = new Player(glm::vec3(0.0f,30.0f,0.0f),physxMaster);
+	player = new Player(glm::vec3(-40.0f,10.0f,30.0f),physxMaster);
 
-	killer = new Killer(glm::vec3(5.0f,5.0f,0.0f),physxMaster);
+	killer = new Killer(glm::vec3(31,10,-21),physxMaster);
 
 
 
@@ -194,7 +195,7 @@ int main(int argc, char** argv)
 	/* --------------------------------------------- */
 	// Models
 	/* --------------------------------------------- */
-
+	LOG_TO_CONSOLE("LOADING MODELS", "");
 		//SKYBOX
 	std::vector<std::string> skyboxFaces
 	{
@@ -209,36 +210,30 @@ int main(int argc, char** argv)
 	std::vector<Model*> modelList = std::vector<Model*>();
 	std::vector<Watertile*> watertiles = std::vector<Watertile*>();
 	
-	Model renderObject = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, 2.0f, -10.0f));
-	Model betweenWaterBird = Model("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(0.0f, -10.0f, -10.0f));
-	StaticModel terrain = StaticModel("assets/models/LowPolyMountains_obj/lowpolymountains.obj", glm::vec3(0.0f, 0.5f, 0.0f),physxMaster,true);
+	LOG_TO_CONSOLE("Terain", "");
+	StaticModel terrain = StaticModel("assets/models/terrain/terrain_norot.dae", glm::vec3(0.0f, 0.0f, 0.0f),physxMaster,true);
+	LOG_TO_CONSOLE("plants", "");
+	
+	StaticModel bigOcc = StaticModel("assets/models/terrain/big_oc.dae", glm::vec3(0.0f, 0.0f, 0.0f), physxMaster, true);
+	LOG_TO_CONSOLE("bridges", "");
+	StaticModel	bridges = StaticModel("assets/models/terrain/bridge.dae", glm::vec3(0.0f, 0.0f, 0.0f), physxMaster, true);
+	StaticModel Safehouse = StaticModel("assets/models/terrain/safehouse.dae", glm::vec3(0.0f, 0.0f, 0.0f), physxMaster, true);
+	LOG_TO_CONSOLE("trees", "");
+	StaticModel leafTree = StaticModel("assets/models/terrain/tree1.dae", glm::vec3(0.0f, 0.0f, 0.0f), PxQuat(-PxHalfPi, PxVec3(1.0f, 0.0f, 0.0f)), physxMaster, true);
+	StaticModel tree2 = StaticModel("assets/models/terrain/tree2.dae", glm::vec3(0.0f, 0.0f, 0.0f), PxQuat(-PxHalfPi, PxVec3(1.0f, 0.0f, 0.0f)), physxMaster, true);
+	StaticModel tree3 = StaticModel("assets/models/terrain/tree3.dae", glm::vec3(0.0f, 0.0f, 0.0f), PxQuat(-PxHalfPi, PxVec3(1.0f, 0.0f, 0.0f)), physxMaster, true);
 
-	// SCALE NOT WORKING ATM, NOT FOR PHYSX AT LEAST
-	DynamicModel shadowBird1 = DynamicModel("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(2.0f, 10.0f, 12.0f), glm::vec3(0.2f), physxMaster, false);
-	shadowBird1.setMass(15.0f);
-	DynamicModel shadowBird2 = DynamicModel("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(-2.0f, 7.0f, 12.0f), glm::vec3(0.2f), physxMaster, false);
-	shadowBird2.setMass(25);
-	DynamicModel shadowBird3 = DynamicModel("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(2.0f, 5.0f, 8.0f), glm::vec3(0.2f), physxMaster, false);
-	shadowBird3.setMass(25.0f);
-	DynamicModel shadowBird4 = DynamicModel("assets/models/bullfinch_obj/bullfinch.obj", glm::vec3(-2.0f, 3.0f, 8.0f), glm::vec3(0.2f), physxMaster, false);
-	shadowBird4.setMass(25);
 
-	modelList.push_back(&renderObject);
-	modelList.push_back(&shadowBird1);
-	modelList.push_back(&shadowBird2);
-	modelList.push_back(&shadowBird3);
-	modelList.push_back(&shadowBird4);
-	modelList.push_back(&betweenWaterBird);
-
-	Watertile watertile = Watertile(glm::vec3(-15.0f, 0.0f, 14.0f), glm::vec2(10.0f), 0.03f);
+	Watertile watertile = Watertile(glm::vec3(0.0f,2.0f,0.0f), glm::vec2(50.0f), 0.03f);
 	watertiles.push_back(&watertile);
-	Watertile tile1 = Watertile(glm::vec3(15.0f, 0.0f, 7.0f), glm::vec2(10.0f), 0.1f);
-	watertiles.push_back(&tile1);
+	
 
 	modelList.push_back(&terrain);
-
-	
-	
+	modelList.push_back(&bigOcc);
+	modelList.push_back(&bridges);
+	modelList.push_back(&Safehouse);
+	modelList.push_back(&leafTree);
+	modelList.push_back(&tree2);
 
 	/* --------------------------------------------- */
 	// Lights
@@ -310,7 +305,7 @@ int main(int argc, char** argv)
 		}
 
 
-
+		
 
 		//TODO: IMPLEMENT REAL END SCREEN
 		if ((player->getSanity() <= 0.01f) || glm::distance(player->getPosition(), killer->getPosition()) <= 2.3f) {
@@ -318,6 +313,11 @@ int main(int argc, char** argv)
 			worldRenderer.renderLoseScreen();
 			dt = 0.0f; // effectively pausing the scene
 			
+		}
+		else if (glm::distance(player->getPosition(), glm::vec3(37, 6, -23)) <= 1.0f) {
+			worldRenderer.renderWinScreen();
+			SoundManager::stopEvent("event: / AmbientSound", true);
+			dt = 0.0f;
 		}
 		else {
 
@@ -329,11 +329,10 @@ int main(int argc, char** argv)
 			else {
 				camera = &freeCamera;
 			}
-
+			
 			physxMaster->update();
-
+			
 			//_-------------------------------------------------------------------------------_
-			//TODO ADD CHARACTER CONTROLLER WHICH PARSES WASD SPACE SHIFT TO PLAYER AND CAMERA
 			unsigned int direction = Player::NO_MOVEMENT;
 			if (w) {
 				direction += Player::FORWARD;
@@ -356,13 +355,12 @@ int main(int argc, char** argv)
 			player->update(direction, mouseDelta, dt, worldRenderer.getCampfires());
 
 			killer->update(*player, player->isNearLight(worldRenderer.getCampfires()), dt);
-
-			//glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			worldRenderer.render(camera, dt, false, NORMALMAPPING, player, usePlayerCamera, killer);
 
 		}
+		
 		//----AUDIO
 		SoundManager::update();
 
@@ -534,13 +532,13 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		NORMALMAPPING = !NORMALMAPPING;
 		break;
 	case GLFW_KEY_F4:
-		player = new Player(glm::vec3(0.0f, 5.0f, 0.0f), physxMaster);
-		killer = new Killer(glm::vec3(5.0f), physxMaster);
+		player = new Player(glm::vec3(-40.0f, 10.0f, 30.0f), physxMaster);
+		killer = new Killer(glm::vec3(31, 10, -21), physxMaster);
 		SoundManager::playEvent("event:/AmbientSound");
 
 		break;
 	case GLFW_KEY_F5:
-		
+		std::cout << "Position: " << player->getPosition().x << " " << player->getPosition().y << " " << player->getPosition().z << std::endl;
 		break;
 	case GLFW_KEY_F6:
 
