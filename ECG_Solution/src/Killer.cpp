@@ -35,6 +35,10 @@ void Killer::update(Player& player, bool playerNearLight, float dt)
 		
 	}
 
+	if (showcaseMode) {
+		movementGoal = this->getPosition();
+		movementGoal.x += 0.01f;
+	}
 
 	glm::vec3 movementVectorNormalized = glm::normalize(movementGoal - this->getPosition());
 	glm::vec3 movementVectorSpeed = movementVectorNormalized * speed * dt;

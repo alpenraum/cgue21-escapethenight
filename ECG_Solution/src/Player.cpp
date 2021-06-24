@@ -94,22 +94,23 @@ void Player::update(unsigned int movementDirection, glm::vec2 mouseDelta, float 
 
 
 	//sanity
+	if (!showcaseMode) {
+		if (isNearLight(campfires) && movementDirection == Player::NO_MOVEMENT) { //if near light and standing still
+			sanity += SANITY_CHANGE_PER_SECOND * delta;
+		}
+		else if ((isNearLight(campfires) && !movementDirection == Player::NO_MOVEMENT)) {
+			//no change in sanity level
+		}
+		else {
+			sanity -= SANITY_CHANGE_PER_SECOND * delta;
+		}
 
-	if (isNearLight(campfires) && movementDirection == Player::NO_MOVEMENT) { //if near light and standing still
-		sanity += SANITY_CHANGE_PER_SECOND * delta;
-	}
-	else if ((isNearLight(campfires) && !movementDirection == Player::NO_MOVEMENT)) {
-		//no change in sanity level
-	}
-	else {
-		sanity -= SANITY_CHANGE_PER_SECOND * delta;
-	}
-
-	if (sanity > 100.0f) {
-		sanity = 100.0f;
-	}
-	if (sanity < 0.0f) {
-		sanity = 0.0f;
+		if (sanity > 100.0f) {
+			sanity = 100.0f;
+		}
+		if (sanity < 0.0f) {
+			sanity = 0.0f;
+		}
 	}
 
 
@@ -217,7 +218,7 @@ PlayerHand::PlayerHand(glm::vec3 playerPos)
 	glm::vec3 lightPos = playerPos;
 	lightPos.y += 1.5f;
 	lightPos += torchOffset;
-	lightsource = PointLight(glm::normalize(glm::vec3(1.0f, 0.372f, 0.057f)) * 4.0f, lightPos, glm::vec3(1.0f, 0.09f, 0.032f));
+	lightsource = PointLight(glm::normalize(glm::vec3(1.0f, 0.372f, 0.057f)) * 3.0f, lightPos, glm::vec3(1.0f, 0.09f, 0.032f));
 	lightsource.toggleShadows();
 
 	this->setPosition(modelHand.getPosition());
@@ -264,6 +265,8 @@ void PlayerHand::update(glm::vec3 pos, glm::quat Rotation, float dt)
 	this->transform.setRotation(Rotation);
 	
 	pos.y += 0.5f;
+	pos.x += 2.0f;
+	
 	lightsource.position = pos;
 
 	

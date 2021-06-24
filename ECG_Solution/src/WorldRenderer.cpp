@@ -34,7 +34,7 @@ WorldRenderer::WorldRenderer(std::vector<Model*> models, std::vector<Watertile*>
 
 	campfires.push_back(c1);
 
-
+	
 	postProcessingRenderer = PostProcessingRenderer();
 
 
@@ -52,9 +52,9 @@ void WorldRenderer::render(ICamera* camera, float deltaTime, bool lightMapping, 
 	ParticleMaster::update(camera->getPosition(), deltaTime);
 
 	//render shadowmaps
-	
 	std::vector<Model*>* modelList = levelRenderer.getModels();
 	for each (PointLight * light in *pointLights) {
+	
 		if (light->castsShadows()) {
 			omniShadowRenderer.prepareRender(light);
 			for each (Model * m in *modelList) {

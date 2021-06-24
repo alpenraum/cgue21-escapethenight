@@ -244,7 +244,7 @@ int main(int argc, char** argv)
 
 	//for good attentuation values, see: http://wiki.ogre3d.org/-Point+Light+Attenuation
 
-	PointLight moon = PointLight(glm::normalize(glm::vec3(0.517f, 0.57f, 0.8f)) * 80.0f, glm::vec3(-60.0f, 100.0f, -80.0f), glm::vec3(1.0f, 0.007f, 0.0002f));
+	PointLight moon = PointLight(glm::normalize(glm::vec3(0.517f, 0.57f, 0.8f)) * 40.0f, glm::vec3(-60.0f, 100.0f, -80.0f), glm::vec3(1.0f, 0.0014f, 0.000007f));
 	moon.toggleShadows();
 	pointLights.push_back(&moon);
 
@@ -542,6 +542,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		std::cout << "Position: " << player->getPosition().x << " " << player->getPosition().y << " " << player->getPosition().z << std::endl;
 		break;
 	case GLFW_KEY_F6:
+		std::cout << "Showcase Mode toggled" << std::endl;
+		player->showcaseMode = !player->showcaseMode;
+		killer->showcaseMode = !killer->showcaseMode;
 
 		break;
 	case GLFW_KEY_F:

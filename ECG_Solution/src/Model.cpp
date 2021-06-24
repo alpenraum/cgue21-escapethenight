@@ -141,7 +141,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
 	
 	aiColor4D ambient;
 		//if (AI_SUCCESS != aiGetMaterialColor(material, AI_MATKEY_COLOR_AMBIENT, &ambient)) {
-			ambient = aiColor4D(1.0f,1.0f,1.0f,1.0f);
+			ambient = aiColor4D(0.8f, 0.8f,0.8f,1.0f);
 		//}
 		aiColor4D diffuse;
 		//if (AI_SUCCESS != aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &diffuse)) {

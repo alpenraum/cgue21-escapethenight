@@ -45,6 +45,8 @@ class Player :
 {
 private:
 
+	
+
     BasicCamera* camera = nullptr;
     
     PlayerHand hand;
@@ -96,5 +98,5 @@ public:
 	float getSanity();
 	void resetSanity();
 
-	
+	bool showcaseMode = false;
 };
